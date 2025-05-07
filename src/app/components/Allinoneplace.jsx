@@ -1,21 +1,21 @@
 'use client';
 import React from 'react';
 
-const JustDrop = () => {
+const Alloneplace = () => {
   const products = [
     {
       id: 1,
       title: 'Woman Hoodie Mockup Front View PSD',
       price: '$2.99',
       oldPrice: '$3.99',
-      image: 'https://i.ibb.co.com/NdBDG3m0/Whats-App-Image-2025-05-06-at-11-27-52-AM-removebg-preview.png', 
+      image: 'https://i.ibb.co.com/cSbmLFkH/3.png', 
     },
     {
       id: 2,
       title: 'Woman Hoodie Mockup Front View PSD',
       price: '$2.99',
       oldPrice: '$3.99',
-      image: 'https://i.postimg.cc/MKr3759W/Whats-App-Image-2025-05-06-at-11-27-48-AM-removebg-preview.png',
+      image: 'https://i.ibb.co.com/cSbmLFkH/3.png',
     },
     {
       id: 3,
@@ -36,7 +36,7 @@ const JustDrop = () => {
       title: 'Woman Hoodie Mockup Front View PSD',
       price: '$2.99',
       oldPrice: '$3.99',
-      image: 'https://i.postimg.cc/MKr3759W/Whats-App-Image-2025-05-06-at-11-27-48-AM-removebg-preview.png',
+      image: 'https://i.ibb.co.com/cSbmLFkH/3.png',
     },
     {
       id: 6,
@@ -49,13 +49,12 @@ const JustDrop = () => {
 
   return (
     <section className="py-12 bg-white text-center max-w-6xl mx-auto">
-      <h2 className="text-2xl font-extrabold mb-2">Fresh Mockups Just Dropped!</h2>
+      <h2 className="text-2xl font-extrabold mb-2">Find the Right Mockup for Any Project — All in One Place!</h2>
       <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-        Explore our newest collection of high-quality mockups designed to bring your creative vision
-        to life. Crafted for realism and easy customization.
+      From minimal to bold, our diverse mockup library helps you showcase your work with style. Save time and impress clients — all with one platform.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 px-4  ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 px-4   ">
         {products.map((product) => (
           <div
             key={product.id}
@@ -91,4 +90,4 @@ const JustDrop = () => {
   );
 };
 
-export default JustDrop;
+export default Alloneplace;
