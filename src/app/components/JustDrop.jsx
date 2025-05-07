@@ -49,7 +49,7 @@ const JustDrop = () => {
 
   return (
     <section className="py-12 bg-white text-center max-w-6xl mx-auto">
-      <h2 className="text-2xl font-extrabold mb-2">Fresh Mockups Just Dropped!</h2>
+      <h2 className="text-2xl font-extrabold mb-2 text-black">Fresh Mockups Just Dropped!</h2>
       <p className="text-gray-600 mb-8 max-w-xl mx-auto">
         Explore our newest collection of high-quality mockups designed to bring your creative vision
         to life. Crafted for realism and easy customization.
@@ -80,7 +80,7 @@ const JustDrop = () => {
 </div>
 
            <div className='p-4'>
-           <button className=" py-2 p-4  font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8]  w-full rounded-full">
+           <button className=" py-2 p-4  font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8]  w-full rounded-full text-white">
               + Add to Cart
             </button>
            </div>
