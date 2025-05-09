@@ -73,7 +73,7 @@ const page = () => {
     <div>
      <Navbar/>
       {/* Product Section */}
-      <section className='grid md:grid-cols-3 mx-auto px-2 py-4 max-w-6xl gap-6 min-h-[200px]'>
+      <section className='grid md:grid-cols-3 mx-auto px-2 py-4 max-w-6xl gap-6 min-h-[200px] bg-white'>
   {/* Image Display + Thumbnails */}
   <div className='md:col-span-2'>
     {/* Main Image */}
@@ -176,7 +176,7 @@ const page = () => {
 
 
       {/* Description Section */}
-      <section className='mx-auto p-2 max-w-7xl'>
+      <section className='mx-auto p-2 max-w-7xl bg-white'>
         <h3 className='mb-2 font-bold text-[#1C2836] text-xl'>
           Description
         </h3>
@@ -261,7 +261,7 @@ const page = () => {
       </section>
 
       {/* Recommended Products */}
-      <section className='mx-auto px-2 py-10 max-w-7xl'>
+      <section className='mx-auto px-2 py-10 max-w-7xl bg-white'>
         <h2 className='mb-6 font-medium text-[#1C2836] text-xl'>
           Recommended Products
         </h2>
