@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import React from 'react';
 
 const JustDrop = () => {
@@ -48,23 +49,26 @@ const JustDrop = () => {
   ];
 
   return (
-    <section className="py-12 bg-white text-center max-w-6xl mx-auto">
-      <h2 className="text-2xl font-extrabold mb-2 text-black">Fresh Mockups Just Dropped!</h2>
-      <p className="text-gray-600 mb-8 max-w-xl mx-auto">
+    <section className="py-12 bg-white text-center max-w-6xl mx-auto ">
+      <h2 className="text-2xl font-extrabold mb-2 text-[#1C2836]">Fresh Mockups Just Dropped!</h2>
+      <p className="text-[#000000] mb-8 max-w-xl mx-auto">
         Explore our newest collection of high-quality mockups designed to bring your creative vision
         to life. Crafted for realism and easy customization.
       </p>
 
+    
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 px-4  ">
         {products.map((product) => (
-          <div
+          
+         <Link href={`/product-details/${product.id}`} key={product.id}>
+           <div
             key={product.id}
             className=" rounded-2xl shadow-md transition pb-4"
           >
             <img
               src={product.image}
               alt={product.title}
-              className="w-full h-64 object-contain mb-4 bg-[#E6E6E6] rounded-lg"
+              className="w-full h-64 object-contain mb-4 bg-[#E6E6E6] ratio-1/1 "
             />
           <h3 className="text-[20px] font-semibold text-gray-800 leading-tight line-clamp-2 px-4">
   {product.title}
@@ -85,8 +89,12 @@ const JustDrop = () => {
             </button>
            </div>
           </div>
+          </Link>
         ))}
       </div>
+      
+     
+
     </section>
   );
 };
