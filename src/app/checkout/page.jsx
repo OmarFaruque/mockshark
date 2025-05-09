@@ -63,7 +63,7 @@ const Page = () => {
               </div>
             </div>
 
-           <div className="flex items-center justify-between gap-1 mb-4">
+           <div className="flex items-center flex-col lg:flex-row lg:justify-between gap-4 lg:gap-1 mb-4">
               <input type="text" placeholder="Coupon code" className="border px-3 py-2 rounded w-64 " />
               <button className="bg-[#7CB84D] text-white px-12 py-2 rounded-lg hover:bg-green-700">APPLY COUPON</button>
             </div>
