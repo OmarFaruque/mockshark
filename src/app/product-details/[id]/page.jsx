@@ -12,6 +12,8 @@ import { Navbar } from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
 import Link from 'next/link'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import JustDrop from '@/app/components/JustDrop';
+import RecommendedProduct from '@/app/components/RecommendedProduct';
 
 const page = () => {
  const products = [
@@ -98,7 +100,7 @@ const page = () => {
   navigation
   pagination={{ clickable: true }}
   thumbs={{ swiper: thumbsSwiper }}
-  className="rounded bg-gray-100 p-2 lg:w-[494px] lg:h-[444px] custom-swiper"
+  className="rounded bg-gray-100 p-2 lg:w-[630px] lg:h-[444px] custom-swiper"
 >
   {thumbnails.map((src, index) => (
     <SwiperSlide key={index}>
@@ -189,7 +191,7 @@ const page = () => {
         See License
       </a>
     </p>
-    <button className="py-2 border border-[#1C2836] rounded-full w-full font-semibold">
+    <button className="py-2 border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold">
       ADD TO CART
     </button>
     <Link href="/checkout">
@@ -297,64 +299,7 @@ const page = () => {
       </section>
 
       {/* Recommended Products */}
-      <section className='mx-auto px-2 py-10 max-w-6xl bg-white'>
-        <h2 className='mb-6 font-medium text-[#1C2836] text-xl'>
-          Recommended Products
-        </h2>
-        <div className='gap-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3'>
-          {products.map(product => (
-            <div
-              key={product.id}
-              className='relative bg-white shadow-sm hover:shadow-md border rounded-lg overflow-hidden transition'
-            >
-              {/* Top Label */}
-              <div className='top-2 left-2 absolute bg-[#1C2836] p-1 rounded font-bold text-[#46D8F9] text-xs'>
-                PSD
-              </div>
-              {/* Cart Icon (top-right) */}
-              <div className='top-2 right-2 absolute'>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  className='bg-[#1C2836] p-1 rounded-sm w-6 h-6 text-gray-200 hover:text-white cursor-pointer'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-5-9V6a2 2 0 10-4 0v7'
-                  />
-                </svg>
-              </div>
-
-              {/* Image */}
-              <Image
-                src={product.image}
-                width={400}
-                height={400}
-                alt={product.title}
-                className='bg-gray-300 w-full h-auto'
-              />
-
-              {/* Details */}
-              <div className='p-4'>
-                <h3 className='mb-1 pb-4 font-bold text-[#1C2836] text-md'>{product.title}</h3>
-                <div className='flex justify-between items-center text-gray-500 text-xs'>
-                  <span>{product.category}</span>
-                  <p>
-                    Starting at{' '}
-                    <span className='bg-[#1C2836] px-2 py-1 rounded font-semibold text-[#46D8F9] text-xs'>
-                      {product.price}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+   <RecommendedProduct/>
 
       {/* Footer */}
     <Footer/>
