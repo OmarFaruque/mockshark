@@ -13,6 +13,9 @@ import Footer from '@/app/components/Footer'
 import Link from 'next/link'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import JustDrop from '@/app/components/JustDrop';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Slider from 'react-slick';
 import RecommendedProduct from '@/app/components/RecommendedProduct';
 
 const page = () => {
@@ -60,6 +63,10 @@ const page = () => {
       image: 'https://i.postimg.cc/MKr3759W/Whats-App-Image-2025-05-06-at-11-27-48-AM-removebg-preview.png',
     },
   ];
+   const [nav1, setNav1] = useState(null);
+  const [nav2, setNav2] = useState(null);
+  const mainSlider = useRef(null);
+  const thumbSlider = useRef(null);
 
 
 
@@ -90,76 +97,80 @@ const page = () => {
     <div>
      <Navbar/>
       {/* Product Section */}
-     <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-2 py-4 bg-white">
+     <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto px-2 py-4 bg-white">
   {/* Image Display + Thumbnails */}
-  <div className="md:col-span-2 w-full">
-    {/* Main Swiper */}
-   <Swiper
-  modules={[Navigation, Pagination, Thumbs]}
-  spaceBetween={10}
-  navigation
-  pagination={{ clickable: true }}
-  thumbs={{ swiper: thumbsSwiper }}
-  className="rounded bg-gray-100 p-2 lg:w-[630px] lg:h-[444px] custom-swiper"
->
-  {thumbnails.map((src, index) => (
-    <SwiperSlide key={index}>
-      <div className="flex items-center justify-center">
-        <Image
-          src={src}
-          alt={`Slide ${index}`}
-          width={400}
-          height={400}
-          className="rounded object-contain"
-        />
-      </div>
-    </SwiperSlide>
-  ))}
-</Swiper>
-
-
-    {/* Thumbnails Swiper */}
-    <Swiper
-      modules={[Thumbs]}
-      onSwiper={setThumbsSwiper}
-      spaceBetween={10}
-      watchSlidesProgress
-      breakpoints={{
-        320: { slidesPerView: 5 },
-        640: { slidesPerView: 4 },
-        1024: { slidesPerView: 5 },
-      }}
-      className="mt-4 "
-    >
-      {thumbnails.map((src, index) => (
-        <SwiperSlide key={index} className="cursor-pointer">
+  <div className="md:col-span-2 w-full max-w-[900px] mx-auto px-4">
+  {/* Main Slider */}
+  <Slider
+    asNavFor={nav2}
+    ref={(slider) => setNav1(slider)}
+    arrows={true}
+    dots={true}
+    slidesToShow={1.3}
+    centerMode={true}
+    centerPadding="1px"
+    infinite={false}
+    className="rounded p-2 w-full h-auto "
+  >
+    {thumbnails.map((src, index) => (
+      <div
+        key={index}
+        className="flex justify-center items-center px-2"
+      >
+        <div className="bg-gray-100 rounded overflow-hidden w-full max-w-[600px] aspect-square">
           <Image
             src={src}
-            alt={`Thumb ${index}`}
-            width={70}
-            height={70}
-            className="rounded border border-gray-300 hover:border-black transition w-full h-auto"
+            alt={`Slide ${index}`}
+            layout="responsive"
+            width={400}
+            height={400}
+            className="rounded object-contain"
           />
-        </SwiperSlide>
-      ))}
-    </Swiper>
+        </div>
+      </div>
+    ))}
+  </Slider>
 
-    {/* Meta Info */}
-    <div className="flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs">
-      <div className="flex items-center gap-1">
-        <Image src="/calender.png" width={12} height={12} alt="Calendar" />
-        <span>18 Nov 2028</span>
+  {/* Thumbnail Slider */}
+  <Slider
+    asNavFor={nav1}
+    ref={(slider) => setNav2(slider)}
+    slidesToShow={5}
+    swipeToSlide={true}
+    focusOnSelect={true}
+    arrows={false}
+    className="mt-6 px-2"
+  >
+    {thumbnails.map((src, index) => (
+      <div key={index} className="">
+        <Image
+          src={src}
+          alt={`Thumb ${index}`}
+          width={70}
+          height={70}
+          className="rounded border border-gray-300 hover:border-black transition"
+        />
       </div>
-      <div className="flex items-center gap-1">
-        <Image src="/file.png" width={12} height={12} alt="File Size" />
-        <span>PSD 700 MB</span>
-      </div>
-      <div className="flex items-center gap-1">
-        <Image src="/size.png" width={12} height={12} alt="Resolution" />
-        <span>4000x4000px</span>
-      </div>
+    ))}
+  </Slider>
+
+  {/* Meta Info */}
+  <div className="flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs px-2">
+    <div className="flex items-center gap-1">
+      <Image src="/calender.png" width={12} height={12} alt="Calendar" />
+      <span>18 Nov 2028</span>
+    </div>
+    <div className="flex items-center gap-1">
+      <Image src="/file.png" width={12} height={12} alt="File Size" />
+      <span>PSD 700 MB</span>
+    </div>
+    <div className="flex items-center gap-1">
+      <Image src="/size.png" width={12} height={12} alt="Resolution" />
+      <span>4000x4000px</span>
     </div>
   </div>
+</div>
+
 
   {/* Product Details */}
   <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0">
