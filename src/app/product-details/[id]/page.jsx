@@ -94,11 +94,8 @@ const page = () => {
     '/mockup-1.png',
     '/mockup-1.png',
     '/mockup-3.png',
-    '/mockup-1.png',
-    '/mockup-4.jpeg',
-     '/mockup-4.jpeg',
-      '/mockup-4.jpeg',
-       '/mockup-4.jpeg',
+
+   
     
   ];
 
@@ -120,7 +117,7 @@ const page = () => {
     <div>
      <Navbar/>
       {/* Product Section */}
-     <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto px-2 py-4 bg-white">
+     <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[1160px] mx-auto px-2 py-4 bg-white">
   {/* Image Display + Thumbnails */}
   <div className="md:col-span-2 w-full max-w-[900px] mx-auto px-4 relative  ">
   {/* Main Slider */}
@@ -128,7 +125,7 @@ const page = () => {
     asNavFor={nav2}
     ref={(slider) => setNav1(slider)}
     arrows={true}
-    dots={true}
+   
     slidesToShow={1.3}
     centerMode={true}
     centerPadding="1px"
@@ -157,30 +154,31 @@ const page = () => {
   </Slider>
 
   {/* Thumbnail Slider */}
-  <Slider
-    asNavFor={nav1}
-    ref={(slider) => setNav2(slider)}
-    slidesToShow={8}
-    swipeToSlide={true}
-    focusOnSelect={true}
-    arrows={false}
-    className="mt-6 px-2 "
-  >
-    {thumbnails.map((src, index) => (
-      <div key={index} className="">
-        <Image
-          src={src}
-          alt={`Thumb ${index}`}
-          width={70}
-          height={70}
-          className="rounded border border-gray-300 hover:border-black transition"
-        />
-      </div>
-    ))}
-  </Slider>
+ <Slider
+  asNavFor={nav1}
+  ref={(slider) => setNav2(slider)}
+  slidesToShow={4}
+  swipeToSlide={true}
+  focusOnSelect={true}
+  arrows={false}
+  className="mt-6 px-2"
+>
+  {thumbnails.map((src, index) => (
+    <div key={index} className="flex justify-start "> {/* Slight padding between thumbs */}
+      <Image
+        src={src}
+        alt={`Thumb ${index}`}
+        width={130}
+        height={130}
+        className="rounded border border-gray-300 hover:border-black transition object-cover"
+      />
+    </div>
+  ))}
+</Slider>
+
 
   {/* Meta Info */}
-  <div className="flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs px-2">
+  <div className="flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs px-2 ">
     <div className="flex items-center gap-1">
       <Image src="/calender.png" width={12} height={12} alt="Calendar" />
       <span>18 Nov 2028</span>
@@ -198,7 +196,7 @@ const page = () => {
 
 
   {/* Product Details */}
-  <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0">
+  <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0 mr-4">
     <p className="text-[#C0C0C0] text-sm">⭐⭐⭐⭐⭐ 35 Reviews</p>
     <h2 className="font-bold text-[#1C2836] text-xl">
       WOMAN HOODIE MOCKUP FRONT VIEW PSD
@@ -250,7 +248,7 @@ const page = () => {
 
 
       {/* Description Section */}
-      <section className='mx-auto p-2 max-w-6xl bg-white lg:mt-24 '>
+      <section className='mx-auto p-2 max-w-[1160px] bg-white lg:mt-24 '>
         <h3 className='mb-2 font-bold text-[#1C2836] text-xl'>
           Description
         </h3>
