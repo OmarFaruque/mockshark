@@ -10,7 +10,7 @@ import Image from 'next/image'
 import { Navbar } from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
 import Link from 'next/link'
-
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const page = () => {
  const products = [
@@ -68,6 +68,17 @@ const page = () => {
     '/mockup-4.jpeg',
   ];
 
+  const handlePrev = () => {
+    setMainImageIndex((prevIndex) =>
+      prevIndex === 0 ? thumbnails.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNext = () => {
+    setMainImageIndex((prevIndex) =>
+      prevIndex === thumbnails.length - 1 ? 0 : prevIndex + 1
+    );
+  };
  
   return (
     <div>
@@ -76,50 +87,63 @@ const page = () => {
       <section className='grid md:grid-cols-3 mx-auto px-2 py-4 max-w-6xl gap-6 min-h-[200px] bg-white'>
   {/* Image Display + Thumbnails */}
   <div className='md:col-span-2'>
-    {/* Main Image */}
-    <div className='bg-gray-100 p-2 rounded overflow-hidden'>
-      <Image
-        src={thumbnails[mainImageIndex]}
-        width={800}
-        height={600}
-        alt={`Main Image`}
-        className='w-full h-auto object-cover rounded'
-      />
-    </div>
+        {/* Slider */}
+        <div className='relative bg-gray-100 p-2 rounded overflow-hidden'>
+          <Image
+            src={thumbnails[mainImageIndex]}
+            width={400}
+            height={400}
+            alt={`Main Image`}
+            className='object-cover rounded mx-auto'
+          />
+          {/* Slider Buttons */}
+          <button
+            onClick={handlePrev}
+            className='absolute top-1/2 left-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow'
+          >
+            <FaArrowLeft />
+          </button>
+          <button
+            onClick={handleNext}
+            className='absolute top-1/2 right-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow'
+          >
+            <FaArrowRight />
+          </button>
+        </div>
 
-    {/* Thumbnails */}
-    <div className='flex items-center gap-3 mt-3 overflow-x-auto'>
-      {thumbnails.map((src, index) => (
-        <Image
-          key={index}
-          src={src}
-          width={70}
-          height={70}
-          alt={`Thumbnail ${index + 1}`}
-          onClick={() => setMainImageIndex(index)}
-          className={`rounded border-2 cursor-pointer hover:scale-105 transition ${
-            mainImageIndex === index ? 'border-black' : 'border-transparent'
-          }`}
-        />
-      ))}
-    </div>
+        {/* Thumbnails */}
+        <div className='flex items-center gap-3 mt-3 overflow-x-auto'>
+          {thumbnails.map((src, index) => (
+            <Image
+              key={index}
+              src={src}
+              width={70}
+              height={70}
+              alt={`Thumbnail ${index + 1}`}
+              onClick={() => setMainImageIndex(index)}
+              className={`rounded border-2 cursor-pointer hover:scale-105 transition ${
+                mainImageIndex === index ? 'border-black' : 'border-transparent'
+              }`}
+            />
+          ))}
+        </div>
 
-    {/* Meta Info */}
-    <div className='flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs'>
-      <div className='flex items-center gap-1'>
-        <Image src='/calendar_icon.png' width={12} height={12} alt='Calendar' />
-        <span> 18 Nov 2028</span>
+        {/* Meta Info (same as before) */}
+        <div className='flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs'>
+          <div className='flex items-center gap-1'>
+            <Image src='/calender.png' width={12} height={12} alt='Calendar' />
+            <span> 18 Nov 2028</span>
+          </div>
+          <div className='flex items-center gap-1'>
+            <Image src='/file.png' width={12} height={12} alt='File Size' />
+            <span> PSD 700 MB</span>
+          </div>
+          <div className='flex items-center gap-1'>
+            <Image src='/size.png' width={12} height={12} alt='Resolution' />
+            <span> 4000x4000px</span>
+          </div>
+        </div>
       </div>
-      <div className='flex items-center gap-1'>
-        <Image src='/file_icon.png' width={12} height={12} alt='File Size' />
-        <span> PSD 700 MB</span>
-      </div>
-      <div className='flex items-center gap-1'>
-        <Image src='/res_icon.png' width={12} height={12} alt='Resolution' />
-        <span> 4000x4000px</span>
-      </div>
-    </div>
-  </div>
 
   {/* Product Details (unchanged) */}
   <div className='space-y-4 p-4 border border-gray-300 rounded-xl'>
@@ -176,7 +200,7 @@ const page = () => {
 
 
       {/* Description Section */}
-      <section className='mx-auto p-2 max-w-7xl bg-white'>
+      <section className='mx-auto p-2 max-w-6xl bg-white '>
         <h3 className='mb-2 font-bold text-[#1C2836] text-xl'>
           Description
         </h3>
@@ -261,7 +285,7 @@ const page = () => {
       </section>
 
       {/* Recommended Products */}
-      <section className='mx-auto px-2 py-10 max-w-7xl bg-white'>
+      <section className='mx-auto px-2 py-10 max-w-6xl bg-white'>
         <h2 className='mb-6 font-medium text-[#1C2836] text-xl'>
           Recommended Products
         </h2>

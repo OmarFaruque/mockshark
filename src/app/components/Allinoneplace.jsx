@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Link from 'next/link';
 
 const Alloneplace = () => {
   const products = [
@@ -54,9 +55,13 @@ const Alloneplace = () => {
       From minimal to bold, our diverse mockup library helps you showcase your work with style. Save time and impress clients — all with one platform.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 px-4   ">
+   
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6 space-y-5 px-4   ">
         {products.map((product) => (
+          <Link href={`/product/${product.id}`} key={product.id}>
+         
           <div
+
             key={product.id}
             className=" rounded-2xl shadow-md transition pb-4"
           >
@@ -84,8 +89,11 @@ const Alloneplace = () => {
             </button>
            </div>
           </div>
+          </Link>
         ))}
+      
       </div>
+   
     </section>
   );
 };
