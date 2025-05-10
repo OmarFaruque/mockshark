@@ -1,11 +1,12 @@
 'use client';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation, Pagination ,Thumbs  } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Autoplay } from 'swiper/modules';
-import { useState } from 'react';
+import 'swiper/css/thumbs';
+import { useState ,useRef } from 'react';
 import Image from 'next/image'
 import { Navbar } from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
@@ -59,7 +60,8 @@ const page = () => {
   ];
 
 
-  const [mainImageIndex, setMainImageIndex] = useState(0);
+
+   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const thumbnails = [
     '/mockup-1.png',
     '/mockup-1.png',
@@ -79,80 +81,91 @@ const page = () => {
       prevIndex === thumbnails.length - 1 ? 0 : prevIndex + 1
     );
   };
+
+ 
  
   return (
     <div>
      <Navbar/>
       {/* Product Section */}
-      <section className='grid md:grid-cols-3 mx-auto px-2 py-4 max-w-6xl gap-6 min-h-[200px] bg-white'>
+     <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-2 py-4 bg-white">
   {/* Image Display + Thumbnails */}
-  <div className='md:col-span-2'>
-        {/* Slider */}
-        <div className='relative bg-gray-100 p-2 rounded overflow-hidden'>
-          <Image
-            src={thumbnails[mainImageIndex]}
-            width={400}
-            height={400}
-            alt={`Main Image`}
-            className='object-cover rounded mx-auto'
-          />
-          {/* Slider Buttons */}
-          <button
-            onClick={handlePrev}
-            className='absolute top-1/2 left-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow'
-          >
-            <FaArrowLeft />
-          </button>
-          <button
-            onClick={handleNext}
-            className='absolute top-1/2 right-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow'
-          >
-            <FaArrowRight />
-          </button>
-        </div>
-
-        {/* Thumbnails */}
-        <div className='flex items-center gap-3 mt-3 overflow-x-auto'>
-          {thumbnails.map((src, index) => (
-            <Image
-              key={index}
-              src={src}
-              width={70}
-              height={70}
-              alt={`Thumbnail ${index + 1}`}
-              onClick={() => setMainImageIndex(index)}
-              className={`rounded border-2 cursor-pointer hover:scale-105 transition ${
-                mainImageIndex === index ? 'border-black' : 'border-transparent'
-              }`}
-            />
-          ))}
-        </div>
-
-        {/* Meta Info (same as before) */}
-        <div className='flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs'>
-          <div className='flex items-center gap-1'>
-            <Image src='/calender.png' width={12} height={12} alt='Calendar' />
-            <span> 18 Nov 2028</span>
-          </div>
-          <div className='flex items-center gap-1'>
-            <Image src='/file.png' width={12} height={12} alt='File Size' />
-            <span> PSD 700 MB</span>
-          </div>
-          <div className='flex items-center gap-1'>
-            <Image src='/size.png' width={12} height={12} alt='Resolution' />
-            <span> 4000x4000px</span>
-          </div>
-        </div>
+  <div className="md:col-span-2 w-full">
+    {/* Main Swiper */}
+   <Swiper
+  modules={[Navigation, Pagination, Thumbs]}
+  spaceBetween={10}
+  navigation
+  pagination={{ clickable: true }}
+  thumbs={{ swiper: thumbsSwiper }}
+  className="rounded bg-gray-100 p-2 lg:w-[494px] lg:h-[444px] custom-swiper"
+>
+  {thumbnails.map((src, index) => (
+    <SwiperSlide key={index}>
+      <div className="flex items-center justify-center">
+        <Image
+          src={src}
+          alt={`Slide ${index}`}
+          width={400}
+          height={400}
+          className="rounded object-contain"
+        />
       </div>
+    </SwiperSlide>
+  ))}
+</Swiper>
 
-  {/* Product Details (unchanged) */}
-  <div className='space-y-4 p-4 border border-gray-300 rounded-xl'>
-    <p className='text-[#C0C0C0] text-sm'>⭐⭐⭐⭐⭐ 35 Reviews</p>
-    <h2 className='font-bold text-[#1C2836] text-xl'>
+
+    {/* Thumbnails Swiper */}
+    <Swiper
+      modules={[Thumbs]}
+      onSwiper={setThumbsSwiper}
+      spaceBetween={10}
+      watchSlidesProgress
+      breakpoints={{
+        320: { slidesPerView: 5 },
+        640: { slidesPerView: 4 },
+        1024: { slidesPerView: 5 },
+      }}
+      className="mt-4 "
+    >
+      {thumbnails.map((src, index) => (
+        <SwiperSlide key={index} className="cursor-pointer">
+          <Image
+            src={src}
+            alt={`Thumb ${index}`}
+            width={70}
+            height={70}
+            className="rounded border border-gray-300 hover:border-black transition w-full h-auto"
+          />
+        </SwiperSlide>
+      ))}
+    </Swiper>
+
+    {/* Meta Info */}
+    <div className="flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs">
+      <div className="flex items-center gap-1">
+        <Image src="/calender.png" width={12} height={12} alt="Calendar" />
+        <span>18 Nov 2028</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Image src="/file.png" width={12} height={12} alt="File Size" />
+        <span>PSD 700 MB</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Image src="/size.png" width={12} height={12} alt="Resolution" />
+        <span>4000x4000px</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Product Details */}
+  <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0">
+    <p className="text-[#C0C0C0] text-sm">⭐⭐⭐⭐⭐ 35 Reviews</p>
+    <h2 className="font-bold text-[#1C2836] text-xl">
       WOMAN HOODIE MOCKUP FRONT VIEW PSD
     </h2>
-
-    <div className='space-y-4 text-[#1C2836]'>
+    <div className="space-y-4 text-[#1C2836]">
       {[
         { label: 'Personal', price: '$2.99' },
         { label: 'Commercial', price: '$4.99' },
@@ -160,38 +173,36 @@ const page = () => {
       ].map((option, idx) => (
         <label
           key={idx}
-          className='flex justify-between items-center px-2 py-2 rounded cursor-pointer'
+          className="flex justify-between items-center px-2 py-2 rounded cursor-pointer"
         >
           <span>
-            <input type='radio' name='license' className='mr-2' />
+            <input type="radio" name="license" className="mr-2" />
             {option.label}
           </span>
-          <span className='font-bold'>{option.price}</span>
+          <span className="font-bold">{option.price}</span>
         </label>
       ))}
     </div>
-
-    <p className='text-[#1C2836] text-xs'>
+    <p className="text-[#1C2836] text-xs">
       For personal & brand usage.{' '}
-      <a href='#' className='text-sky-500 underline'>
+      <a href="#" className="text-sky-500 underline">
         See License
       </a>
     </p>
-
-    <button className='py-2 border border-[#1C2836] rounded-full w-full font-semibold'>
+    <button className="py-2 border border-[#1C2836] rounded-full w-full font-semibold">
       ADD TO CART
     </button>
-    <Link href='/checkout'>
-      <button className='bg-[#1C2836] py-2 rounded-full w-full font-semibold text-white'>
+    <Link href="/checkout">
+      <button className="bg-[#1C2836] py-2 rounded-full w-full font-semibold text-white">
         CHECKOUT
       </button>
     </Link>
-    <div className='px-2 rounded text-[#939393] text-center'>
+    <div className=" rounded text-[#939393] text-center">
       <p>
         Get our bundle pack and Unlock <br />
         <strong>Exclusive Discounts!</strong>
       </p>
-      <button className='bg-[#46D8F9] mt-3 py-2 rounded-full w-full font-bold text-[#1C2836]'>
+      <button className="bg-[#46D8F9] mt-3 py-2  rounded-full w-full font-bold text-[#1C2836]">
         GET NOW
       </button>
     </div>
@@ -199,8 +210,9 @@ const page = () => {
 </section>
 
 
+
       {/* Description Section */}
-      <section className='mx-auto p-2 max-w-6xl bg-white '>
+      <section className='mx-auto p-2 max-w-6xl bg-white lg:mt-24 '>
         <h3 className='mb-2 font-bold text-[#1C2836] text-xl'>
           Description
         </h3>

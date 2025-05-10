@@ -25,3 +25,24 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+.custom-swiper .swiper-button-next,
+.custom-swiper .swiper-button-prev {
+  width: 28px;
+  height: 28px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 9999px; /* fully rounded */
+  padding: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.custom-swiper .swiper-button-next:hover,
+.custom-swiper .swiper-button-prev:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.custom-swiper .swiper-button-next::after,
+.custom-swiper .swiper-button-prev::after {
+  font-size: 14px;
+}
