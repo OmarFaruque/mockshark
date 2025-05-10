@@ -46,3 +46,8 @@ body {
 .custom-swiper .swiper-button-prev::after {
   font-size: 14px;
 }
+.slick-prev,
+.slick-next {
+  z-index: 10;
+  color: black;
+}

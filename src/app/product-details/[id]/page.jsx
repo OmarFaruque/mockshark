@@ -1,22 +1,41 @@
 'use client';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination ,Thumbs  } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css/thumbs';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
+
+import Slider from 'react-slick';
 import { useState ,useRef } from 'react';
 import Image from 'next/image'
 import { Navbar } from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
 import Link from 'next/link'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
 import JustDrop from '@/app/components/JustDrop';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import Slider from 'react-slick';
+
 import RecommendedProduct from '@/app/components/RecommendedProduct';
+
+
+
+const NextArrow = ({ onClick }) => (
+  <div
+    onClick={onClick}
+    className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-[rgba(0,0,0,0.4)] hover:bg-[rgba(0,0,0,0.8)] rounded-full p-2 transition duration-300"
+  >
+    <FaChevronRight className="text-white text-xl" />
+  </div>
+);
+
+const PrevArrow = ({ onClick }) => (
+  <div
+    onClick={onClick}
+    className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-[rgba(0,0,0,0.4)] hover:bg-[rgba(0,0,0,0.8)] rounded-full p-2 transition duration-300"
+  >
+    <FaChevronLeft className="text-white text-xl" />
+  </div>
+);
+
 
 const page = () => {
  const products = [
@@ -77,6 +96,10 @@ const page = () => {
     '/mockup-3.png',
     '/mockup-1.png',
     '/mockup-4.jpeg',
+     '/mockup-4.jpeg',
+      '/mockup-4.jpeg',
+       '/mockup-4.jpeg',
+    
   ];
 
   const handlePrev = () => {
@@ -99,7 +122,7 @@ const page = () => {
       {/* Product Section */}
      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto px-2 py-4 bg-white">
   {/* Image Display + Thumbnails */}
-  <div className="md:col-span-2 w-full max-w-[900px] mx-auto px-4">
+  <div className="md:col-span-2 w-full max-w-[900px] mx-auto px-4 relative  ">
   {/* Main Slider */}
   <Slider
     asNavFor={nav2}
@@ -111,6 +134,8 @@ const page = () => {
     centerPadding="1px"
     infinite={false}
     className="rounded p-2 w-full h-auto "
+     nextArrow={<NextArrow />}
+  prevArrow={<PrevArrow />}
   >
     {thumbnails.map((src, index) => (
       <div
@@ -135,11 +160,11 @@ const page = () => {
   <Slider
     asNavFor={nav1}
     ref={(slider) => setNav2(slider)}
-    slidesToShow={5}
+    slidesToShow={8}
     swipeToSlide={true}
     focusOnSelect={true}
     arrows={false}
-    className="mt-6 px-2"
+    className="mt-6 px-2 "
   >
     {thumbnails.map((src, index) => (
       <div key={index} className="">
@@ -319,3 +344,6 @@ const page = () => {
 }
 
 export default page
+
+
+
