@@ -1,112 +1,159 @@
-'use client'
+'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Search, ShoppingCart, User ,ChevronDown } from 'lucide-react';
- // Adjust the path as necessary
+import { Menu, X, Search, ShoppingCart, User, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+
 export const Navbar = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
+const [expandedCategories, setExpandedCategories] = useState({}); 
+  const [expandedCategory, setExpandedCategory] = useState(null); // Track which category is expanded
+  const categories = {
+    "T-shirt Mockups": ["Front View", "Back View", "Folded", "Hanging"],
+    "Device Mockups": ["iPhone", "iPad", "MacBook", "Android"],
+    "Poster Mockups": ["Indoor", "Outdoor", "Framed", "Rolled"],
+    "Logo Mockups": ["Wall Sign", "Embossed", "Paper", "Glass"]
+  };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+const handleCategoryClick = (category) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category] // Toggle the selected category's expanded state
+    }));
+  };
+
 
   return (
     <nav className="bg-[#1C2836] text-white px-4 py-3">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
-        {/* Left Side */}
-        <div className="relative flex items-center space-x-2">
-  <img
-    src="/logo.png"
-    alt="Mockshark Logo"
-    className="w-8 h-8 object-contain"
-  />
-  <button className="font-bold text-xl flex items-center space-x-1 text-white">
-    <span>Mockshark</span>
-  </button>
-</div>
+        {/* Logo */}
+       <Link href='/'>
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+          <span className="text-xl font-bold">Mockshark</span>
+        </div>
 
+       </Link>
+        {/* Desktop Nav Links */}
+        <div className="hidden md:flex items-center gap-8">
+          {/* Dropdown Menu */}
+          <div className="relative group">
+            <button className="flex items-center gap-2 hover:text-cyan-300 transition">
+              Mockups
+              <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
 
-        {/* Center Nav Links */}
-      {/* Center Nav Links with Mockups Dropdown */}
-<div className="hidden md:flex space-x-6 items-center">
-  {/* Mockups Dropdown */}
-  <div className="relative group">
-    <button className="hover:text-gray-300 flex items-center gap-1">
-      Mockups
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
-    <div className="absolute top-full mt-2 hidden group-hover:block bg-[#1C2836] text-white  rounded-2xl shadow w-40 z-50">
-      <ul>
-        <li className="px-4 py-2 hover:bg-gray-900 cursor-pointer border-b border-b-white/10 ">T-shirt Mockups</li>
-        <li className="px-4 py-2 hover:bg-gray-900 cursor-pointer border-b border-b-white/10">Device Mockups</li>
-        <li className="px-4 py-2 hover:bg-gray-900 cursor-pointer border-b border-b-white/10">Poster Mockups</li>
-        <li className="px-4 py-2 hover:bg-gray-900 cursor-pointer border-b border-b-white/10">Logo Mockups</li>
-      </ul>
-    </div>
-  </div>
+            <div className="absolute top-full mt-2 hidden group-hover:block bg-[#0d0f18] border border-cyan-400/30 rounded-lg shadow-lg w-72 z-50 py-2 backdrop-blur-md">
+              <ul className="space-y-1 px-2">
+                {Object.entries(categories).map(([category, subcategories]) => (
+                  <li key={category} className="relative group/item">
+                    <div
+                      className="flex justify-between items-center px-4 py-3 hover:bg-cyan-400/10 hover:border-l-2 hover:border-l-cyan-400 rounded-md cursor-pointer"
+                      onMouseEnter={() => setHoveredCategory(category)}
+                    >
+                      <span className="text-sm text-gray-100 group-hover/item:text-cyan-300">{category}</span>
+                      <ChevronRight className="w-4 h-4 text-cyan-400/50 group-hover:item:text-cyan-400 group-hover:item:translate-x-1 transition" />
+                    </div>
 
-  {/* Static Links */}
-  <a href="#" className="hover:text-gray-300">About Us</a>
-  <a href="#" className="hover:text-gray-300">Bundle Deals</a>
-  <a href="#" className="hover:text-gray-300">Blog</a>
-</div>
+                    {hoveredCategory === category && (
+                      <div className="absolute left-full top-0 ml-1 bg-[#0d0f18] border border-cyan-400/20 rounded-lg shadow-lg w-64 z-50 py-2">
+                        <ul className="space-y-1">
+                          {subcategories.map((sub, idx) => (
+                            <li key={idx} className="px-4 py-2.5 hover:bg-cyan-400/5 hover:text-cyan-300 text-sm text-gray-300 flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
+                              {sub}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
+          {/* Static Links */}
+          <a href="#" className="hover:text-cyan-300 transition">About Us</a>
+          <a href="#" className="hover:text-cyan-300 transition">Bundle Deals</a>
+          <a href="#" className="hover:text-cyan-300 transition">Blog</a>
+        </div>
 
-        {/* Right Side */}
-        <div className="flex items-center space-x-4">
-          {/* Mobile Menu Toggle */}
+        {/* Right Icons */}
+        <div className="flex items-center gap-4">
+          <Search className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
+          <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
+          <User className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
+
+          {/* Desktop Sign In */}
+         <Link href='/login'>
+          <button className="hidden md:block px-4 py-1.5 bg-white text-[#1C2836] font-medium rounded hover:bg-gray-100 transition">
+            Sign In
+          </button>
+
+         </Link>
+          {/* Mobile Menu Icon */}
           <div className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X className="w-6 h-6 cursor-pointer" /> : <Menu className="w-6 h-6 cursor-pointer" />}
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </div>
-
-          {/* Desktop Menu (Login/Signup hover menu) */}
-          <div
-            className="relative group hidden md:block"
-            onMouseEnter={() => setMenuOpen(true)}
-            onMouseLeave={() => setMenuOpen(false)}
-          >
-            <Menu className="w-6 h-6 cursor-pointer" />
-            {menuOpen && (
-              <div className="absolute right-0 mt-2 bg-[#1C2836] text-white rounded-2xl shadow w-28 z-50">
-                <ul>
-                  <li className="px-4 py-2 hover:bg-gray-900   cursor-pointer border-b border-b-white/10">Login</li>
-                  <li className="px-4 py-2 hover:bg-gray-900  cursor-pointer border-b border-b-white/10">Signup</li>
-                </ul>
-              </div>
-            )}
-          </div>
-
-          {/* Icons */}
-          <Search className="w-5 h-5 cursor-pointer hover:text-gray-300" />
-          <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-gray-300" />
-          <User className="w-5 h-5 cursor-pointer hover:text-gray-300" />
         </div>
       </div>
 
-      {/* Mobile Menu Links */}
-      {mobileMenuOpen && (
-        <div className="md:hidden mt-4 flex flex-col items-center space-y-2 animate-slideDown">
-          <a href="#" className="hover:text-gray-300">Mockups</a>
-          <a href="#" className="hover:text-gray-300">About Us</a>
-          <a href="#" className="hover:text-gray-300">Bundle Deals</a>
-          <a href="#" className="hover:text-gray-300">Blog</a>
-          <div className="flex space-x-4 mt-2 ">
-            <button className="bg-white text-black px-3 py-1 rounded hover:bg-gray-200">Login</button>
-            <button className="bg-white text-black px-3 py-1 rounded hover:bg-gray-200">Signup</button>
+    {/* Mobile Menu */}
+ {mobileMenuOpen && (
+          <div className="md:hidden mt-3 space-y-2 animate-slideDown">
+            {/* Mockups Dropdown for Mobile */}
+            <div className="px-4">
+              <button
+                onClick={() => handleCategoryClick('Mockups')}
+                className="w-full flex justify-between items-center py-2 text-left text-white hover:text-cyan-300"
+              >
+                Mockups
+                <ChevronRight className={`w-4 h-4 transition-transform ${expandedCategories['Mockups'] ? "rotate-90" : ""}`} />
+              </button>
+              {expandedCategories['Mockups'] && (
+                <div className="mt-1 space-y-1">
+                  {Object.entries(categories).map(([category, subcategories]) => (
+                    <div key={category}>
+                      <button
+                        onClick={() => handleCategoryClick(category)} // Toggle subcategories for the selected category
+                        className="w-full flex justify-between items-center py-2 text-left text-gray-200"
+                      >
+                        <span className="text-sm font-semibold">{category}</span>
+                        <ChevronRight className={`w-4 h-4 transition-transform ${expandedCategories[category] ? "rotate-90" : ""}`} />
+                      </button>
+                      {expandedCategories[category] && (
+                        <div className="pl-4 space-y-1">
+                          {subcategories.map((sub, i) => (
+                            <div key={i} className="text-sm text-gray-300 hover:text-cyan-200 py-1">
+                              - {sub}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <a href="#" className="block px-4 py-2 hover:text-cyan-300">About Us</a>
+            <a href="#" className="block px-4 py-2 hover:text-cyan-300">Bundle Deals</a>
+            <a href="#" className="block px-4 py-2 hover:text-cyan-300">Blog</a>
+
+            {/* Mobile Auth Buttons */}
+            <div className="flex justify-center gap-4 mt-3">
+              <button className="bg-white text-[#1C2836] px-4 py-1.5 rounded hover:bg-gray-200">Login</button>
+              <button className="bg-white text-[#1C2836] px-4 py-1.5 rounded hover:bg-gray-200">Signup</button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+      
     </nav>
   );
 };

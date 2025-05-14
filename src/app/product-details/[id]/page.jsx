@@ -94,6 +94,7 @@ const page = () => {
     '/mockup-1.png',
     '/mockup-1.png',
     '/mockup-3.png',
+     '/mockup-3.png',
 
    
     
@@ -130,7 +131,7 @@ const page = () => {
     centerMode={true}
     centerPadding="1px"
     infinite={false}
-    className="rounded p-2 w-full h-auto "
+    className="rounded  w-full h-auto "
      nextArrow={<NextArrow />}
   prevArrow={<PrevArrow />}
   >
@@ -154,22 +155,25 @@ const page = () => {
   </Slider>
 
   {/* Thumbnail Slider */}
- <Slider
+
+<Slider
   asNavFor={nav1}
-  ref={(slider) => setNav2(slider)}
-  slidesToShow={4}
-  swipeToSlide={true}
-  focusOnSelect={true}
+  ref={(slider2) => setNav2(slider2)}
+  slidesToShow={thumbnails.length}
+  swipe={false}
+  draggable={false}
   arrows={false}
-  className="mt-6 px-2"
+  infinite={false}
+  focusOnSelect={true}
+  className="mt-4 px-0 thumbnail-slider"
 >
   {thumbnails.map((src, index) => (
-    <div key={index} className="flex justify-start "> {/* Slight padding between thumbs */}
+    <div key={index}>
       <Image
         src={src}
         alt={`Thumb ${index}`}
         width={130}
-        height={130}
+        height={100}
         className="rounded border border-gray-300 hover:border-black transition object-cover"
       />
     </div>
@@ -177,21 +181,26 @@ const page = () => {
 </Slider>
 
 
+
+
+
+
   {/* Meta Info */}
-  <div className="flex flex-col items-start gap-1 mt-3 text-gray-600 text-xs px-2 ">
-    <div className="flex items-center gap-1">
-      <Image src="/calender.png" width={12} height={12} alt="Calendar" />
-      <span>18 Nov 2028</span>
-    </div>
-    <div className="flex items-center gap-1">
-      <Image src="/file.png" width={12} height={12} alt="File Size" />
-      <span>PSD 700 MB</span>
-    </div>
-    <div className="flex items-center gap-1">
-      <Image src="/size.png" width={12} height={12} alt="Resolution" />
-      <span>4000x4000px</span>
-    </div>
+ <div className="flex flex-col items-start gap-2 mt-4 text-gray-700 text-sm px-4">
+  <div className="flex items-center gap-2">
+    <Image src="/calender.png" width={16} height={16} alt="Calendar" />
+    <span>18 Nov 2028</span>
   </div>
+  <div className="flex items-center gap-2">
+    <Image src="/file.png" width={16} height={16} alt="File Size" />
+    <span>PSD 700 MB</span>
+  </div>
+  <div className="flex items-center gap-2">
+    <Image src="/size.png" width={16} height={16} alt="Resolution" />
+    <span>4000x4000px</span>
+  </div>
+</div>
+
 </div>
 
 
