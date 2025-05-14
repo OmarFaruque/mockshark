@@ -68,7 +68,7 @@ const Alloneplace = () => {
             <img
               src={product.image}
               alt={product.title}
-              className="w-full h-[315px] object-contain mb-4 bg-[#E6E6E6] rounded-lg"
+              className="w-[357px] h-[357px] object-contain mb-4 bg-[#E6E6E6] rounded-lg"
             />
           <h3 className="text-[20px] font-semibold text-gray-800 leading-tight line-clamp-2 px-4">
   {product.title}
