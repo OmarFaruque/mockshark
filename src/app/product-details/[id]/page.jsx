@@ -234,11 +234,11 @@ const page = () => {
         See License
       </a>
     </p>
-    <button className="py-2 border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold">
+    <button className=" h-[40px] border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold">
       ADD TO CART
     </button>
     <Link href="/checkout">
-      <button className="bg-[#1C2836] py-2 rounded-full w-full font-semibold text-white">
+      <button className="bg-[#1C2836] h-[40px] rounded-full w-full font-semibold text-white">
         CHECKOUT
       </button>
     </Link>
@@ -247,7 +247,7 @@ const page = () => {
         Get our bundle pack and Unlock <br />
         <strong>Exclusive Discounts!</strong>
       </p>
-      <button className="bg-[#46D8F9] mt-3 py-2  rounded-full w-full font-bold text-[#1C2836]">
+      <button className="bg-[#46D8F9] mt-3 h-[40px]  rounded-full w-full font-semibold text-[#1C2836]">
         GET NOW
       </button>
     </div>
@@ -257,7 +257,7 @@ const page = () => {
 
 
       {/* Description Section */}
-      <section className='mx-auto lg:p-2 p-4 max-w-[1130px] bg-white lg:mt-24 '>
+      <section className='mx-auto lg:p-2 p-4 max-w-[1130px] bg-white lg:mt-11 '>
         <h3 className='mb-2 font-bold text-[#1C2836] text-2xl'>
           Description
         </h3>

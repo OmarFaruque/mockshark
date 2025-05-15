@@ -51,12 +51,12 @@ const Alloneplace = () => {
   return (
     <section className="py-7 bg-white text-center max-w-6xl mx-auto">
       <h2 className="text-2xl font-extrabold mb-2 text-black">Find the Right Mockup for Any Project — All in One Place!</h2>
-      <p className="text-gray-600 mb-8 max-w-xl mx-auto">
+      <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
       From minimal to bold, our diverse mockup library helps you showcase your work with style. Save time and impress clients — all with one platform.
       </p>
 
    
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 space-y-5 px-4  ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6  px-4  ">
             {products.map((product) => (
               
              <Link href={`/product-details/${product.id}`} key={product.id}>
@@ -69,7 +69,7 @@ const Alloneplace = () => {
                   alt={product.title}
                   className="rounded-t-2xl w-full h-full lg:w-[262] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]  "
                 />
-              <h3 className="text-[20px] font-semibold text-gray-800 leading-tight line-clamp-2 px-4">
+              <h3 className="text-[18px] font-bold text-gray-800 leading-tight  px-4">
       {product.title}
     </h3>
     

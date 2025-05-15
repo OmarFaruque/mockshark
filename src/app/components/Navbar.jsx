@@ -22,7 +22,8 @@ const [expandedCategories, setExpandedCategories] = useState({});
   const menuItems = [
     'Home',
     'About Us',
-    'Order Download',
+    'Order ',
+    'Download',
     'Blogs',
     'FAQs',
     'Contact Us',
@@ -42,7 +43,7 @@ const handleCategoryClick = (category) => {
     <nav className="bg-[#1C2836] text-white px-4 py-3">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         {/* Logo */}
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-6">
          <button onClick={() => setSidebarOpen(true)} className="mt-1 ml-3 hidden lg:block">
   <Menu className="w-6 h-6 text-white" />
 </button>
