@@ -127,6 +127,7 @@ const handleCategoryClick = (category) => {
 
         {/* Right Icons */}
         <div className="flex items-center gap-4">
+          <p className='text-cyan-400 mr-2'>00/00</p>
           <Search className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
           <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
           <User className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
