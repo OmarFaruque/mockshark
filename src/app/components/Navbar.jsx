@@ -17,6 +17,19 @@ const [expandedCategories, setExpandedCategories] = useState({});
     "Logo Mockups": ["Wall Sign", "Embossed", "Paper", "Glass"]
   };
 
+ const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const menuItems = [
+    'Home',
+    'About Us',
+    'Order Download',
+    'Blogs',
+    'FAQs',
+    'Contact Us',
+    'Terms of Services',
+    'Privacy Policy'
+  ];
+
 const handleCategoryClick = (category) => {
     setExpandedCategories((prev) => ({
       ...prev,
@@ -29,13 +42,42 @@ const handleCategoryClick = (category) => {
     <nav className="bg-[#1C2836] text-white px-4 py-3">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         {/* Logo */}
-       <Link href='/'>
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
-          <span className="text-xl font-bold">Mockshark</span>
+      <div className="flex items-start gap-4">
+         <button onClick={() => setSidebarOpen(true)} className="mt-1 ml-3 hidden lg:block">
+  <Menu className="w-6 h-6 text-white" />
+</button>
+
+          <Link href='/'>
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+              <span className="text-xl font-bold">Mockshark</span>
+            </div>
+          </Link>
         </div>
 
-       </Link>
+{/* Sidebar Overlay */}
+      <div className={`fixed inset-0 z-40 bg-opacity-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} onClick={() => setSidebarOpen(false)}></div>
+
+      {/* Sidebar Panel */}
+      <div className={`fixed top-0 left-0 w-64 h-full bg-[#1C2836] z-50 shadow-xl transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex justify-between items-center px-4 py-4 border-b border-gray-600">
+          <span className="text-xl font-bold">Menu</span>
+          <button onClick={() => setSidebarOpen(false)}>
+            <X className="w-5 h-5 text-white " />
+          </button>
+        </div>
+        <div className="flex flex-col p-4 space-y-4">
+          {menuItems.map((item, idx) => (
+            <Link key={idx} href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}>
+              <span className="block text-white uppercase hover:text-cyan-300 transition-colors duration-200">
+                {item}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+        
         {/* Desktop Nav Links */}
         <div className="hidden md:flex items-center gap-8">
           {/* Dropdown Menu */}
@@ -91,7 +133,7 @@ const handleCategoryClick = (category) => {
 
           {/* Desktop Sign In */}
          <Link href='/login'>
-          <button className="hidden md:block px-4 py-1.5 bg-white text-[#1C2836] font-medium rounded hover:bg-gray-100 transition">
+          <button className="hidden md:block px-4 py-1.5 text-cyan-400  font-medium rounded hover:bg-gray-100 transition">
             Sign In
           </button>
 
@@ -146,10 +188,23 @@ const handleCategoryClick = (category) => {
             <a href="#" className="block px-4 py-2 hover:text-cyan-300">Blog</a>
 
             {/* Mobile Auth Buttons */}
-            <div className="flex justify-center gap-4 mt-3">
-              <button className="bg-white text-[#1C2836] px-4 py-1.5 rounded hover:bg-gray-200">Login</button>
-              <button className="bg-white text-[#1C2836] px-4 py-1.5 rounded hover:bg-gray-200">Signup</button>
-            </div>
+         <div className="flex justify-center gap-4 mt-3">
+  {/* Login Button */}
+  <button className="relative px-6 py-2 overflow-hidden font-semibold text-white border border-white rounded-lg group">
+    <span className="relative z-10">Login</span>
+    <span className="absolute inset-0 w-0 bg-cyan-500 transition-all duration-500 ease-out group-hover:w-full z-0"></span>
+  </button>
+
+  {/* Signup Button */}
+  <button className="relative px-6 py-2 overflow-hidden font-semibold text-white border border-white rounded-lg group">
+    <span className="relative z-10">Signup</span>
+    <span className="absolute inset-0 w-0 bg-cyan-500 transition-all duration-500 ease-out group-hover:w-full z-0"></span>
+  </button>
+</div>
+
+
+
+
           </div>
         )}
 

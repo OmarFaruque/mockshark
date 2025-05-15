@@ -57,9 +57,9 @@ const Page = () => {
                 <span className="text-[#b7b7b7] text-[17px]">VARSITY LETTERMAN JACKET FRONT VIEW</span>
                 <span className=' text-[#b7b7b7] text-[17px]'>$15</span>
               </div>
-              <div className="flex justify-between font-bold text-[#1C2836] border-t border-[#b7b7b7] pt-2 text-sm sm:text-base">
+              <div className="flex justify-between items-center font-bold text-[#1C2836] border-t border-[#b7b7b7] pt-2 text-sm sm:text-base">
                 <span className="text-[#6f6f6f] text-[17px]">SUBTOTAL</span>
-                <span className='text-[17px]'>$15</span>
+                <span className='text-[25px] '>$15</span>
               </div>
             </div>
 
@@ -69,7 +69,7 @@ const Page = () => {
             </div>
 
             <div className="text-center text-[#c1c1c1] mt-20 font-bold text-lg">
-              YOUR TOTAL: <span className="text-[#1C2836]">$30</span>
+              YOUR TOTAL: <span className="text-[#1C2836] ">$30</span>
             </div>
 
             <button className="w-full mt-4 bg-[#006a4e] text-white py-2 rounded-lg hover:bg-green-700 font-bold">

@@ -120,39 +120,39 @@ const page = () => {
       {/* Product Section */}
      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[1160px] mx-auto px-2 py-4 bg-white">
   {/* Image Display + Thumbnails */}
-  <div className="md:col-span-2 w-full max-w-[900px] mx-auto px-4 relative  ">
+  <div className="md:col-span-2 w-full max-w-[900px] mx-auto px-4 relative  gap-4 ">
   {/* Main Slider */}
-  <Slider
-    asNavFor={nav2}
-    ref={(slider) => setNav1(slider)}
-    arrows={true}
-   
-    slidesToShow={1.3}
-    centerMode={true}
-    centerPadding="1px"
-    infinite={false}
-    className="rounded  w-full h-auto "
-     nextArrow={<NextArrow />}
+ <Slider
+  asNavFor={nav2}
+  ref={(slider) => setNav1(slider)}
+  arrows={true}
+  slidesToShow={1.3}
+  centerMode={true}
+  centerPadding="0px"
+  infinite={false}
+  className="w-full h-auto"
+  nextArrow={<NextArrow />}
   prevArrow={<PrevArrow />}
-  >
-    {thumbnails.map((src, index) => (
-      <div
-        key={index}
-        className="flex justify-center items-center px-2"
-      >
-        <div className="bg-gray-100 rounded overflow-hidden w-full max-w-[600px] aspect-square">
-          <Image
-            src={src}
-            alt={`Slide ${index}`}
-            layout="responsive"
-            width={400}
-            height={400}
-            className="rounded object-contain"
-          />
-        </div>
+>
+  {thumbnails.map((src, index) => (
+    <div
+      key={index}
+      className={index !== thumbnails.length - 1 ? "pr-2" : ""}  // padding-right only except last slide
+    >
+      <div className="bg-gray-100 rounded-2xl overflow-hidden w-full max-w-[600px] aspect-square">
+        <Image
+          src={src}
+          alt={`Slide ${index}`}
+          layout="responsive"
+          width={400}
+          height={400}
+          className="rounded-2xl object-contain"
+        />
       </div>
-    ))}
-  </Slider>
+    </div>
+  ))}
+</Slider>
+
 
   {/* Thumbnail Slider */}
 
@@ -174,7 +174,7 @@ const page = () => {
         alt={`Thumb ${index}`}
         width={130}
         height={100}
-        className="rounded border border-gray-300 hover:border-black transition object-cover"
+        className="rounded-xl border border-gray-300 hover:border-black transition object-cover"
       />
     </div>
   ))}
@@ -186,7 +186,7 @@ const page = () => {
 
 
   {/* Meta Info */}
- <div className="flex flex-col items-start gap-2 mt-4 text-gray-700 text-sm px-4">
+ <div className="flex flex-col items-start gap-2 mt-4 text-gray-700 text-lg ">
   <div className="flex items-center gap-2">
     <Image src="/calender.png" width={16} height={16} alt="Calendar" />
     <span>18 Nov 2028</span>
@@ -205,7 +205,7 @@ const page = () => {
 
 
   {/* Product Details */}
-  <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0 mr-4">
+  <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0 mr-4 h-[560px]">
     <p className="text-[#C0C0C0] text-sm">⭐⭐⭐⭐⭐ 35 Reviews</p>
     <h2 className="font-bold text-[#1C2836] text-xl">
       WOMAN HOODIE MOCKUP FRONT VIEW PSD
@@ -243,7 +243,7 @@ const page = () => {
       </button>
     </Link>
     <div className=" rounded text-[#939393] text-center">
-      <p>
+      <p className='mt-3'>
         Get our bundle pack and Unlock <br />
         <strong>Exclusive Discounts!</strong>
       </p>
@@ -257,8 +257,8 @@ const page = () => {
 
 
       {/* Description Section */}
-      <section className='mx-auto p-2 max-w-[1160px] bg-white lg:mt-24 '>
-        <h3 className='mb-2 font-bold text-[#1C2836] text-xl'>
+      <section className='mx-auto lg:p-2 p-4 max-w-[1130px] bg-white lg:mt-24 '>
+        <h3 className='mb-2 font-bold text-[#1C2836] text-2xl'>
           Description
         </h3>
         <p className='mb-4 text-[#939393]'>
@@ -270,7 +270,7 @@ const page = () => {
           mockup also includes additional masks for flawless line positioning.
           Ideal for presenting your artwork in a professional and impactful way.
         </p>
-        <h4 className='mb-2 font-bold text-[#1C2836] text-lg'>
+        <h4 className='mb-2 font-bold text-[#1C2836] text-2xl'>
           Which License is Right for You?
         </h4>
         <p className='mb-4 text-[#939393]'>
@@ -286,7 +286,7 @@ const page = () => {
           companies with diverse needs.
         </p>
 
-        <h4 className='mb-2 font-bold text-[#1C2836] text-lg'>FAQs</h4>
+        <h4 className='mb-2 font-bold text-[#1C2836] text-2xl'>FAQs</h4>
         <ul className='space-y-2 text-[#939393]'>
           <li>
             <p className='font-bold'>

@@ -49,7 +49,7 @@ const JustDrop = () => {
   ];
 
   return (
-    <section className="py-12 bg-white text-center max-w-6xl mx-auto ">
+    <section className="py-9 bg-white text-center max-w-6xl mx-auto ">
       <h2 className="text-2xl font-extrabold mb-2 text-[#1C2836]">Fresh Mockups Just Dropped!</h2>
       <p className="text-[#000000] mb-8 max-w-xl mx-auto">
         Explore our newest collection of high-quality mockups designed to bring your creative vision
@@ -68,7 +68,7 @@ const JustDrop = () => {
             <img
               src={product.image}
               alt={product.title}
-              className="w-[262] h-[262px] object-contain mb-4 bg-[#E6E6E6]  "
+              className="rounded-t-2xl w-full h-full lg:w-[262] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]  "
             />
           <h3 className="text-[20px] font-semibold text-gray-800 leading-tight line-clamp-2 px-4">
   {product.title}
