@@ -4,7 +4,7 @@ const nextConfig = {
     domains: ['i.ibb.co', 'i.postimg.cc'], // Add all external image domains here
   },
    experimental: {
-    turbo: false, // switch back to webpack
+    turbo: true, // switch back to webpack
   },
 };
 
