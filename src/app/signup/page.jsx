@@ -5,13 +5,22 @@ import { Navbar } from '../components/Navbar';
 import Footer from '../components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from 'next/navigation'
+
 
 const SignupPage = () => {
+
+ const router = useRouter(); 
+
+  
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: ''
+    fullname: '',
+  name: '',
+  email: '',
+  password: ''
   });
 
   const [isFocused, setIsFocused] = useState({
@@ -32,6 +41,37 @@ const SignupPage = () => {
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await fetch('http://localhost:4000/api/v1/customer/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      toast.success('Registration successful! Please check your email.');
+
+      // // ✅ Redirect using userId instead of email
+      // router.push(`/verify-email?id=${data?.data?.id}`);
+    } else {
+      toast.error(data?.message || 'Registration failed!');
+    }
+  } catch (error) {
+    toast.error('Something went wrong!');
+    console.error(error);
+  }
+};
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
@@ -89,8 +129,8 @@ const SignupPage = () => {
               <p className="text-gray-500 mt-2">Sign up to get started</p>
             </motion.div>
 
-            <form className="space-y-6 mt-8">
-              {['firstName', 'lastName', 'email', 'password'].map((field) => (
+            <form className="space-y-6 mt-8" onSubmit={handleSubmit}>
+              {['fullname', 'name', 'email', 'password'].map((field) => (
                 <div key={field} className="relative">
                   <label
                     htmlFor={field}
@@ -136,6 +176,7 @@ const SignupPage = () => {
       </main>
 
       <Footer />
+       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

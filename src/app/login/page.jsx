@@ -5,8 +5,13 @@ import { Navbar } from '../components/Navbar';
 import Footer from '../components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isFocused, setIsFocused] = useState({
@@ -21,6 +26,42 @@ const LoginPage = () => {
   const handleBlur = (field) => {
     setIsFocused(prev => ({ ...prev, [field]: false }));
   };
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await fetch('http://localhost:4000/api/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 403 && data.message?.includes("verify")) {
+        toast.error('You need to verify your email first');
+      } else {
+        toast.error(data.message || 'Login failed');
+      }
+      return;
+    }
+
+    localStorage.setItem('token', data.token);
+    toast.success('Login successful');
+
+    
+    router.push('/');
+  } catch (err) {
+    console.error(err);
+    toast.error('Something went wrong');
+  }
+};
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
@@ -80,7 +121,7 @@ const LoginPage = () => {
               <p className="text-gray-500 mt-2">Sign in to access your exclusive content</p>
             </motion.div>
 
-            <form className="space-y-6 mt-8">
+            <form className="space-y-6 mt-8" onSubmit={handleLogin}>
               <div className="relative">
                 <label 
                   htmlFor="email" 
@@ -184,6 +225,7 @@ const LoginPage = () => {
       </main>
 
       <Footer />
+      <ToastContainer/>
     </div>
   );
 };

@@ -2,23 +2,25 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingCart, User, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
-  const [hoveredCategory, setHoveredCategory] = useState(null);
+  // const [hoveredCategory, setHoveredCategory] = useState(null);
 const [expandedCategories, setExpandedCategories] = useState({}); 
   const [expandedCategory, setExpandedCategory] = useState(null); // Track which category is expanded
-  const categories = {
-    "T-shirt Mockups": ["Front View", "Back View", "Folded", "Hanging"],
-    "Device Mockups": ["iPhone", "iPad", "MacBook", "Android"],
-    "Poster Mockups": ["Indoor", "Outdoor", "Framed", "Rolled"],
-    "Logo Mockups": ["Wall Sign", "Embossed", "Paper", "Glass"]
-  };
+  // const categories = {
+  //   "T-shirt Mockups": ["Front View", "Back View", "Folded", "Hanging"],
+  //   "Device Mockups": ["iPhone", "iPad", "MacBook", "Android"],
+  //   "Poster Mockups": ["Indoor", "Outdoor", "Framed", "Rolled"],
+  //   "Logo Mockups": ["Wall Sign", "Embossed", "Paper", "Glass"]
+  // };
 
  const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const [categories, setCategories] = useState({});
+  const [hoveredCategory, setHoveredCategory] = useState(null);
   const menuItems = [
     'Home',
     'About Us',
@@ -31,10 +33,47 @@ const [expandedCategories, setExpandedCategories] = useState({});
     'Privacy Policy'
   ];
 
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch('http://localhost:4000/api/v1/customer/categories');
+      const json = await res.json();
+
+      if (json.success) {
+        const structuredData = {};
+        json.data.forEach((cat) => {
+          structuredData[cat.name] = (cat.subcategory || []).map(sub => sub.name);
+        });
+
+        setCategories(structuredData);
+      }
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token); 
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    router.push('/login'); 
+  };
+
 const handleCategoryClick = (category) => {
     setExpandedCategories((prev) => ({
       ...prev,
-      [category]: !prev[category] // Toggle the selected category's expanded state
+      [category]: !prev[category] 
     }));
   };
 
@@ -92,31 +131,35 @@ const handleCategoryClick = (category) => {
 
             <div className="absolute top-full mt-2 hidden group-hover:block bg-[#0d0f18] border border-cyan-400/30 rounded-lg shadow-lg w-72 z-50 py-2 backdrop-blur-md">
               <ul className="space-y-1 px-2">
-                {Object.entries(categories).map(([category, subcategories]) => (
-                  <li key={category} className="relative group/item">
-                    <div
-                      className="flex justify-between items-center px-4 py-3 hover:bg-cyan-400/10 hover:border-l-2 hover:border-l-cyan-400 rounded-md cursor-pointer"
-                      onMouseEnter={() => setHoveredCategory(category)}
-                    >
-                      <span className="text-sm text-gray-100 group-hover/item:text-cyan-300">{category}</span>
-                      <ChevronRight className="w-4 h-4 text-cyan-400/50 group-hover:item:text-cyan-400 group-hover:item:translate-x-1 transition" />
-                    </div>
+      {Object.entries(categories).map(([category, subcategories]) => (
+        <li key={category} className="relative group/item">
+          <div
+            className="flex justify-between items-center px-4 py-3 hover:bg-cyan-400/10 hover:border-l-2 hover:border-l-cyan-400 rounded-md cursor-pointer"
+            onMouseEnter={() => setHoveredCategory(category)}
+            onMouseLeave={() => setHoveredCategory(null)}
+          >
+            <span className="text-sm text-gray-100 group-hover/item:text-cyan-300">{category}</span>
+            <ChevronRight className="w-4 h-4 text-cyan-400/50 group-hover:item:text-cyan-400 group-hover:item:translate-x-1 transition" />
+          </div>
 
-                    {hoveredCategory === category && (
-                      <div className="absolute left-full top-0 ml-1 bg-[#0d0f18] border border-cyan-400/20 rounded-lg shadow-lg w-64 z-50 py-2">
-                        <ul className="space-y-1">
-                          {subcategories.map((sub, idx) => (
-                            <li key={idx} className="px-4 py-2.5 hover:bg-cyan-400/5 hover:text-cyan-300 text-sm text-gray-300 flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
-                              {sub}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+          {hoveredCategory === category && (
+            <div className="absolute left-full top-0 ml-1 bg-[#0d0f18] border border-cyan-400/20 rounded-lg shadow-lg w-64 z-50 py-2">
+              <ul className="space-y-1">
+                {subcategories.map((sub, idx) => (
+                  <li
+                    key={idx}
+                    className="px-4 py-2.5 hover:bg-cyan-400/5 hover:text-cyan-300 text-sm text-gray-300 flex items-center gap-2"
+                  >
+                    <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
+                    {sub}
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
             </div>
           </div>
 
@@ -131,15 +174,24 @@ const handleCategoryClick = (category) => {
           <p className='text-cyan-400 mr-2'>00/00</p>
           <Search className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
           <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
-          <User className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
+         {isLoggedIn && <User className="w-5 h-5 cursor-pointer hover:text-cyan-300" />}
+
 
           {/* Desktop Sign In */}
-         <Link href='/login'>
-          <button className="hidden md:block px-4 py-1.5 text-cyan-400  font-medium rounded hover:bg-gray-100 transition">
+        {!isLoggedIn ? (
+        <Link href="/login">
+          <button className="hidden md:block px-4 py-1.5 text-cyan-400 font-medium rounded hover:bg-gray-100 transition">
             Sign In
           </button>
-
-         </Link>
+        </Link>
+      ) : (
+        <button
+          onClick={handleLogout}
+          className="hidden md:block px-4 py-1.5 text-red-500 font-medium rounded hover:bg-gray-100 transition"
+        >
+          Logout
+        </button>
+      )}
           {/* Mobile Menu Icon */}
           <div className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -191,17 +243,35 @@ const handleCategoryClick = (category) => {
 
             {/* Mobile Auth Buttons */}
          <div className="flex justify-center gap-4 mt-3">
-  {/* Login Button */}
-  <button className="relative px-6 py-2 overflow-hidden font-semibold text-white border border-white rounded-lg group">
-    <span className="relative z-10">Login</span>
-    <span className="absolute inset-0 w-0 bg-cyan-500 transition-all duration-500 ease-out group-hover:w-full z-0"></span>
-  </button>
 
-  {/* Signup Button */}
-  <button className="relative px-6 py-2 overflow-hidden font-semibold text-white border border-white rounded-lg group">
-    <span className="relative z-10">Signup</span>
-    <span className="absolute inset-0 w-0 bg-cyan-500 transition-all duration-500 ease-out group-hover:w-full z-0"></span>
+{!isLoggedIn ? (
+  <>
+    <Link href="/login">
+      <button className="relative px-6 py-2 overflow-hidden font-semibold text-white border border-white rounded-lg group">
+        <span className="relative z-10">Login</span>
+        <span className="absolute inset-0 w-0 bg-cyan-500 transition-all duration-500 ease-out group-hover:w-full z-0"></span>
+      </button>
+    </Link>
+
+    <Link href="/signup">
+      <button className="relative px-6 py-2 overflow-hidden font-semibold text-white border border-white rounded-lg group">
+        <span className="relative z-10">Signup</span>
+        <span className="absolute inset-0 w-0 bg-cyan-500 transition-all duration-500 ease-out group-hover:w-full z-0"></span>
+      </button>
+    </Link>
+  </>
+) : (
+  <button
+    onClick={handleLogout}
+    className=" px-4 py-1.5 text-red-500 font-medium rounded hover:bg-gray-100 transition"
+  >
+    Logout
   </button>
+)}
+
+
+
+
 </div>
 
 
