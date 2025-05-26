@@ -463,7 +463,7 @@ const ProfilePage = () => {
       <ChevronRight size={18} className={activeTab === tab ? 'text-cyan-600' : 'text-gray-400'} />
     </button>
   );
-
+//main strat here
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
       <Navbar />
