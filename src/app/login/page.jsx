@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+import { Cookie } from 'next/font/google';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -50,10 +52,15 @@ const handleLogin = async (e) => {
       return;
     }
 
-    localStorage.setItem('token', data.token);
+    // ✅ Store token in localStorage
+    localStorage.setItem('token', data?.data?.accessToken);
+
+    // ✅ Store user id in cookies
+    Cookies.set('userId', data?.data?.id, { expires: 7 }); // expires in 7 days
+    Cookies.set('token', data?.data?.accessToken, { expires: 7 }); // expires in 7 days
+
     toast.success('Login successful');
 
-    
     router.push('/');
   } catch (err) {
     console.error(err);

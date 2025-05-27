@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingCart, User, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
+import Cookies from 'js-cookie';
 export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,16 +22,17 @@ const [expandedCategories, setExpandedCategories] = useState({});
   const [categories, setCategories] = useState({});
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const menuItems = [
-    'Home',
-    'About Us',
-    'Order ',
-    'Download',
-    'Blogs',
-    'FAQs',
-    'Contact Us',
-    'Terms of Services',
-    'Privacy Policy'
-  ];
+  { label: 'Home', href: '/' },
+  { label: 'About Us', href: '/about-us' },
+  { label: 'Order', href: '/order' },
+  { label: 'Download', href: '/download' },
+  { label: 'Blogs', href: '/blogs' },
+  { label: 'FAQs', href: '/faqs' },
+  { label: 'Contact Us', href: '/contact-us' },       // link added
+  { label: 'Terms of Services', href: '/Terms-Conditions' }, // link added
+  { label: 'Privacy Policy', href: '/Privacypolicy' } // link added
+];
+
 
 useEffect(() => {
   const fetchCategories = async () => {
@@ -67,6 +68,8 @@ useEffect(() => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
+    Cookies.remove('userId'); // Remove user ID cookie
+    Cookies.remove('token'); // Remove token cookie
     router.push('/login'); 
   };
 
@@ -106,15 +109,16 @@ const handleCategoryClick = (category) => {
             <X className="w-5 h-5 text-white " />
           </button>
         </div>
-        <div className="flex flex-col p-4 space-y-4">
-          {menuItems.map((item, idx) => (
-            <Link key={idx} href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}>
-              <span className="block text-white uppercase hover:text-cyan-300 transition-colors duration-200">
-                {item}
-              </span>
-            </Link>
-          ))}
-        </div>
+       <div className="flex flex-col p-4 space-y-4">
+  {menuItems.map((item, idx) => (
+    <Link key={idx} href={item.href}>
+      <span className="block text-white uppercase hover:text-cyan-300 transition-colors duration-200">
+        {item.label}
+      </span>
+    </Link>
+  ))}
+</div>
+
       </div>
 
         

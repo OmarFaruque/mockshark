@@ -1,24 +1,41 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { Navbar } from '../components/Navbar';
 import Footer from '../components/Footer';
 import { User, Info, CreditCard, Edit2, Save, X, ChevronRight } from 'lucide-react';
+import Cookies from 'js-cookie';
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [editing, setEditing] = useState({ profile: false, personal: false, billing: false });
   const [formData, setFormData] = useState({
     profile: {
-      firstName: 'Masum',
-      lastName: 'Abrar',
-      email: 'masum@example.com',
-      about: 'Passionate developer and marketer',
-      avatar: '/avatar.png'
+      name: '',
+      fullname : '',
+      email: '',
+      about: '',
+      image: '',
+     phone: '',
+      language: '',
+      country: '',
+      billingFirstName : '',
+      billingLastName : '',
+      billingCompany: '',
+      billingEmail: '',
+      billingPhone: '',
+      billingCountry: '',
+      address: '',
+      city: '',
+      state: '',
+      postalCode: '',
+
+
     },
     personal: {
-      phone: '+880123456789',
-      language: 'English',
-      country: 'Bangladesh'
+     
     },
     billing: {
       company: 'mockshark',
@@ -40,13 +57,146 @@ const ProfilePage = () => {
     }));
   };
 
-  const handleSubmit = (section, e) => {
-    e.preventDefault();
-    setEditing({ ...editing, [section]: false });
-  };
+  // const handleSubmit = (section, e) => {
+  //   e.preventDefault();
+  //   setEditing({ ...editing, [section]: false });
+  // };
 
   const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition";
   const labelClass = "block text-sm font-medium text-gray-700 mb-1";
+
+//Data for the profile page
+const userId = Cookies.get('userId');
+const token =  Cookies.get('token'); 
+
+ useEffect(() => {
+  const fetchUser = async () => {
+   
+
+    try {
+      const res = await fetch(`http://localhost:4000/api/v1/customer/auth/users/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Add token in Authorization header
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error('Unauthorized');
+      }
+
+      const data = await res.json();
+      setFormData({ profile: data.data }); // assuming API returns { data: { ...user } }
+    } catch (err) {
+      console.error('Failed to fetch user:', err);
+    }
+  };
+
+  if (userId) {
+    fetchUser();
+  }
+}, [userId]);
+
+
+  if (!formData) {
+    return <p>Loading user info...</p>;
+  }
+
+
+//update profile function
+const handleSubmit = async (section, e) => {
+  e.preventDefault();
+
+  const validSections = ['profile', 'personal', 'billing'];
+  if (!validSections.includes(section)) return;
+
+  const token = Cookies.get("token");
+  const id = Cookies.get('userId');
+
+  const formDataToSend = new FormData();
+
+  // Profile & personal section fields
+  if (section === 'profile' || section === 'personal') {
+    formDataToSend.append("name", formData?.profile?.name);
+    formDataToSend.append("fullname", formData?.profile?.fullname);
+    formDataToSend.append("email", formData?.profile?.email);
+    formDataToSend.append("phone", formData?.profile?.phone);
+    formDataToSend.append("language", formData?.profile?.language);
+    formDataToSend.append("country", formData?.profile?.country);
+    formDataToSend.append("about", formData?.profile?.about);
+
+    if (formData?.profile?.imageFile) {
+      formDataToSend.append("image", formData.profile.imageFile);
+    }
+  }
+
+  // Billing section fields
+  if (section === 'billing') {
+    formDataToSend.append("billingFirstName", formData?.profile?.billingFirstName || '');
+    formDataToSend.append("billingLastName", formData?.profile?.billingLastName || '');
+    formDataToSend.append("billingCompany", formData?.profile?.billingCompany || '');
+    formDataToSend.append("billingEmail", formData?.profile?.billingEmail || '');
+    formDataToSend.append("billingPhone", formData?.profile?.billingPhone || '');
+    formDataToSend.append("billingCountry", formData?.profile?.billingCountry || '');
+    formDataToSend.append("address", formData?.profile?.address || '');
+    formDataToSend.append("apartment", formData?.profile?.apartment || '');
+    formDataToSend.append("city", formData?.profile?.city || '');
+    formDataToSend.append("state", formData?.profile?.state || '');
+    formDataToSend.append("postalCode", formData?.profile?.postalCode || '');
+  }
+
+  try {
+    const res = await fetch(`http://localhost:4000/api/v1/customer/auth/users/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formDataToSend,
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to update user");
+    }
+
+    const data = await res.json();
+
+    setFormData((prev) => ({
+      ...prev,
+      profile: data.user,
+    }));
+
+    toast.success("Information updated successfully!");
+  } catch (error) {
+    toast.error(error.message || "Something went wrong");
+  }
+};
+
+
+
+
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const imageURL = URL.createObjectURL(file);
+
+  setFormData(prev => ({
+    ...prev,
+    profile: {
+      ...prev.profile,
+      image: imageURL,      // preview
+      imageFile: file,      // real file for upload
+    },
+  }));
+};
+
+
+
+
+
+
+
 
   const renderProfile = () => (
     <div className="p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -73,45 +223,60 @@ const ProfilePage = () => {
 
       {!editing.profile ? (
         <div className="space-y-6">
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <img 
-                src={formData.profile.avatar} 
-                alt="Profile" 
-                className="w-24 h-24 rounded-full border-4 border-white shadow-md"
-              />
-              <div className="absolute bottom-0 right-0 bg-cyan-500 rounded-full p-1.5 shadow-sm">
-                <Edit2 size={14} className="text-white" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800">
-                {formData.profile.firstName} {formData.profile.lastName}
-              </h3>
-              <p className="text-gray-500">{formData.profile.email}</p>
-            </div>
-          </div>
-          
-          <div className="space-y-1">
-            <h4 className="font-medium text-gray-700">About</h4>
-            <p className="text-gray-600">{formData.profile.about || 'Not specified'}</p>
+      <div className="flex items-center gap-6">
+        <div className="relative">
+          <img
+            src={formData?.profile?.image}
+            alt="Profile"
+            className="w-24 h-24 rounded-full border-4 border-white shadow-md"
+          />
+          <div className="absolute bottom-0 right-0 bg-cyan-500 rounded-full p-1.5 shadow-sm">
+            <Edit2 size={14} className="text-white" />
           </div>
         </div>
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800">
+            {formData?.profile?.firstName} {formData?.profile?.fullname}
+          </h3>
+          <p className="text-gray-500">{formData?.profile?.email}</p>
+        </div>
+      </div>
+
+      <div className="space-y-1">
+        <h4 className="font-medium text-gray-700">About</h4>
+        <p className="text-gray-600">{formData?.profile?.about || 'Not specified'}</p>
+      </div>
+    </div>
       ) : (
         <form onSubmit={(e) => handleSubmit('profile', e)} className="space-y-5">
           <div className="flex justify-center">
-            <div className="relative group">
-              <img 
-                src={formData.profile.avatar} 
-                alt="Profile" 
-                className="w-24 h-24 rounded-full border-4 border-white shadow-md group-hover:opacity-80 transition"
-              />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                <button type="button" className="bg-black/50 text-white p-2 rounded-full">
-                  <Edit2 size={16} />
-                </button>
-              </div>
-            </div>
+           <div className="relative group">
+  <img 
+    src={formData?.profile?.image} 
+    alt="Profile" 
+    className="w-24 h-24 rounded-full border-4 border-white shadow-md group-hover:opacity-80 transition"
+  />
+  
+  {/* Hidden file input */}
+  <input
+    type="file"
+    accept="image/*"
+    id="profileImageInput"
+    className="hidden"
+    onChange={(e) => handleImageChange(e)}
+  />
+
+  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+    <button
+      type="button"
+      onClick={() => document.getElementById('profileImageInput').click()}
+      className="bg-black/50 text-white p-2 rounded-full"
+    >
+      <Edit2 size={16} />
+    </button>
+  </div>
+</div>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -119,16 +284,16 @@ const ProfilePage = () => {
               <label className={labelClass}>First Name</label>
               <input
                 className={inputClass}
-                value={formData.profile.firstName}
-                onChange={(e) => handleInputChange('profile', 'firstName', e.target.value)}
+                value={formData?.profile?.name}
+                onChange={(e) => handleInputChange('profile', 'name', e.target.value)}
               />
             </div>
             <div>
               <label className={labelClass}>Last Name</label>
               <input
                 className={inputClass}
-                value={formData.profile.lastName}
-                onChange={(e) => handleInputChange('profile', 'lastName', e.target.value)}
+                value={formData?.profile?.fullname}
+                onChange={(e) => handleInputChange('profile', 'fullname', e.target.value)}
               />
             </div>
           </div>
@@ -137,7 +302,7 @@ const ProfilePage = () => {
             <label className={labelClass}>Email</label>
             <input
               className={inputClass}
-              value={formData.profile.email}
+              value={formData?.profile?.email}
               onChange={(e) => handleInputChange('profile', 'email', e.target.value)}
             />
           </div>
@@ -147,7 +312,7 @@ const ProfilePage = () => {
             <textarea
               className={inputClass}
               rows={3}
-              value={formData.profile.about}
+              value={formData?.profile?.about}
               onChange={(e) => handleInputChange('profile', 'about', e.target.value)}
             />
           </div>
@@ -193,21 +358,21 @@ const ProfilePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-500">Email</p>
-              <p className="font-medium text-gray-800">{formData.profile.email}</p>
+              <p className="font-medium text-gray-800">{formData?.profile?.email}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Phone</p>
-              <p className="font-medium text-gray-800">{formData.personal.phone}</p>
+              <p className="font-medium text-gray-800">{formData?.profile?.phone}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-500">Language</p>
-              <p className="font-medium text-gray-800">{formData.personal.language}</p>
+              <p className="font-medium text-gray-800">{formData?.profile?.language}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Country</p>
-              <p className="font-medium text-gray-800">{formData.personal.country}</p>
+              <p className="font-medium text-gray-800">{formData?.profile?.country}</p>
             </div>
           </div>
         </div>
@@ -218,39 +383,38 @@ const ProfilePage = () => {
               <label className={labelClass}>Email</label>
               <input
                 className={inputClass}
-                value={formData.profile.email}
-                disabled
+                value={formData?.profile?.email}
+                onChange={(e) => handleInputChange('profile', 'email', e.target.value)}
               />
             </div>
             <div>
               <label className={labelClass}>Phone</label>
               <input
                 className={inputClass}
-                value={formData.personal.phone}
-                onChange={(e) => handleInputChange('personal', 'phone', e.target.value)}
+                value={formData?.profile?.phone}
+                onChange={(e) => handleInputChange('profile', 'phone', e.target.value)}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className={labelClass}>Language</label>
-              <select
-                className={inputClass}
-                value={formData.personal.language}
-                onChange={(e) => handleInputChange('personal', 'language', e.target.value)}
-              >
-                <option value="English">English</option>
-                <option value="Bangla">Bangla</option>
-                <option value="Hindi">Hindi</option>
-              </select>
-            </div>
+           <div>
+  <label className={labelClass}>Language</label>
+  <input
+    type="text"
+    className={inputClass}
+    value={formData?.profile?.language}
+    onChange={(e) => handleInputChange('profile', 'language', e.target.value)}
+    placeholder="Enter language"
+  />
+</div>
+
             <div>
               <label className={labelClass}>Country</label>
               <input
                 className={inputClass}
-                value={formData.personal.country}
-                onChange={(e) => handleInputChange('personal', 'country', e.target.value)}
+                value={formData?.profile?.country}
+                onChange={(e) => handleInputChange('profile', 'country', e.target.value)}
               />
             </div>
           </div>
@@ -298,53 +462,53 @@ const ProfilePage = () => {
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
       <p className="text-sm text-gray-500 mb-1">First Name</p>
-      <p className="font-medium text-gray-800">Rakib</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.billingFirstName}</p>
     </div>
     <div>
       <p className="text-sm text-gray-500 mb-1">Last Name</p>
-      <p className="font-medium text-gray-800">Khan</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.billingLastName}</p>
     </div>
 
     <div>
       <p className="text-sm text-gray-500 mb-1">Company</p>
-      <p className="font-medium text-gray-800">MockShark</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.billingCompany}</p>
     </div>
     <div>
       <p className="text-sm text-gray-500 mb-1">Country</p>
-      <p className="font-medium text-gray-800">Bangladesh</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.billingCountry} </p>
     </div>
 
     <div>
       <p className="text-sm text-gray-500 mb-1">Email</p>
-      <p className="font-medium text-gray-800">rakib.khan@example.com</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.billingEmail}</p>
     </div>
     <div>
       <p className="text-sm text-gray-500 mb-1">Phone</p>
-      <p className="font-medium text-gray-800">+8801234567890</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.billingPhone} </p>
     </div>
 
     <div>
       <p className="text-sm text-gray-500 mb-1">Street Address</p>
-      <p className="font-medium text-gray-800">123 Main Street</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.address}</p>
     </div>
     <div>
       <p className="text-sm text-gray-500 mb-1">Apartment</p>
-      <p className="font-medium text-gray-800">Suite 4B</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.apartment}</p>
     </div>
   </div>
 
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
     <div>
       <p className="text-sm text-gray-500 mb-1">City</p>
-      <p className="font-medium text-gray-800">Dhaka</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.city}</p>
     </div>
     <div>
       <p className="text-sm text-gray-500 mb-1">State</p>
-      <p className="font-medium text-gray-800">Dhaka Division</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.state}</p>
     </div>
     <div>
       <p className="text-sm text-gray-500 mb-1">Zip Code</p>
-      <p className="font-medium text-gray-800">1207</p>
+      <p className="font-medium text-gray-800">{formData?.profile?.postalCode}</p>
     </div>
   </div>
 </div>
@@ -355,11 +519,18 @@ const ProfilePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label className={labelClass}>First Name</label>
-            <input className={inputClass} value={formData.profile.firstName} disabled />
+            <input className={inputClass} 
+            value={formData?.profile?.billingFirstName} 
+            onChange={(e) => handleInputChange('profile', 'billingFirstName', e.target.value)}
+            />
+
           </div>
           <div>
             <label className={labelClass}>Last Name</label>
-            <input className={inputClass} value={formData.profile.lastName} disabled />
+            <input className={inputClass}
+             value={formData?.profile?.billingLastName} 
+              onChange={(e) => handleInputChange('profile', 'billingLastName', e.target.value)}
+             />
           </div>
         </div>
 
@@ -367,33 +538,39 @@ const ProfilePage = () => {
           <label className={labelClass}>Company/Organization (optional)</label>
           <input
             className={inputClass}
-            value={formData.billing.company}
-            onChange={(e) => handleInputChange('billing', 'company', e.target.value)}
+            value={formData?.profile?.billingCompany }
+            onChange={(e) => handleInputChange('profile', 'billingCompany', e.target.value)}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label className={labelClass}>Email</label>
-            <input className={inputClass} value={formData.profile.email} disabled />
+            <input className={inputClass} value={formData?.profile?.billingEmail} 
+            onChange={(e) => handleInputChange('profile', 'billingEmail', e.target.value)}
+            />
           </div>
           <div>
             <label className={labelClass}>Phone</label>
-            <input className={inputClass} value={formData.personal.phone} disabled />
+            <input className={inputClass} value={formData?.profile?.billingPhone} 
+            onChange={(e) => handleInputChange('profile', 'billingPhone', e.target.value)}
+            />
           </div>
         </div>
 
         <div>
           <label className={labelClass}>Country</label>
-          <input className={inputClass} value="Bangladesh" disabled />
+          <input className={inputClass} value={formData?.profile?.billingCountry}  
+          onChange={(e) => handleInputChange('profile', 'billingCountry', e.target.value)}
+          />
         </div>
 
         <div>
           <label className={labelClass}>Street Address</label>
           <input
             className={inputClass}
-            value={formData.billing.streetAddress}
-            onChange={(e) => handleInputChange('billing', 'streetAddress', e.target.value)}
+            value={formData?.profile?.address}
+            onChange={(e) => handleInputChange('profile', 'address', e.target.value)}
           />
         </div>
 
@@ -401,8 +578,8 @@ const ProfilePage = () => {
           <label className={labelClass}>Apartment, suite unit etc. (optional)</label>
           <input
             className={inputClass}
-            value={formData.billing.apartment}
-            onChange={(e) => handleInputChange('billing', 'apartment', e.target.value)}
+            value={formData?.profile?.apartment}
+            onChange={(e) => handleInputChange('profile', 'apartment', e.target.value)}
           />
         </div>
 
@@ -411,24 +588,24 @@ const ProfilePage = () => {
             <label className={labelClass}>City</label>
             <input
               className={inputClass}
-              value={formData.billing.city}
-              onChange={(e) => handleInputChange('billing', 'city', e.target.value)}
+              value={formData?.profile?.city}
+              onChange={(e) => handleInputChange('profile', 'city', e.target.value)}
             />
           </div>
           <div>
             <label className={labelClass}>State</label>
             <input
               className={inputClass}
-              value={formData.billing.state}
-              onChange={(e) => handleInputChange('billing', 'state', e.target.value)}
+              value={formData?.profile?.state}
+              onChange={(e) => handleInputChange('profile', 'state', e.target.value)}
             />
           </div>
           <div>
             <label className={labelClass}>Zip / Postal Code</label>
             <input
               className={inputClass}
-              value={formData.billing.zipCode}
-              onChange={(e) => handleInputChange('billing', 'zipCode', e.target.value)}
+              value={formData?.profile?.postalCode}
+              onChange={(e) => handleInputChange('profile', 'postalCode', e.target.value)}
             />
           </div>
         </div>
@@ -490,6 +667,7 @@ const ProfilePage = () => {
       </div>
       
       <Footer />
+      <ToastContainer/>
     </div>
   );
 };
