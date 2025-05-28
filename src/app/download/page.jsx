@@ -34,7 +34,7 @@ export default function Page() {
 
 
       {/* Table Header */}
-      <div className="bg-gray-100 px-4 py-3 font-bold text-2xl text-[#0f1c2e]">
+      <div className="bg-gray-100 px-4 py-3 font-bold text-xl text-[#0f1c2e]">
         <div className="max-w-6xl mx-auto grid grid-cols-3">
           <div>Product</div>
           <div className="text-center">Lisence</div>
@@ -46,7 +46,7 @@ export default function Page() {
       <div className="max-w-6xl mx-auto divide-y divide-gray-200 h-screen">
         {products.map((product, idx) => (
           <div key={idx} className="grid grid-cols-3  py-6 items-center">
-            <div className="text-2xl font-semibold text-[#0f1c2e]">
+            <div className="text-xl font-medium text-[#0f1c2e]">
               {product.name}
             </div>
             <div className="flex justify-center">

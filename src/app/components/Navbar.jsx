@@ -28,9 +28,9 @@ const [expandedCategories, setExpandedCategories] = useState({});
   { label: 'Download', href: '/download' },
   { label: 'Blogs', href: '/blogs' },
   { label: 'FAQs', href: '/faqs' },
-  { label: 'Contact Us', href: '/contact-us' },       // link added
+  { label: 'Contact Us', href: '/' },       // link added
   { label: 'Terms of Services', href: '/Terms-Conditions' }, // link added
-  { label: 'Privacy Policy', href: '/Privacypolicy' } // link added
+  { label: 'Privacy Policy', href: '/' } // link added
 ];
 
 

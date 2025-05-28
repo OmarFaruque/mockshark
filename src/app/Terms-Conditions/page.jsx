@@ -30,7 +30,7 @@ const TermsAndConditions = () => {
   return (
     <>
       <Navbar />
-      <Container maxWidth="md" sx={{ py: 6 }}>
+      <Container maxWidth="md" sx={{ py: 6 , bgcolor: '#fff'}}>
         {/* Header Section */}
         <Box textAlign="center" mb={6}>
         <Typography 

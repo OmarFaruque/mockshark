@@ -8,24 +8,22 @@ import Image from 'next/image';
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from 'next/navigation'
-
+import { useRouter } from 'next/navigation';
 
 const SignupPage = () => {
+  const router = useRouter(); 
 
- const router = useRouter(); 
-
-  
-  const [formData, setFormData] = useState({
-    fullname: '',
-  name: '',
+ const [formData, setFormData] = useState({
+  firstname: '',
+  lastname: '',
   email: '',
-  password: ''
-  });
+  password: '',
+});
+
 
   const [isFocused, setIsFocused] = useState({
-    firstName: false,
-    lastName: false,
+    firstname: false,
+    lastname: false,
     email: false,
     password: false
   });
@@ -42,9 +40,19 @@ const SignupPage = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
   e.preventDefault();
+
+  // Combine first and last name
+  const fullName = `${formData.firstname} ${formData.lastname}`.trim();
+
+  // Prepare only required backend fields
+  const payload = {
+    name: fullName,
+    fullname: fullName,
+    email: formData.email,
+    password: formData.password,
+  };
 
   try {
     const res = await fetch('http://localhost:4000/api/v1/customer/auth/register', {
@@ -52,16 +60,13 @@ const handleSubmit = async (e) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(payload),
     });
 
     const data = await res.json();
 
     if (res.ok) {
       toast.success('Registration successful! Please check your email.');
-
-      // // ✅ Redirect using userId instead of email
-      // router.push(`/verify-email?id=${data?.data?.id}`);
     } else {
       toast.error(data?.message || 'Registration failed!');
     }
@@ -70,7 +75,6 @@ const handleSubmit = async (e) => {
     console.error(error);
   }
 };
-
 
 
   return (
@@ -130,7 +134,7 @@ const handleSubmit = async (e) => {
             </motion.div>
 
             <form className="space-y-6 mt-8" onSubmit={handleSubmit}>
-              {['fullname', 'name', 'email', 'password'].map((field) => (
+              {['firstname', 'lastname', 'email', 'password'].map((field) => (
                 <div key={field} className="relative">
                   <label
                     htmlFor={field}
@@ -140,7 +144,7 @@ const handleSubmit = async (e) => {
                         : 'top-3 text-sm text-gray-500'
                     }`}
                   >
-                    {field.charAt(0).toUpperCase() + field.slice(1).replace('Name', ' Name')}
+                    {field.charAt(0).toUpperCase() + field.slice(1).replace('name', ' Name')}
                   </label>
                   <input
                     type={field === 'password' ? 'password' : 'text'}
@@ -176,7 +180,7 @@ const handleSubmit = async (e) => {
       </main>
 
       <Footer />
-       <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
