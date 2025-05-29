@@ -211,7 +211,7 @@ const PrivacyPolicy = () => {
         </Container>
       </Box>
 
-      <Container maxWidth="md" sx={{ py: 6, position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="md" sx={{ py: 6, position: 'relative', zIndex: 1 ,bgcolor: '#fff' }}>
         {sections.map((section, index) => (
           <Grow in={true} timeout={index * 200 + 500} key={section.id}>
             <Box mb={3}>

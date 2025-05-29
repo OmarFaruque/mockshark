@@ -27,7 +27,7 @@ const ContactUs = () => {
   return (
     <>
       <Navbar />
-      <Container maxWidth="lg" sx={{ py: 10 }}>
+      <Container maxWidth="lg" sx={{ py: 10 , bgcolor: '#fff'}}>
         {/* Header */}
         <Box textAlign="center" mb={8}>
           <Typography

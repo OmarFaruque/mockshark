@@ -55,7 +55,7 @@ const SignupPage = () => {
   };
 
   try {
-    const res = await fetch('http://localhost:4000/api/v1/customer/auth/register', {
+    const res = await fetch('https://mockshark-backend.vercel.app/api/v1/customer/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

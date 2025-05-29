@@ -28,16 +28,16 @@ const [expandedCategories, setExpandedCategories] = useState({});
   { label: 'Download', href: '/download' },
   { label: 'Blogs', href: '/blogs' },
   { label: 'FAQs', href: '/faqs' },
-  { label: 'Contact Us', href: '/' },       // link added
+  { label: 'Contact Us', href: '/contact-us' },       // link added
   { label: 'Terms of Services', href: '/Terms-Conditions' }, // link added
-  { label: 'Privacy Policy', href: '/' } // link added
+  { label: 'Privacy Policy', href: '/Privacypolicy' } // link added
 ];
 
 
 useEffect(() => {
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://localhost:4000/api/v1/customer/categories');
+      const res = await fetch('https://mockshark-backend.vercel.app/api/v1/customer/categories');
       const json = await res.json();
 
       if (json.success) {
