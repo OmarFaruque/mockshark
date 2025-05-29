@@ -178,7 +178,9 @@ const handleCategoryClick = (category) => {
           <p className='text-cyan-400 mr-2'>00/00</p>
           <Search className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
           <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
+        <Link href="/profile">
          {isLoggedIn && <User className="w-5 h-5 cursor-pointer hover:text-cyan-300" />}
+        </Link>
 
 
           {/* Desktop Sign In */}
