@@ -1,18 +1,16 @@
 'use client';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-
-
 import Slider from 'react-slick';
-import { useState ,useRef } from 'react';
+import { useState ,useRef ,useEffect } from 'react';
 import Image from 'next/image'
 import { Navbar } from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
 import Link from 'next/link'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useParams } from 'next/navigation';
 
-import JustDrop from '@/app/components/JustDrop';
 
 import RecommendedProduct from '@/app/components/RecommendedProduct';
 
@@ -38,6 +36,33 @@ const PrevArrow = ({ onClick }) => (
 
 
 const page = () => {
+
+const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`http://localhost:4000/api/v1/customer/products/${id}`);
+        const data = await res.json();
+        setProduct(data?.data);
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchProduct();
+  }, [id]);
+
+ 
+
+
+ 
+
+
+
  const products = [
     {
       id: 1,
@@ -82,6 +107,8 @@ const page = () => {
       image: 'https://i.postimg.cc/MKr3759W/Whats-App-Image-2025-05-06-at-11-27-48-AM-removebg-preview.png',
     },
   ];
+
+
    const [nav1, setNav1] = useState(null);
   const [nav2, setNav2] = useState(null);
   const mainSlider = useRef(null);
@@ -89,7 +116,7 @@ const page = () => {
 
 
 
-   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  //  const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const thumbnails = [
     '/mockup-1.png',
     '/mockup-1.png',
@@ -100,20 +127,73 @@ const page = () => {
     
   ];
 
-  const handlePrev = () => {
-    setMainImageIndex((prevIndex) =>
-      prevIndex === 0 ? thumbnails.length - 1 : prevIndex - 1
-    );
-  };
+  // const handlePrev = () => {
+  //   setMainImageIndex((prevIndex) =>
+  //     prevIndex === 0 ? thumbnails.length - 1 : prevIndex - 1
+  //   );
+  // };
 
-  const handleNext = () => {
-    setMainImageIndex((prevIndex) =>
-      prevIndex === thumbnails.length - 1 ? 0 : prevIndex + 1
-    );
-  };
+  // const handleNext = () => {
+  //   setMainImageIndex((prevIndex) =>
+  //     prevIndex === thumbnails.length - 1 ? 0 : prevIndex + 1
+  //   );
+  // };
 
  
- 
+ if (loading) {
+  return (
+    <div className="animate-pulse p-4 max-w-7xl mx-auto">
+      {/* Image slider skeleton */}
+      <div className="flex gap-4">
+        <div className="w-full max-w-[600px] aspect-square bg-gray-200 rounded-2xl" />
+
+        {/* Text section */}
+        <div className="flex-1 space-y-4">
+          <div className="h-6 w-2/3 bg-gray-200 rounded" />
+          <div className="h-4 w-1/3 bg-gray-200 rounded" />
+          <div className="h-4 w-1/2 bg-gray-200 rounded" />
+          <div className="h-4 w-1/4 bg-gray-200 rounded" />
+          <div className="h-36 w-full bg-gray-200 rounded mt-4" />
+        </div>
+      </div>
+
+      {/* Thumbnail skeleton */}
+      <div className="flex gap-4 mt-6">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="w-[130px] h-[100px] bg-gray-200 rounded-xl"
+          />
+        ))}
+      </div>
+
+      {/* Description section skeleton */}
+      <div className="mt-10 space-y-3">
+        <div className="h-5 w-1/3 bg-gray-200 rounded" />
+        <div className="h-4 w-full bg-gray-200 rounded" />
+        <div className="h-4 w-5/6 bg-gray-200 rounded" />
+        <div className="h-4 w-2/3 bg-gray-200 rounded" />
+      </div>
+    </div>
+  );
+}
+
+  if (!product) return <div className="text-center py-10">Product not found.</div>;
+  const {
+    name,
+    shortDescription,
+    longDescription,
+    images = [],
+    productAttributes = [],
+    category,
+    subcategory,
+    brand,
+    fileSize,
+    resolution,
+    createdAt
+  } = product;
+
+
   return (
     <div>
      <Navbar/>
@@ -122,63 +202,71 @@ const page = () => {
   {/* Image Display + Thumbnails */}
   <div className="md:col-span-2 w-full max-w-[900px] mx-auto px-4 relative  gap-4 ">
   {/* Main Slider */}
- <Slider
-  asNavFor={nav2}
-  ref={(slider) => setNav1(slider)}
-  arrows={true}
-  slidesToShow={1.3}
-  centerMode={true}
-  centerPadding="0px"
-  infinite={false}
-  className="w-full h-auto"
-  nextArrow={<NextArrow />}
-  prevArrow={<PrevArrow />}
->
-  {thumbnails.map((src, index) => (
-    <div
-      key={index}
-      className={index !== thumbnails.length - 1 ? "pr-2" : ""}  // padding-right only except last slide
-    >
-      <div className="bg-gray-100 rounded-2xl overflow-hidden w-full max-w-[600px] aspect-square">
-        <Image
-          src={src}
-          alt={`Slide ${index}`}
-          layout="responsive"
-          width={400}
-          height={400}
-          className="rounded-2xl object-contain"
-        />
+{images?.length > 0 ? (
+  <Slider
+    asNavFor={nav2}
+    ref={(slider) => setNav1(slider)}
+    arrows={true}
+    slidesToShow={1.3}
+    centerMode={true}
+    centerPadding="0px"
+    infinite={false}
+    className="w-full h-auto"
+    nextArrow={<NextArrow />}
+    prevArrow={<PrevArrow />}
+  >
+    {images.map((item, index) => (
+      <div
+        key={index}
+        className={index !== images.length - 1 ? "pr-2" : ""}
+      >
+        <div className="bg-gray-100 rounded-2xl overflow-hidden w-full max-w-[600px] aspect-square">
+          <Image
+            src={item?.image || '/placeholder.png'} // fallback image
+            alt={`Slide ${index + 1}`}
+            layout="responsive"
+            width={400}
+            height={400}
+            className="rounded-2xl object-contain"
+          />
+        </div>
       </div>
-    </div>
-  ))}
-</Slider>
+    ))}
+  </Slider>
+) : (
+  <div className="text-center text-gray-400 py-8">No images available</div>
+)}
+
 
 
   {/* Thumbnail Slider */}
 
-<Slider
-  asNavFor={nav1}
-  ref={(slider2) => setNav2(slider2)}
-  slidesToShow={thumbnails.length}
-  swipe={false}
-  draggable={false}
-  arrows={false}
-  infinite={false}
-  focusOnSelect={true}
-  className="mt-4 px-0 thumbnail-slider"
->
-  {thumbnails.map((src, index) => (
-    <div key={index}>
-      <Image
-        src={src}
-        alt={`Thumb ${index}`}
-        width={130}
-        height={100}
-        className="rounded-xl border border-gray-300 hover:border-black transition object-cover"
-      />
-    </div>
-  ))}
-</Slider>
+{images?.length > 0 && (
+  <Slider
+    asNavFor={nav1}
+    ref={(slider2) => setNav2(slider2)}
+    slidesToShow={images.length} // number of thumbnails = number of images
+    swipe={false}
+    draggable={false}
+    arrows={false}
+    infinite={false}
+    focusOnSelect={true}
+    className="mt-4 px-0 thumbnail-slider"
+  >
+    {images.map((item, index) => (
+      <div key={index}>
+        <Image
+          src={item?.image || '/placeholder.png'}
+          alt={`Thumb ${index}`}
+          width={130}
+          height={100}
+          className="rounded-xl border border-gray-300 hover:border-black transition object-cover"
+        />
+      </div>
+    ))}
+  </Slider>
+)}
+
 
 
 
@@ -189,15 +277,20 @@ const page = () => {
  <div className="flex flex-col items-start gap-2 mt-4 text-gray-700 text-lg ">
   <div className="flex items-center gap-2">
     <Image src="/calender.png" width={16} height={16} alt="Calendar" />
-    <span>18 Nov 2028</span>
+   <span>{new Date(createdAt).toLocaleDateString('en-GB', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+})}</span>
+
   </div>
   <div className="flex items-center gap-2">
     <Image src="/file.png" width={16} height={16} alt="File Size" />
-    <span>PSD 700 MB</span>
+    <span>{fileSize}</span>
   </div>
   <div className="flex items-center gap-2">
     <Image src="/size.png" width={16} height={16} alt="Resolution" />
-    <span>4000x4000px</span>
+    <span>{resolution}</span>
   </div>
 </div>
 
@@ -262,83 +355,12 @@ const page = () => {
           Description
         </h3>
         <p className='mb-4 text-[#939393]'>
-          Showcase your designs with our Varsity Jacket Mockup. This versatile
-          mockup features a classic letterman style with ribbed cuffs and
-          waistband, perfect for school or team representations. Easily
-          customize different sections of the jacket with special layers and
-          smart objects, ensuring precise placement and stunning results. The
-          mockup also includes additional masks for flawless line positioning.
-          Ideal for presenting your artwork in a professional and impactful way.
+          {shortDescription}
         </p>
         <h4 className='mb-2 font-bold text-[#1C2836] text-2xl'>
           Which License is Right for You?
         </h4>
-        <p className='mb-4 text-[#939393]'>
-          Our Essentials License is perfect for designers who want to build
-          their portfolios, share their creations on social media, or simply get
-          creative. It's ideal for freelancers working on individual projects
-          for clients.
-          <br />
-          <br />
-          If you need flexibility for multiple projects or clients, our
-          Professional License is the way to go. It provides unlimited use for
-          various products and clients, making it perfect for agencies and
-          companies with diverse needs.
-        </p>
-
-        <h4 className='mb-2 font-bold text-[#1C2836] text-2xl'>FAQs</h4>
-        <ul className='space-y-2 text-[#939393]'>
-          <li>
-            <p className='font-bold'>
-              Can I use these templates for client projects?
-            </p>
-            <p>
-              Yes, you can use our templates for client projects, but you cannot
-              use them to create derivative or competing products. For detailed
-              information, please review our license agreement.
-            </p>
-          </li>
-          <br />
-
-          <li>
-            <p className='font-bold'>
-              Can I use the templates for my own commercial projects?
-            </p>
-            <p>
-              Absolutely! Your license allows you to use the templates in as
-              many commercial projects as you need. For more details, please
-              check our license agreement.
-            </p>
-          </li>
-          <br />
-          <li>
-            <p className='font-bold'>Can I get an invoice for my purchase?</p>
-            <p>
-              Yes, an invoice will be sent to you via email right after your
-              purchase is completed.
-            </p>
-          </li>
-          <br />
-          <li>
-            <p className='font-bold'>
-              Do you accept PayPal as a payment method?
-            </p>
-            <p>
-              Yes, you can pay with any major credit card or PayPal during
-              checkout.
-            </p>
-          </li>
-          <br />
-          <li>
-            <p className='font-bold'>
-              Do you offer discounts for students or registered nonprofits?
-            </p>
-            <p>
-              Yes, we offer a 20% discount. Please contact us with your
-              organization or student email address to receive a coupon.
-            </p>
-          </li>
-        </ul>
+       { longDescription }
       </section>
 
       {/* Recommended Products */}
