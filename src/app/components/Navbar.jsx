@@ -1,9 +1,10 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Menu, X, Search, ShoppingCart, User, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { CartContext } from '@/CartContext';
 export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -37,7 +38,7 @@ const [expandedCategories, setExpandedCategories] = useState({});
 useEffect(() => {
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://localhost:4000/api/v1/customer/categories');
+      const res = await fetch('https://mockshark-backend.vercel.app/api/v1/customer/categories');
       const json = await res.json();
 
       if (json.success) {
@@ -80,6 +81,22 @@ const handleCategoryClick = (category) => {
       [category]: !prev[category] 
     }));
   };
+
+ const { cartCount } = useContext(CartContext);
+// const [cartCount, setCartCount] = useState(0);
+
+//   useEffect(() => {
+//     const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
+//     const totalCount = existingCart.reduce((acc, item) => acc + item.quantity, 0);
+//     setCartCount(totalCount);
+//   }, []);
+// // Load initial cart count on mount
+//   useEffect(() => {
+//     const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
+//     setCartCount(existingCart.reduce((acc, item) => acc + item.quantity, 0));
+//   }, []);
+
+
 
 
   return (
@@ -178,7 +195,21 @@ const handleCategoryClick = (category) => {
         <div className="flex items-center gap-4">
           <p className='text-cyan-400 mr-2'>00/00</p>
           <Search className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
-          <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
+         <div className="relative inline-block">
+  <Link href="/checkout">
+    <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
+    </Link>
+  
+  {cartCount > 0 && (
+    <span
+      className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+      style={{ lineHeight: 1 }}
+    >
+      {cartCount}
+    </span>
+  )}
+</div>
+
         <Link href="/profile">
          {isLoggedIn && <User className="w-5 h-5 cursor-pointer hover:text-cyan-300" />}
         </Link>

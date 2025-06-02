@@ -1,3 +1,4 @@
+import { CartProvider } from "@/CartContext";
 import Alloneplace from "./components/Allinoneplace";
 import Footer from "./components/Footer";
 import JustDrop from "./components/JustDrop";
@@ -7,7 +8,8 @@ import Payment from "./components/Payment";
 
 export default function Home() {
   return (
-   <div>
+  <CartProvider>
+     <div>
     <Navbar/>
     <div>
       <JustDrop/>
@@ -37,5 +39,6 @@ export default function Home() {
 
     </div>
    </div>
+  </CartProvider>
   );
 }

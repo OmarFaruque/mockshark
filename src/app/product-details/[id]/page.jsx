@@ -3,6 +3,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 import { useState ,useRef ,useEffect } from 'react';
+import { Star,Trash2  } from 'lucide-react';
 import Image from 'next/image'
 import { Navbar } from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
@@ -10,11 +11,13 @@ import Link from 'next/link'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useParams } from 'next/navigation';
-
-
+import { useRouter } from "next/navigation";
 import RecommendedProduct from '@/app/components/RecommendedProduct';
-
-
+import axios from "axios";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const NextArrow = ({ onClick }) => (
   <div
@@ -35,16 +38,106 @@ const PrevArrow = ({ onClick }) => (
 );
 
 
-const page = () => {
+  const page = () => {
 
-const { id } = useParams();
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [comment, setComment] = useState("");
+  const [reviews, setReviews] = useState([]);
+  const [commentText, setCommentText] = useState('');
+  const [rating, setRating] = useState(0);
+  const userId = Cookies.get("userId");
+  const productId = id; // assuming id is the product ID from the URL
+  const token = Cookies.get("token");
+  const [visibleCount, setVisibleCount] = useState(3);
+
+
+
+
+const currentUser = {
+  _id: Cookies.get("userId"), // or whatever key you use
+  name: Cookies.get("name") || "Anonymous",
+  avatar: "https://cdn-icons-png.flaticon.com/512/9368/9368192.png", // default fallback
+};
+
+const handleSubmit = async () => {
+  if (!token) {
+    toast.error("Please login to submit a review.");
+    return;
+  }
+
+  if (!rating || !comment.trim()) {
+    toast.error("Please provide both rating and comment.");
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      "https://mockshark-backend.vercel.app/api/v1/reviews",
+      {
+        productId,
+        userId,
+        rating,
+        comment,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const reviewWithUser = {
+      ...res.data.data,
+      user: {
+        name: currentUser?.name || "You",
+        avatar:
+          currentUser?.avatar ||
+          "https://cdn-icons-png.flaticon.com/512/9368/9368192.png",
+        _id: userId,
+      },
+    };
+
+    setReviews((prev) => [reviewWithUser, ...prev]);
+
+    setRating(0);
+    setComment("");
+
+    toast.success("Review submitted successfully!");
+  } catch (err) {
+    toast.error(
+      err.response?.data?.message || "Failed to submit review. Try again."
+    );
+  }
+};
+
+const handleDelete = async (reviewId) => {
+  
+
+  try {
+    await axios.delete(`https://mockshark-backend.vercel.app/api/v1/reviews/${reviewId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Remove the deleted review from the list
+    setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+
+    toast.success("Review deleted successfully.");
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to delete review.");
+  }
+};
+
+
+
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/v1/customer/products/${id}`);
+        const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/customer/products/${id}`);
         const data = await res.json();
         setProduct(data?.data);
       } catch (error) {
@@ -56,7 +149,10 @@ const { id } = useParams();
     if (id) fetchProduct();
   }, [id]);
 
- 
+ useEffect(() => {
+  setReviews(product?.review || []);
+}, [product]);
+
 
 
  
@@ -192,6 +288,10 @@ const { id } = useParams();
     resolution,
     createdAt
   } = product;
+
+  const handleShowMore = () => {
+  setVisibleCount((prev) => prev + 3);
+};
 
 
   return (
@@ -362,12 +462,118 @@ const { id } = useParams();
         </h4>
        { longDescription }
       </section>
+ <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-md shadow-cyan-200 p-6 space-y-6 border border-gray-100">
 
+      <h3 className="text-2xl font-bold text-gray-800 text-center">Write a Review</h3>
+
+      {/* Stars */}
+      <div className="flex gap-2 justify-center">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => setRating(star)}
+            className={`rounded-full p-2 transition ${
+              rating >= star ? "bg-yellow-400 text-white" : "bg-gray-100 hover:bg-yellow-100"
+            }`}
+          >
+            <Star className="w-5 h-5" fill={rating >= star ? "white" : "none"} />
+          </button>
+        ))}
+      </div>
+
+      {/* Textarea */}
+     <div className="flex justify-center">
+  <textarea
+    value={comment}
+    onChange={(e) => setComment(e.target.value)}
+    rows={3}
+    className="w-[410px] p-4 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-cyan-400 outline-none resize-none"
+    placeholder="Share your experience..."
+  />
+</div>
+
+
+      {/* Submit */}
+    <div className="flex justify-center mt-4">
+  <button
+    onClick={handleSubmit}
+    className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-xl shadow-md"
+  >
+    Submit Review
+  </button>
+</div>
+
+
+      {/* Divider */}
+      <hr className="border-t border-gray-200" />
+
+      <h4 className="text-xl font-semibold text-gray-700">Customer Reviews</h4>
+
+      {/* Reviews List */}
+      <div className="space-y-4">
+  {reviews.length === 0 ? (
+    <p className="text-gray-400">No reviews yet.</p>
+  ) : (
+    reviews.slice(0, visibleCount).map((r) => (
+      <div
+        key={r._id}
+        className="bg-gray-50 rounded-xl p-4 shadow-sm flex justify-between items-start"
+      >
+        <div className="flex gap-3">
+          <img
+            src={r?.user?.image || "https://cdn-icons-png.flaticon.com/512/9368/9368192.png"}
+            alt="avatar"
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          <div>
+            <p className="font-semibold text-gray-800 mb-1">{r?.user?.name || "Anonymous"}</p>
+            <div className="flex items-center gap-1 mb-1">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-4 h-4 ${i < r.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+                />
+              ))}
+            </div>
+            <p className="text-gray-700">{r.comment}</p>
+          </div>
+        </div>
+
+        {r.userId === userId && (
+          <button
+            onClick={() => handleDelete(r.id)}
+            className="text-red-500 hover:text-red-700"
+            title="Delete your comment"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        )}
+      </div>
+    ))
+  )}
+
+  {/* Show More Button */}
+  {visibleCount < reviews.length && (
+    <div className="pt-2 text-center">
+      <button
+        onClick={handleShowMore}
+        className="text-cyan-600 font-semibold hover:underline"
+      >
+        Show more reviews
+      </button>
+    </div>
+  )}
+</div>
+
+
+    </div>
       {/* Recommended Products */}
    <RecommendedProduct/>
 
       {/* Footer */}
     <Footer/>
+
+    <ToastContainer/>
     </div>
   )
 }

@@ -1,14 +1,18 @@
 'use client';
 import Link from 'next/link';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useEffect, useState } from 'react';
 import axios from 'axios'; // we'll use axios for easier API calls
-
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { CartContext } from '@/CartContext';
 
 const JustDrop = () => {
 
    const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true); // optional: show loader
+  //  const [cartCount, setCartCount] = useState(0);
   // const products = [
   //   {
   //     id: 1,
@@ -58,7 +62,7 @@ const JustDrop = () => {
     // Step 2: Fetch data when component mounts
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/v1/customer/products');
+        const response = await axios.get('https://mockshark-backend.vercel.app/api/v1/customer/products');
         setProducts(response.data.data);  // set product list in state
         setLoading(false);           // stop loader
       } catch (error) {
@@ -69,6 +73,18 @@ const JustDrop = () => {
 
     fetchProducts();
   }, []); // empty dependency array = run once on component mount
+
+
+
+
+
+const { addToCart, cartCount } = useContext(CartContext);
+
+
+
+
+
+
 
   // Step 3: Show loading or list
 if (loading) return (
@@ -139,16 +155,23 @@ if (loading) return (
 
 
            <div className='p-4'>
-           <button className=" py-2 p-4  font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8]  w-full rounded-full text-black">
-              + Add to Cart
-            </button>
+         <button
+  className="py-2 p-4 font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8] w-full rounded-full text-black"
+  onClick={(e) => {
+    e.preventDefault(); // prevent navigation
+    addToCart(product); // call addToCart with current product
+  }} // pass current product object here
+>
+  + Add to Cart
+</button>
+
            </div>
           </div>
           </Link>
         ))}
       </div>
       
-     
+   
 
     </section>
   );

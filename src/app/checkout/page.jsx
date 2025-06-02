@@ -1,8 +1,51 @@
-import React from 'react';
+'use client'
+
+import { useContext } from 'react';
 import { Navbar } from '../components/Navbar';
 import Footer from '../components/Footer';
+import { CartContext } from '@/CartContext';
+import { Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Page = () => {
+
+
+const { cart, setCart } = useContext(CartContext);
+
+  const handleRemove = (id) => {
+    const updatedCart = cart.filter(item => item.id !== id);
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    toast.success("✅ Product removed from cart!", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+
+  const subtotal = cart.reduce((acc, item) => {
+    const price = item.productAttributes?.[0]?.retailPrice ?? 0;
+    return acc + price * item.quantity;
+  }, 0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     <div className="bg-white min-h-screen flex flex-col justify-between">
       <div className="w-full">
@@ -45,41 +88,57 @@ const Page = () => {
         </div>
 
         {/* Payment Details */}
-        <div className="w-full">
-          <h2 className="text-3xl font-bold mb-6 text-center text-[#1C2836]">Payment Details</h2>
-          <div className="border border-[#b7b7b7] rounded p-6  w-full">
-            <div className="mb-4">
-              <div className="flex justify-between font-bold text-[200px] sm:text-base">
-                <span className="text-[#6f6f6f] text-[17px]">PRODUCT</span>
-                <span className="text-[#6f6f6f] text-[17px]">SUB TOTAL</span>
-              </div>
-              <div className="flex justify-between py-2 border-t border-[#b7b7b7] mt-2 text-sm sm:text-base">
-                <span className="text-[#b7b7b7] text-[17px]">VARSITY LETTERMAN JACKET FRONT VIEW</span>
-                <span className=' text-[#b7b7b7] text-[17px]'>$15</span>
-              </div>
-              <div className="flex justify-between items-center font-bold text-[#1C2836] border-t border-[#b7b7b7] pt-2 text-sm sm:text-base">
-                <span className="text-[#6f6f6f] text-[17px]">SUBTOTAL</span>
-                <span className='text-[25px] '>$15</span>
-              </div>
-            </div>
+      <div className="w-full">
+      <h2 className="text-3xl font-bold mb-6 text-center text-[#1C2836]">Payment Details</h2>
+      <div className="border border-[#b7b7b7] rounded p-6 w-full">
+        <div className="mb-4">
+          <div className="flex justify-between font-bold">
+            <span className="text-[#6f6f6f] text-[17px]">PRODUCT</span>
+            <span className="text-[#6f6f6f] text-[17px]">SUB TOTAL</span>
+          </div>
 
-           <div className="flex items-center flex-col lg:flex-row lg:justify-between gap-4 lg:gap-1 mb-4">
-              <input type="text" placeholder="Coupon code" className="border border-[#b7b7b7] px-3 py-2 rounded w-64 " />
-              <button className="bg-[#7CB84D] text-white px-12 py-2 rounded-lg hover:bg-green-700">APPLY COUPON</button>
-            </div>
+          {cart.map((item) => {
+            const price = item.productAttributes?.[0]?.retailPrice ?? 0;
+            const itemTotal = price * item.quantity;
 
-            <div className="text-center text-[#c1c1c1] mt-20 font-bold text-lg">
-              YOUR TOTAL: <span className="text-[#1C2836] ">$30</span>
-            </div>
+            return (
+              <div key={item.id} className="flex justify-between items-center py-2 border-t border-[#b7b7b7]">
+                <div className="flex ">
+                  <span className="text-[#1C2836] font-medium">{item.name} </span>
+               <span> <button onClick={() => handleRemove(item.id)} className="text-red-500 hover:text-red-700 ml-4">
+  <Trash2 size={18} />
+</button></span>
+                </div>
+                <span className="text-[#1C2836] font-medium">${itemTotal.toFixed(2)}</span>
+                
+              </div>
+            );
+          })}
 
-            <button className="w-full mt-4 bg-[#006a4e] text-white py-2 rounded-lg hover:bg-green-700 font-bold">
-              PLACE ORDER
-            </button>
+          <div className="flex justify-between items-center font-bold text-[#1C2836] border-t border-[#b7b7b7] pt-2">
+            <span className="text-[#6f6f6f] text-[17px]">SUBTOTAL</span>
+            <span className='text-[25px]'>${subtotal.toFixed(2)}</span>
           </div>
         </div>
+
+        <div className="flex items-center flex-col lg:flex-row lg:justify-between gap-4 lg:gap-1 mb-4">
+          <input type="text" placeholder="Coupon code" className="border border-[#b7b7b7] px-3 py-2 rounded w-64 " />
+          <button className="bg-[#7CB84D] text-white px-12 py-2 rounded-lg hover:bg-green-700">APPLY COUPON</button>
+        </div>
+
+        <div className="text-center text-[#c1c1c1] mt-20 font-bold text-lg">
+          YOUR TOTAL: <span className="text-[#1C2836]">${subtotal.toFixed(2)}</span>
+        </div>
+
+        <button className="w-full mt-4 bg-[#006a4e] text-white py-2 rounded-lg hover:bg-green-700 font-bold">
+          PLACE ORDER
+        </button>
+      </div>
+    </div>
       </div>
 
       <Footer />
+      <ToastContainer/>
     </div>
   );
 };
