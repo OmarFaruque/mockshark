@@ -1,52 +1,42 @@
 import Link from 'next/link'
 import React from 'react'
-
+import {
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter,
+} from 'lucide-react';
 const Footer = () => {
   return (
     <footer className='bg-slate-900 px-6 py-12 text-white'>
       <div className='gap-8 grid grid-cols-1 md:grid-cols-4 mx-auto max-w-7xl'>
         {/* Logo + Social */}
         <div>
-          <div className='flex justify-start items-center gap-2'>
+          <div className='flex justify-start items-center '>
             <img
-              src='/logo.png'
+              src='/ML-05.png'
               alt='Mockshark Logo'
-              className='w-14 h-14 object-contain'
+              className='w-18 h-18 object-contain'
             />
-            <h2 className='mb-2 font-bold text-cyan-400 text-2xl'>
+            <h2 className=' font-bold text-cyan-400 text-2xl'>
               Mock <br /> <span className='text-white'>Shark</span>
             </h2>
           </div>
-          <div className='flex gap-3 text-xl'>
-            <a href='#'>
-              <img
-                src='/icon (1).png'
-                alt='Mockshark Logo'
-                className='w-6 h-6 object-contain'
-              />
-            </a>
-            <a href='#'>
-              <img
-                src='/icon (2).png'
-                alt='Mockshark Logo'
-                className='w-6 h-6 object-contain'
-              />
-            </a>
-            <a href='#'>
-              <img
-                src='/icon (3).png'
-                alt='Mockshark Logo'
-                className='w-6 h-6 object-contain'
-              />
-            </a>
-            <a href='#'>
-              <img
-                src='/icon (4).png'
-                alt='Mockshark Logo'
-                className='w-6 h-6 object-contain'
-              />
-            </a>
-          </div>
+       <div className='flex gap-2 text-xl ml-3'>
+  <a href='https://x.com' target='_blank' rel='noopener noreferrer'>
+    <Twitter className='w-6 h-6 text-white hover:text-white' />
+  </a>
+  <a href='https://instagram.com' target='_blank' rel='noopener noreferrer'>
+    <Instagram className='w-6 h-6 text-white hover:text-white' />
+  </a>
+  <a href='https://facebook.com' target='_blank' rel='noopener noreferrer'>
+    <Facebook className='w-6 h-6 text-white hover:text-white' />
+  </a>
+  <a href='https://linkedin.com' target='_blank' rel='noopener noreferrer'>
+    <Linkedin className='w-6 h-6 text-white hover:text-white' />
+  </a>
+</div>
+
         </div>
 
         {/* Information */}
