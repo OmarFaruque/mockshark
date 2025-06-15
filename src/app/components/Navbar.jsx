@@ -30,7 +30,7 @@ const hoverTimeout = useRef(null);
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const menuItems = [
   { label: 'Home', href: '/' },
-  { label: 'About Us', href: '/about-us' },
+  { label: 'About Us', href: '/aboutus' },
   { label: 'Order', href: '/order' },
   { label: 'Download', href: '/download' },
   { label: 'Blogs', href: '/blogs' },
@@ -214,7 +214,9 @@ const handleCategoryClick = (category) => {
           </div>
 
           {/* Static Links */}
-          <a href="#" className="hover:text-cyan-300 transition">About Us</a>
+          <Link href="/aboutus" className="hover:text-cyan-300 transition">
+          About Us
+          </Link>
           <a href="#" className="hover:text-cyan-300 transition">Bundle Deals</a>
           <a href="#" className="hover:text-cyan-300 transition">Blog</a>
         </div>
