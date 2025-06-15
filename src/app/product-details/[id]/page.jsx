@@ -50,7 +50,9 @@ const PrevArrow = ({ onClick }) => (
   const userId = Cookies.get("userId");
   const productId = id; // assuming id is the product ID from the URL
   const token = Cookies.get("token");
-  const [visibleCount, setVisibleCount] = useState(3);
+const [visibleCount, setVisibleCount] = useState(3); // Initially show 3 reviews
+const [showAll, setShowAll] = useState(false); // Toggle state
+
 
 
 
@@ -289,9 +291,16 @@ const handleDelete = async (reviewId) => {
     createdAt
   } = product;
 
-  const handleShowMore = () => {
-  setVisibleCount((prev) => prev + 3);
+const handleShowMore = () => {
+  setVisibleCount(reviews.length);
+  setShowAll(true);
 };
+
+const handleShowLess = () => {
+  setVisibleCount(3); // Reset to initial count
+  setShowAll(false);
+};
+
 
 
   return (
@@ -553,16 +562,26 @@ const handleDelete = async (reviewId) => {
   )}
 
   {/* Show More Button */}
-  {visibleCount < reviews.length && (
-    <div className="pt-2 text-center">
+ {reviews.length > 3 && (
+  <div className="pt-2 text-center">
+    {!showAll ? (
       <button
         onClick={handleShowMore}
         className="text-cyan-600 font-semibold hover:underline"
       >
         Show more reviews
       </button>
-    </div>
-  )}
+    ) : (
+      <button
+        onClick={handleShowLess}
+        className="text-cyan-600 font-semibold hover:underline"
+      >
+        Show less reviews
+      </button>
+    )}
+  </div>
+)}
+
 </div>
 
 

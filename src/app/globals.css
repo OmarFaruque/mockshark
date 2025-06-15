@@ -51,3 +51,8 @@ body {
   z-index: 10;
   color: black;
 }
+.left-full {
+  left: 100%; /* Make sure submenu is exactly adjacent */
+  top: 0;
+  margin-left: 0; /* remove margin-left or make it very small */
+}

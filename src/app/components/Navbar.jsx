@@ -6,6 +6,11 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { CartContext } from '@/CartContext';
 export const Navbar = () => {
+
+ const [showSearch, setShowSearch] = useState(false);
+
+
+  
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
@@ -18,6 +23,7 @@ const [expandedCategories, setExpandedCategories] = useState({});
   //   "Poster Mockups": ["Indoor", "Outdoor", "Framed", "Rolled"],
   //   "Logo Mockups": ["Wall Sign", "Embossed", "Paper", "Glass"]
   // };
+const hoverTimeout = useRef(null);
 
  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categories, setCategories] = useState({});
@@ -151,37 +157,59 @@ const handleCategoryClick = (category) => {
               </svg>
             </button>
 
-            <div className="absolute top-full mt-2 hidden group-hover:block bg-[#0d0f18] border border-cyan-400/30 rounded-lg shadow-lg w-72 z-50 py-2 backdrop-blur-md">
-              <ul className="space-y-1 px-2">
-      {Object.entries(categories).map(([category, subcategories]) => (
-        <li key={category} className="relative group/item">
-          <div
-            className="flex justify-between items-center px-4 py-3 hover:bg-cyan-400/10 hover:border-l-2 hover:border-l-cyan-400 rounded-md cursor-pointer"
-            onMouseEnter={() => setHoveredCategory(category)}
-            onMouseLeave={() => setHoveredCategory(null)}
-          >
-            <span className="text-sm text-gray-100 group-hover/item:text-cyan-300">{category}</span>
-            <ChevronRight className="w-4 h-4 text-cyan-400/50 group-hover:item:text-cyan-400 group-hover:item:translate-x-1 transition" />
-          </div>
+            <div className="absolute top-full  hidden group-hover:block bg-[#0d0f18] border border-cyan-400/30 rounded-lg shadow-lg w-72 z-50 py-2 backdrop-blur-md">
+            <ul className="space-y-1 px-2">
+  {Object.entries(categories).map(([category, subcategories]) => (
+    <li
+  key={category}
+  className="relative group/item"
+  onMouseEnter={() => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    setHoveredCategory(category);
+  }}
+  onMouseLeave={() => {
+    hoverTimeout.current = setTimeout(() => {
+      setHoveredCategory(null);
+    }, 300); // 👈 Delay to prevent flickering
+  }}
+>
+  <div className="flex justify-between items-center px-4 py-3 hover:bg-cyan-400/10 hover:border-l-2 hover:border-l-cyan-400 rounded-md cursor-pointer">
+    <span className="text-sm text-gray-100 group-hover/item:text-cyan-300">
+      {category}
+    </span>
+    <ChevronRight className="w-4 h-4 text-cyan-400/50 group-hover:item:text-cyan-400 group-hover:item:translate-x-1 transition" />
+  </div>
 
-          {hoveredCategory === category && (
-            <div className="absolute left-full top-0 ml-1 bg-[#0d0f18] border border-cyan-400/20 rounded-lg shadow-lg w-64 z-50 py-2">
-              <ul className="space-y-1">
-                {subcategories.map((sub, idx) => (
-                  <li
-                    key={idx}
-                    className="px-4 py-2.5 hover:bg-cyan-400/5 hover:text-cyan-300 text-sm text-gray-300 flex items-center gap-2"
-                  >
-                    <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
-                    {sub}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+ {hoveredCategory === category && (
+  <div
+    className="absolute left-full top-0 ml-1 bg-[#0d0f18] border border-cyan-400/20 rounded-lg shadow-lg w-64 z-50 py-2"
+    onMouseEnter={() => {
+      if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    }}
+    onMouseLeave={() => {
+      hoverTimeout.current = setTimeout(() => {
+        setHoveredCategory(null);
+      }, 300);
+    }}
+  >
+    <ul className="space-y-1">
+      {subcategories.map((sub, idx) => (
+        <li
+          key={idx}
+          className="px-4 py-2.5 hover:bg-cyan-400/5 hover:text-cyan-300 text-sm text-gray-300 flex items-center gap-2"
+        >
+          <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
+          {sub}
         </li>
       ))}
     </ul>
+  </div>
+)}
+
+</li>
+
+  ))}
+</ul>
             </div>
           </div>
 
@@ -194,7 +222,31 @@ const handleCategoryClick = (category) => {
         {/* Right Icons */}
         <div className="flex items-center gap-4">
           <p className='text-cyan-400 mr-2'>00/00</p>
-          <Search className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
+         <div className="relative flex items-center">
+      {/* Search Icon */}
+      {!showSearch && (
+        <Search
+          className="w-5 h-5 cursor-pointer hover:text-cyan-300 transition"
+          onClick={() => setShowSearch(true)}
+        />
+      )}
+
+      {/* Search Bar */}
+      {showSearch && (
+        <div className="absolute top-9 ml-[-220px] lg:ml-[-800px] flex items-center bg-white border border-gray-300 rounded-xl shadow-md px-3 py-5 lg:w-[780px] w-[270px] z-50 ">
+        <input
+  type="text"
+  placeholder="Search..."
+  className="flex-grow text-black outline-none bg-transparent  rounded-md"
+/>
+
+          <X
+            className="w-4 h-4 text-gray-500 cursor-pointer hover:text-red-500 ml-2"
+            onClick={() => setShowSearch(false)}
+          />
+        </div>
+      )}
+    </div>
          <div className="relative inline-block">
   <Link href="/checkout">
     <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
