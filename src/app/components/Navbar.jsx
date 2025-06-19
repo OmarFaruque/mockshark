@@ -33,7 +33,7 @@ const hoverTimeout = useRef(null);
   { label: 'About Us', href: '/aboutus' },
   { label: 'Order', href: '/order' },
   { label: 'Download', href: '/download' },
-  { label: 'Blogs', href: '/blogs' },
+  { label: 'Blogs', href: '/blog' },
   { label: 'FAQs', href: '/faqs' },
   { label: 'Contact Us', href: '/contact-us' },      
   { label: 'Terms of Services', href: '/Terms-Conditions' }, 
@@ -218,7 +218,9 @@ const handleCategoryClick = (category) => {
           About Us
           </Link>
           <a href="#" className="hover:text-cyan-300 transition">Bundle Deals</a>
-          <a href="#" className="hover:text-cyan-300 transition">Blog</a>
+        <Link href="/blog" className="hover:text-cyan-300 transition">
+          Blog
+        </Link>
         </div>
 
         {/* Right Icons */}

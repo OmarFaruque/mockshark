@@ -18,7 +18,7 @@ const ProfilePage = () => {
       email: '',
       about: '',
       image: '',
-     phone: '',
+      phone: '',
       language: '',
       country: '',
       billingFirstName : '',
@@ -31,9 +31,8 @@ const ProfilePage = () => {
       city: '',
       state: '',
       postalCode: '',
-
-
     },
+
     personal: {
      
     },
