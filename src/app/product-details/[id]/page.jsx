@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 const NextArrow = ({ onClick }) => (
   <div
     onClick={onClick}
@@ -52,6 +53,31 @@ const PrevArrow = ({ onClick }) => (
   const token = Cookies.get("token");
 const [visibleCount, setVisibleCount] = useState(3); // Initially show 3 reviews
 const [showAll, setShowAll] = useState(false); // Toggle state
+const [selectedVariant, setSelectedVariant] = useState(null);
+
+const router = useRouter();
+
+const handleCheckout = () => {
+ if (!selectedVariant || !selectedVariant.id) {
+  toast.error("Invalid variant selected");
+  return;
+}
+
+
+  const checkoutItem = {
+    productId: product.id,
+    productAttributeId: selectedVariant.id,
+    name: product.name,
+    image: product?.images?.[0]?.image,
+    variant: selectedVariant.size,
+    price: selectedVariant.costPrice,
+    quantity: 1,
+  };
+
+  console.log("Saving to localStorage:", checkoutItem); // Debug
+  localStorage.setItem("checkoutItem", JSON.stringify(checkoutItem));
+  router.push("/checkout");
+};
 
 
 
@@ -238,39 +264,65 @@ const handleDelete = async (reviewId) => {
   // };
 
  
- if (loading) {
+//  if (loading) {
+//   return (
+//     <div className="animate-pulse p-4 max-w-7xl mx-auto">
+//       {/* Image slider skeleton */}
+//       <div className="flex gap-4">
+//         <div className="w-full max-w-[600px] aspect-square bg-gray-200 rounded-2xl" />
+
+//         {/* Text section */}
+//         <div className="flex-1 space-y-4">
+//           <div className="h-6 w-2/3 bg-gray-200 rounded" />
+//           <div className="h-4 w-1/3 bg-gray-200 rounded" />
+//           <div className="h-4 w-1/2 bg-gray-200 rounded" />
+//           <div className="h-4 w-1/4 bg-gray-200 rounded" />
+//           <div className="h-36 w-full bg-gray-200 rounded mt-4" />
+//         </div>
+//       </div>
+
+//       {/* Thumbnail skeleton */}
+//       <div className="flex gap-4 mt-6">
+//         {[...Array(4)].map((_, i) => (
+//           <div
+//             key={i}
+//             className="w-[130px] h-[100px] bg-gray-200 rounded-xl"
+//           />
+//         ))}
+//       </div>
+
+//       {/* Description section skeleton */}
+//       <div className="mt-10 space-y-3">
+//         <div className="h-5 w-1/3 bg-gray-200 rounded" />
+//         <div className="h-4 w-full bg-gray-200 rounded" />
+//         <div className="h-4 w-5/6 bg-gray-200 rounded" />
+//         <div className="h-4 w-2/3 bg-gray-200 rounded" />
+//       </div>
+//     </div>
+//   );
+// }
+
+if (loading) {
   return (
-    <div className="animate-pulse p-4 max-w-7xl mx-auto">
-      {/* Image slider skeleton */}
-      <div className="flex gap-4">
-        <div className="w-full max-w-[600px] aspect-square bg-gray-200 rounded-2xl" />
-
-        {/* Text section */}
-        <div className="flex-1 space-y-4">
-          <div className="h-6 w-2/3 bg-gray-200 rounded" />
-          <div className="h-4 w-1/3 bg-gray-200 rounded" />
-          <div className="h-4 w-1/2 bg-gray-200 rounded" />
-          <div className="h-4 w-1/4 bg-gray-200 rounded" />
-          <div className="h-36 w-full bg-gray-200 rounded mt-4" />
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex items-center justify-center text-[#0f1c2e]">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="relative w-24 h-24">
+          {/* Spinner Ring */}
+          <div className="absolute inset-0 rounded-full border-[6px] border-blue-400 border-t-transparent animate-spin"></div>
+          
+          {/* Shark Emoji */}
+          <span className="absolute inset-0 flex items-center justify-center text-4xl animate-bounce">
+            🦈
+          </span>
         </div>
-      </div>
 
-      {/* Thumbnail skeleton */}
-      <div className="flex gap-4 mt-6">
-        {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="w-[130px] h-[100px] bg-gray-200 rounded-xl"
-          />
-        ))}
-      </div>
-
-      {/* Description section skeleton */}
-      <div className="mt-10 space-y-3">
-        <div className="h-5 w-1/3 bg-gray-200 rounded" />
-        <div className="h-4 w-full bg-gray-200 rounded" />
-        <div className="h-4 w-5/6 bg-gray-200 rounded" />
-        <div className="h-4 w-2/3 bg-gray-200 rounded" />
+        {/* Brand Text */}
+        <h2 className="text-2xl font-bold animate-pulse tracking-wide">
+          MockShark is swimming your mockups...
+        </h2>
+        <p className="text-sm text-gray-500 animate-fadeIn">
+          Please wait while we fetch your assets.
+        </p>
       </div>
     </div>
   );
@@ -408,42 +460,46 @@ const handleShowLess = () => {
 
   {/* Product Details */}
   <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0 mr-4 h-[560px]">
-    <p className="text-[#C0C0C0] text-sm">⭐⭐⭐⭐⭐ 35 Reviews</p>
+    <p className="text-[#C0C0C0] text-sm">⭐⭐⭐⭐⭐ {product?.review?.length} Reviews</p>
     <h2 className="font-bold text-[#1C2836] text-xl">
-      WOMAN HOODIE MOCKUP FRONT VIEW PSD
+      {name}
     </h2>
-    <div className="space-y-4 text-[#1C2836]">
-      {[
-        { label: 'Personal', price: '$2.99' },
-        { label: 'Commercial', price: '$4.99' },
-        { label: 'Extended Commercial', price: '$8.99' },
-      ].map((option, idx) => (
-        <label
-          key={idx}
-          className="flex justify-between items-center px-2 py-2 rounded cursor-pointer"
-        >
-          <span>
-            <input type="radio" name="license" className="mr-2" />
-            {option.label}
-          </span>
-          <span className="font-bold">{option.price}</span>
-        </label>
-      ))}
-    </div>
+  <div className="space-y-4 text-[#1C2836]">
+  {productAttributes.map((attr, idx) => (
+    <label
+      key={idx}
+      className="flex justify-between items-center px-2 py-2 rounded cursor-pointer"
+    >
+      <span>
+        <input
+  type="radio"
+  name="license"
+  className="mr-2"
+  value={attr.size}
+  onChange={() => setSelectedVariant(attr)}
+/>
+
+        {attr.size}
+      </span>
+      <span className="font-bold">${attr.costPrice}</span>
+    </label>
+  ))}
+</div>
     <p className="text-[#1C2836] text-xs">
       For personal & brand usage.{' '}
       <a href="#" className="text-sky-500 underline">
         See License
       </a>
     </p>
-    <button className=" h-[40px] border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold">
+    <button className=" h-[40px] border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold"
+    onClick={handleCheckout}
+    >
       ADD TO CART
     </button>
-    <Link href="/checkout">
-      <button className="bg-[#1C2836] h-[40px] rounded-full w-full font-semibold text-white">
-        CHECKOUT
-      </button>
-    </Link>
+   <button onClick={handleCheckout} className="bg-[#1C2836] h-[40px] rounded-full w-full font-semibold text-white">
+  CHECKOUT
+</button>
+
     <div className=" rounded text-[#939393] text-center">
       <p className='mt-3'>
         Get our bundle pack and Unlock <br />

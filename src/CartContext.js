@@ -24,8 +24,11 @@ export const CartProvider = ({ children }) => {
     }
   }, [cart, isLoaded]);
 
+  // 🛒 Only adds product with all variants, no selection yet
   const addToCart = (product) => {
     const updatedCart = [...cart];
+
+    // Check if this product is already in cart (only by id)
     const index = updatedCart.findIndex((item) => item.id === product.id);
 
     if (index > -1) {
@@ -39,7 +42,19 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    updatedCart.push({ ...product, quantity: 1 });
+  const personalVariant = product.productAttributes.find(
+  (attr) => attr.size === "Personal"
+);
+
+const cartItem = {
+  id: product.id,
+  name: product.name,
+  quantity: 1,
+  productAttributes: [personalVariant], // ✅ only "Personal"
+};
+
+
+    updatedCart.push(cartItem);
     setCart(updatedCart);
 
     toast.success("✅ Product added to cart!", {
@@ -58,9 +73,8 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider value={{ cart, setCart, addToCart, cartCount }}>
-  {children}
-  <ToastContainer />
-</CartContext.Provider>
-
+      {children}
+      <ToastContainer />
+    </CartContext.Provider>
   );
 };

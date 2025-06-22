@@ -5,12 +5,25 @@ import { Navbar } from "../components/Navbar";
 import Footer from "../components/Footer";
 import { CartContext } from "@/CartContext";
 import { Trash2 } from "lucide-react";
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 
 const Page = () => {
+ const { cart, setCart } = useContext(CartContext);
+
+useEffect(() => {
+  if (cart.length === 0) {
+    const stored = localStorage.getItem("cart");
+    if (stored) {
+      setCart(JSON.parse(stored));
+    }
+  }
+}, []);
+
+  const [selectedVariants, setSelectedVariants] = useState({});
+  const [checkoutProduct, setCheckoutProduct] = useState(null);
+
   const [formData, setFormData] = useState({
     profile: {
       name: "",
@@ -32,7 +45,6 @@ const Page = () => {
       state: "",
       postalCode: "",
     },
-
     personal: {},
     billing: {
       company: "mockshark",
@@ -44,21 +56,117 @@ const Page = () => {
     },
   });
 
+  const token = Cookies.get("token");
+  const userId = Cookies.get("userId");
 
-const handleSubmit = async (e) => {
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(
+          `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!res.ok) throw new Error("Unauthorized");
+        const data = await res.json();
+        setFormData({ profile: data.data });
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+    if (userId) fetchUser();
+  }, [userId]);
+
+  useEffect(() => {
+    const initialVariants = {};
+    cart.forEach((item) => {
+      initialVariants[item.id] = item.productAttributes?.[0]?.size || "";
+    });
+    setSelectedVariants(initialVariants);
+  }, [cart]);
+
+  const handleVariantChange = (itemId, size) => {
+    setSelectedVariants((prev) => ({ ...prev, [itemId]: size }));
+  };
+
+  const handleRemove = (id) => {
+    const updatedCart = cart.filter((item) => item.id !== id);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    toast.success("✅ Product removed from cart!");
+  };
+
+  // const subtotal = cart.reduce((acc, item) => {
+  //   const selectedSize = selectedVariants[item.id] || item.productAttributes?.[0]?.size;
+  //   const selectedVariant = item.productAttributes.find(v => v.size === selectedSize);
+  //   const price = selectedVariant?.retailPrice ?? 0;
+  //   return acc + price * item.quantity;
+  // }, 0);
+const checkoutProductPrice = checkoutProduct?.productAttributes?.[0]?.retailPrice || 0;
+
+let subtotal = cart.reduce((acc, item) => {
+  const selectedSize = selectedVariants[item.id] || item.productAttributes?.[0]?.size;
+  const selectedVariant = item.productAttributes.find(v => v.size === selectedSize);
+  const price = selectedVariant?.retailPrice ?? 0;
+  return acc + price * item.quantity;
+}, 0);
+
+if (checkoutProduct) {
+  subtotal += checkoutProduct.price * checkoutProduct.quantity;
+}
+
+ const handleSubmit = async (e) => {
   e.preventDefault();
 
-  const orderItems = cart.map((item) => ({
-    productId: item.id,
-    productAttributeId: item.productAttributes?.[0]?.id, // ✅ MUST include this
-    quantity: item.quantity,
-  }));
+  const orderItems = [];
+
+  // Handle cart items
+  cart.forEach((item) => {
+    const selectedSize = selectedVariants[item.id] || item.productAttributes?.[0]?.size;
+    const selectedVariant = item.productAttributes?.find(v => v.size === selectedSize);
+
+    orderItems.push({
+      productId: item.id,
+      productAttributeId: selectedVariant?.id,
+      name: item.name,
+      size: selectedVariant?.size,
+      costPrice: selectedVariant?.costPrice,
+      retailPrice: selectedVariant?.retailPrice,
+      discountedRetailPrice: selectedVariant?.discountedRetailPrice || selectedVariant?.retailPrice,
+      quantity: item.quantity,
+      totalCostPrice: selectedVariant?.costPrice * item.quantity,
+      totalPrice: selectedVariant?.retailPrice * item.quantity,
+       licenseType:"personal"
+    });
+  });
+
+  // Handle single checkoutProduct
+  if (checkoutProduct) {
+    orderItems.push({
+      productId: checkoutProduct.productId,
+      productAttributeId: checkoutProduct.productAttributeId,
+      name: checkoutProduct.name,
+      size: checkoutProduct.variant,
+      costPrice: checkoutProduct.price,
+      retailPrice: checkoutProduct.price,
+      discountedRetailPrice: checkoutProduct.price,
+      quantity: checkoutProduct.quantity,
+      totalCostPrice: checkoutProduct.price * checkoutProduct.quantity,
+      totalPrice: checkoutProduct.price * checkoutProduct.quantity,
+       licenseType: checkoutProduct.variant
+    });
+  }
 
   const payload = {
-    userId:userId,
+    userId,
     billingFirstName: formData.profile.billingFirstName,
     billingLastName: formData.profile.billingLastName,
-    billingCompany: "Mockshark Ltd", // or formData.profile.billingCompany
+    billingCompany: formData.profile.billingCompany,
     billingCountry: formData.profile.billingCountry,
     billingEmail: formData.profile.billingEmail,
     billingPhone: formData.profile.billingPhone,
@@ -67,7 +175,7 @@ const handleSubmit = async (e) => {
     city: formData.profile.city,
     state: formData.profile.state,
     postalCode: formData.profile.postalCode,
-    orderItems, // ✅ only required fields
+    orderItems,
   };
 
   try {
@@ -82,11 +190,13 @@ const handleSubmit = async (e) => {
 
     if (!res.ok) throw new Error("Order submission failed");
 
-    const result = await res.json();
     toast.success("✅ Order placed successfully!");
 
+    // Cleanup
     setCart([]);
     localStorage.removeItem("cart");
+    localStorage.removeItem("checkoutItem");
+    setCheckoutProduct(null);
   } catch (error) {
     console.error(error);
     toast.error("❌ Failed to place order");
@@ -94,78 +204,27 @@ const handleSubmit = async (e) => {
 };
 
 
+useEffect(() => {
+  const stored = localStorage.getItem("checkoutItem");
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    setCheckoutProduct(parsed);
+  }
+}, []);
 
 
-
-
-  const { cart, setCart } = useContext(CartContext);
-
-  const handleRemove = (id) => {
-    const updatedCart = cart.filter((item) => item.id !== id);
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    toast.success("✅ Product removed from cart!", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
-  };
-
-  const subtotal = cart.reduce((acc, item) => {
-    const price = item.productAttributes?.[0]?.retailPrice ?? 0;
-    return acc + price * item.quantity;
-  }, 0);
-
-  // Billing Ifnformation
-  const token = Cookies.get("token");
-  const userId = Cookies.get("userId");
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(
-          `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // Add token in Authorization header
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Unauthorized");
-        }
-
-        const data = await res.json();
-        setFormData({ profile: data.data }); // assuming API returns { data: { ...user } }
-      } catch (err) {
-        console.error("Failed to fetch user:", err);
-      }
-    };
-
-    if (userId) {
-      fetchUser();
-    }
-  }, [userId]);
 
   return (
     <div className="bg-white min-h-screen flex flex-col justify-between">
-      <div className="w-full">
-        <Navbar />
-      </div>
-      {/* <p className="font-medium text-gray-800">{formData?.profile?.billingFirstName}</p> */}
+      <Navbar />
       <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-        {/* Billing Information */}
+        {/* Billing Info */}
         <div className="w-full">
           <h2 className="text-3xl font-bold mb-6 text-center text-[#1C2836]">
             Billing Information
           </h2>
-         <form className="space-y-4 w-full text-black" onSubmit={handleSubmit}>
+          {/* Form omitted for brevity */}
+          <form className="space-y-4 w-full text-black" onSubmit={handleSubmit}>
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <input
       type="text"
@@ -336,7 +395,9 @@ const handleSubmit = async (e) => {
               </div>
 
               {cart.map((item) => {
-                const price = item.productAttributes?.[0]?.retailPrice ?? 0;
+                const selectedSize = selectedVariants[item.id] || item.productAttributes?.[0]?.size;
+                const selectedVariant = item.productAttributes.find(v => v.size === selectedSize);
+                const price = selectedVariant?.costPrice ?? 0;
                 const itemTotal = price * item.quantity;
 
                 return (
@@ -344,19 +405,32 @@ const handleSubmit = async (e) => {
                     key={item.id}
                     className="flex justify-between items-center py-2 border-t border-[#b7b7b7]"
                   >
-                    <div className="flex ">
-                      <span className="text-[#1C2836] font-medium">
-                        {item.name}{" "}
-                      </span>
-                      <span>
-                        {" "}
-                        <button
-                          onClick={() => handleRemove(item.id)}
-                          className="text-red-500 hover:text-red-700 ml-4"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#1C2836] font-medium">{item.name}</span>
+                      {/* <select
+                        value={selectedSize}
+                        onChange={(e) => handleVariantChange(item.id, e.target.value)}
+                        className="ml-2 border rounded px-1 py-0.5 text-sm"
+                      >
+                       {item.productAttributes
+  ?.sort((a, b) => {
+    if (a.size === "Personal") return -1;
+    if (b.size === "Personal") return 1;
+    return 0;
+  })
+  .map((variant) => (
+    <option key={variant.id} value={variant.size}>
+      {variant.size}
+    </option>
+))}
+
+                      </select> */}
+                      <button
+                        onClick={() => handleRemove(item.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                     <span className="text-[#1C2836] font-medium">
                       ${itemTotal.toFixed(2)}
@@ -364,14 +438,38 @@ const handleSubmit = async (e) => {
                   </div>
                 );
               })}
+{checkoutProduct && (
+  <div className="mt-4 border-t pt-4 border-[#b7b7b7]">
+   
+   <div className="flex justify-between items-center py-2">
+  <div className="flex items-center gap-2">
+    <span className="text-[#1C2836] font-medium">{checkoutProduct.name}</span>
+    <button
+      onClick={() => {
+        localStorage.removeItem("checkoutItem");
+        setCheckoutProduct(null);
+        toast.success("✅ Checkout item removed!");
+      }}
+      className="text-red-500 hover:text-red-700"
+    >
+      <Trash2 size={18} />
+    </button>
+  </div>
+  <div className="text-[#1C2836] font-medium">
+    ${(checkoutProduct.price * checkoutProduct.quantity).toFixed(2)}
+  </div>
+</div>
+
+  </div>
+)}
+
 
               <div className="flex justify-between items-center font-bold text-[#1C2836] border-t border-[#b7b7b7] pt-2">
                 <span className="text-[#6f6f6f] text-[17px]">SUBTOTAL</span>
                 <span className="text-[25px]">${subtotal.toFixed(2)}</span>
               </div>
             </div>
-
-            <div className="flex items-center flex-col lg:flex-row lg:justify-between gap-4 lg:gap-1 mb-4">
+ <div className="flex items-center flex-col lg:flex-row lg:justify-between gap-4 lg:gap-1 mb-4">
               <input
                 type="text"
                 placeholder="Coupon code"
@@ -381,25 +479,21 @@ const handleSubmit = async (e) => {
                 APPLY COUPON
               </button>
             </div>
-
             <div className="text-center text-[#c1c1c1] mt-20 font-bold text-lg">
-              YOUR TOTAL:{" "}
-              <span className="text-[#1C2836]">${subtotal.toFixed(2)}</span>
+              YOUR TOTAL: <span className="text-[#1C2836]">${subtotal.toFixed(2)}</span>
             </div>
 
-           <form onSubmit={handleSubmit}>
-  <button
-    type="submit"
-    className="w-full mt-4 bg-[#006a4e] text-white py-2 rounded-lg hover:bg-green-700 font-bold"
-  >
-    PLACE ORDER
-  </button>
-</form>
-
+            <form onSubmit={handleSubmit}>
+              <button
+                type="submit"
+                className="w-full mt-4 bg-[#006a4e] text-white py-2 rounded-lg hover:bg-green-700 font-bold"
+              >
+                PLACE ORDER
+              </button>
+            </form>
           </div>
         </div>
       </div>
-
       <Footer />
       <ToastContainer />
     </div>

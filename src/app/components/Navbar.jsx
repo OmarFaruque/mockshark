@@ -104,6 +104,13 @@ const handleCategoryClick = (category) => {
 
 
 
+  const handleCartClick = () => {
+    router.push("/checkout").then(() => {
+      window.location.reload(); // ✅ force refresh after navigation
+    });
+  };
+
+
 
   return (
     <nav className="bg-[#1C2836] text-white px-4 py-3">
@@ -252,9 +259,10 @@ const handleCategoryClick = (category) => {
       )}
     </div>
          <div className="relative inline-block">
-  <Link href="/checkout">
-    <ShoppingCart className="w-5 h-5 cursor-pointer hover:text-cyan-300" />
-    </Link>
+  <ShoppingCart
+      className="w-5 h-5 cursor-pointer hover:text-cyan-300"
+      onClick={handleCartClick}
+    />
   
   {cartCount > 0 && (
     <span

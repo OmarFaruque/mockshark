@@ -87,32 +87,57 @@ const { addToCart, cartCount } = useContext(CartContext);
 
 
   // Step 3: Show loading or list
-if (loading) return (
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-4 py-10 max-w-6xl mx-auto">
-    {Array.from({ length: 4 }).map((_, i) => (
-      <div
-        key={i}
-        className="rounded-2xl shadow-md p-4 animate-pulse bg-white"
-      >
-        {/* Image Placeholder */}
-        <div className="w-full h-[200px] bg-gray-200 rounded-xl mb-4" />
+// if (loading) return (
+//   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-4 py-10 max-w-6xl mx-auto">
+//     {Array.from({ length: 4 }).map((_, i) => (
+//       <div
+//         key={i}
+//         className="rounded-2xl shadow-md p-4 animate-pulse bg-white"
+//       >
+//         {/* Image Placeholder */}
+//         <div className="w-full h-[200px] bg-gray-200 rounded-xl mb-4" />
 
-        {/* Title Line */}
-        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-        {/* Subtitle Line */}
-        <div className="h-3 bg-gray-200 rounded w-1/2 mb-4" />
+//         {/* Title Line */}
+//         <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+//         {/* Subtitle Line */}
+//         <div className="h-3 bg-gray-200 rounded w-1/2 mb-4" />
 
-        {/* Price */}
-        <div className="h-5 bg-gray-200 rounded w-1/3 mb-2" />
-        <div className="h-3 bg-gray-300 rounded w-1/4" />
+//         {/* Price */}
+//         <div className="h-5 bg-gray-200 rounded w-1/3 mb-2" />
+//         <div className="h-3 bg-gray-300 rounded w-1/4" />
 
-        {/* Button Placeholder */}
-        <div className="mt-6 h-10 bg-gray-300 rounded-full w-full" />
+//         {/* Button Placeholder */}
+//         <div className="mt-6 h-10 bg-gray-300 rounded-full w-full" />
+//       </div>
+//     ))}
+//   </div>
+// );
+
+if (loading) {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex items-center justify-center text-[#0f1c2e]">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="relative w-24 h-24">
+          {/* Spinner Ring */}
+          <div className="absolute inset-0 rounded-full border-[6px] border-blue-400 border-t-transparent animate-spin"></div>
+          
+          {/* Shark Emoji */}
+          <span className="absolute inset-0 flex items-center justify-center text-4xl animate-bounce">
+            🦈
+          </span>
+        </div>
+
+        {/* Brand Text */}
+        <h2 className="text-2xl font-bold animate-pulse tracking-wide">
+          MockShark is swimming your mockups...
+        </h2>
+        <p className="text-sm text-gray-500 animate-fadeIn">
+          Please wait while we fetch your assets.
+        </p>
       </div>
-    ))}
-  </div>
-);
-
+    </div>
+  );
+}
 
 
   
@@ -146,12 +171,13 @@ if (loading) return (
 
 <div className="mt-4 mb-4">
   <div className="text-[30px] font-extrabold text-gray-900">
-    ${product?.productAttributes?.[0]?.costPrice}
+    ${product?.productAttributes?.find(v => v.size === "Personal")?.costPrice}
   </div>
   <div className="text-[14px] text-gray-400 line-through">
-    Regular Price : ${product?.productAttributes?.[0]?.retailPrice}
+    Regular Price : ${product?.productAttributes?.find(v => v.size === "Personal")?.retailPrice}
   </div>
 </div>
+
 
 
            <div className='p-4'>
