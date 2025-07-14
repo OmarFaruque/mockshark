@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 const Payment = ({
@@ -141,9 +142,11 @@ const BundlePackages = () => {
           })}
         </div>
 
-        <a href="#" className="mt-20 block">
+        
+         <Link href="/Bundle-Deals">
           <span className="text-cyan-400 underline">Click Here</span> to see full details
-        </a>
+         </Link>
+        
       </section>
     </div>
   );

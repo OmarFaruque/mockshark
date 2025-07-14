@@ -428,21 +428,21 @@ const userId = Cookies.get("userId");
           ) : (
             <Link
               href="/login"
-              className="relative px-4 py-2 text-sm font-medium text-white rounded-lg group bg-gradient-to-br from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-200"
+              className="relative px-4 py-2 text-sm font-medium text-cyan-400 rounded-lg group "
             >
               <span className="relative z-10">Sign In</span>
-              <span className="absolute inset-0 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+              <span className="absolute "></span>
             </Link>
           )}
 
           {/* Desktop Sign In */}
-          {!isLoggedIn && (
+          {/* {!isLoggedIn && (
             <Link href="/login">
               <button className="hidden md:block px-4 py-1.5 text-cyan-400 font-medium rounded hover:bg-gray-100 transition">
                 Sign In
               </button>
             </Link>
-          )}
+          )} */}
           {/* Mobile Menu Icon */}
           <div
             className="md:hidden"
@@ -530,7 +530,7 @@ const userId = Cookies.get("userId");
                 <Link href="/signup">
                   <button className="relative px-6 py-2 overflow-hidden font-semibold text-white border border-white rounded-lg group">
                     <span className="relative z-10">Signup</span>
-                    <span className="absolute inset-0 w-0 bg-cyan-500 transition-all duration-500 ease-out group-hover:w-full z-0"></span>
+                    <span className="absolute inset-0 w-0 text-cyan-500 transition-all duration-500 ease-out group-hover:w-full z-0"></span>
                   </button>
                 </Link>
               </>

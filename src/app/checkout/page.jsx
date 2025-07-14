@@ -130,6 +130,12 @@ const handleSubmit = async (e) => {
 
   const isBundle = checkoutProduct && !checkoutProduct.productId && !checkoutProduct.productAttributeId;
 
+
+
+
+
+
+  
   if (isBundle) {
     const payload = {
       userId,
@@ -268,6 +274,48 @@ try {
   toast.error(error.message || "❌ Order failed");
 }
 
+};
+
+
+const updateBillingInfo = async () => {
+
+   const id = Cookies.get('userId');
+  const formDataToSend = new FormData();
+  formDataToSend.append("billingFirstName", formData?.profile?.billingFirstName || '');
+  formDataToSend.append("billingLastName", formData?.profile?.billingLastName || '');
+  formDataToSend.append("billingCompany", formData?.profile?.billingCompany || '');
+  formDataToSend.append("billingEmail", formData?.profile?.billingEmail || '');
+  formDataToSend.append("billingPhone", formData?.profile?.billingPhone || '');
+  formDataToSend.append("billingCountry", formData?.profile?.billingCountry || '');
+  formDataToSend.append("address", formData?.profile?.address || '');
+  formDataToSend.append("apartment", formData?.profile?.apartment || '');
+  formDataToSend.append("city", formData?.profile?.city || '');
+  formDataToSend.append("state", formData?.profile?.state || '');
+  formDataToSend.append("postalCode", formData?.profile?.postalCode || '');
+
+  try {
+    const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formDataToSend,
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to update user");
+    }
+
+    const data = await res.json();
+    setFormData((prev) => ({
+      ...prev,
+      profile: data.user,
+    }));
+
+    toast.success("Information updated successfully!");
+  } catch (error) {
+    toast.error(error.message || "Something went wrong");
+  }
 };
 
 
@@ -454,13 +502,17 @@ useEffect(() => {
     />
   </div>
 
-  <button
-    type="submit"
-    className="bg-[#7CB84D] font-bold text-[#1C2836] py-2 px-16 rounded-lg hover:bg-green-700 w-full sm:w-auto"
-  >
-    SAVE
-  </button>
+
+
 </form>
+
+ <button
+  type="button"
+  onClick={updateBillingInfo}
+  className="bg-[#7CB84D] font-bold text-[#1C2836] py-2 px-16 rounded-lg hover:bg-green-700 w-full sm:w-auto mt-3"
+>
+  SAVE
+</button>
         </div>
 
         {/* Payment Details */}
@@ -533,7 +585,7 @@ useEffect(() => {
       }}
       className="text-red-500 hover:text-red-700"
     >
-      <Trash2 size={18} />
+      {/* <Trash2 size={18} /> */}
     </button>
   </div>
   <div className="text-[#1C2836] font-medium">
