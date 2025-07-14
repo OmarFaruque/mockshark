@@ -7,11 +7,13 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CartContext } from '@/CartContext';
-
-const JustDrop = () => {
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+const JustDrop = ({ title, paragraph }) => {
 
    const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true); // optional: show loader
+   const [userCredits, setUserCredits] = useState(0);
   //  const [cartCount, setCartCount] = useState(0);
   // const products = [
   //   {
@@ -58,24 +60,78 @@ const JustDrop = () => {
   //   },
   // ];
 
-  useEffect(() => {
-    // Step 2: Fetch data when component mounts
+  // useEffect(() => {
+  //   // Step 2: Fetch data when component mounts
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const response = await axios.get('https://mockshark-backend.vercel.app/api/v1/customer/products');
+  //       setProducts(response.data.data);  // set product list in state
+  //       setLoading(false);           // stop loader
+  //     } catch (error) {
+  //       console.error('Product fetch failed:', error);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchProducts();
+  // }, []); // empty dependency array = run once on component mount
+
+ useEffect(() => {
+    // Fetch products
     const fetchProducts = async () => {
       try {
         const response = await axios.get('https://mockshark-backend.vercel.app/api/v1/customer/products');
-        setProducts(response.data.data);  // set product list in state
-        setLoading(false);           // stop loader
+        setProducts(response.data.data);
+        setLoading(false);
       } catch (error) {
         console.error('Product fetch failed:', error);
         setLoading(false);
       }
     };
 
+    // Fetch user credits
+    const fetchUserCredits = async () => {
+      try {
+        const userId = Cookies.get("userId");
+        if (!userId) return;
+
+        const res = await axios.get(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`);
+        setUserCredits(res.data?.data?.credits - res.data?.data?.creditsUsed || 0);
+      } catch (error) {
+        console.error("Failed to fetch user credits", error);
+      }
+    };
+
     fetchProducts();
-  }, []); // empty dependency array = run once on component mount
+    fetchUserCredits();
+  }, []);
 
+  const handleBuyNow = async (productId) => {
+    try {
+      const userId = Cookies.get("userId");
+      if (!userId) {
+        toast.error("Please log in first");
+        return;
+      }
 
+      const res = await axios.get('https://mockshark-backend.vercel.app/api/v1/download-with-credit', {
+        params: { userId, productId }
+      });
 
+      if (res.data.success) {
+        toast.success(res.data.message);
+        // Reduce local credits count immediately for UI update
+        setUserCredits((prev) => prev - 1);
+        // Open download link
+        window.open(res.data?.downloadUrl, "_blank");
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      toast.error("Download failed. Please try again.");
+      console.error(error);
+    }
+  };
 
 
 const { addToCart, cartCount } = useContext(CartContext);
@@ -144,58 +200,54 @@ if (loading) {
 
   return (
     <section className="py-9 bg-white text-center max-w-6xl mx-auto ">
-      <h2 className="text-2xl font-extrabold mb-2 text-[#1C2836]">Fresh Mockups Just Dropped!</h2>
+      <h2 className="text-2xl font-extrabold mb-2 text-[#1C2836]">{title}</h2>
       <p className="text-[#000000] mb-8 max-w-2xl mx-auto">
-        Explore our newest collection of high-quality mockups designed to bring your creative vision
-        to life. Crafted for realism and easy customization.
+       {paragraph}
       </p>
 
     
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6  px-4  ">
-        {products?.map((product) => (
-          
-         <Link href={`/product-details/${product?.id}`} key={product?.id}>
-           <div
-            key={product?.id}
-            className=" rounded-2xl shadow-md transition pb-4 lg:h-[500px]"
-          >
-           <img
-  src={product?.images?.[1]?.image || 'https://via.placeholder.com/262'}
-  alt={product?.title}
-  className="rounded-t-2xl w-full h-full lg:w-[262] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]"
-/>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-4">
+        {products.map((product) => (
+           <Link href={`/product-details/${product?.id}`} key={product?.id}>
+           
+          <div key={product.id} className="rounded-2xl shadow-md pb-4 lg:h-[500px]">
+            <img
+              src={product?.images?.[0]?.image || 'https://via.placeholder.com/262'}
+              alt={product?.title}
+              className="rounded-t-2xl w-full h-full lg:w-[262] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]"
+            />
 
-          <h3 className="text-[18px] lg:text-[15px] font-bold text-gray-800 leading-tight  px-4 h-[40px]">
-  {product?.name}
-</h3>
+            <h3 className="text-[18px] lg:text-[15px] font-bold text-gray-800 leading-tight px-4 h-[40px]">
+              {product.name}
+            </h3>
 
-<div className="mt-4 mb-4">
-  <div className="text-[30px] font-extrabold text-gray-900">
-    ${product?.productAttributes?.find(v => v.size === "Personal")?.costPrice}
-  </div>
-  <div className="text-[14px] text-gray-400 line-through">
-    Regular Price : ${product?.productAttributes?.find(v => v.size === "Personal")?.retailPrice}
-  </div>
-</div>
+            <div className="mt-4 mb-4">
+              <div className="text-[30px] font-extrabold text-gray-900">
+                ${product.productAttributes?.find(v => v.size === "Personal")?.costPrice}
+              </div>
+              <div className="text-[14px] text-gray-400 line-through">
+                Regular Price : ${product.productAttributes?.find(v => v.size === "Personal")?.retailPrice}
+              </div>
+            </div>
 
-
-
-           <div className='p-4'>
-         <button
-  className="py-2 p-4 font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8] w-full rounded-full text-black"
-  onClick={(e) => {
-    e.preventDefault(); // prevent navigation
-    addToCart(product); // call addToCart with current product
-  }} // pass current product object here
->
-  + Add to Cart
-</button>
-
-           </div>
+            <div className="p-4">
+           
+                <button
+                  className="py-2 px-4 font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8] w-full rounded-full text-black"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addToCart(product);
+                  }}
+                >
+                  + Add to Cart
+                </button>
+              
+            </div>
           </div>
           </Link>
         ))}
       </div>
+
       
    
 

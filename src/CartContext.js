@@ -74,7 +74,18 @@ const cartItem = {
   return (
     <CartContext.Provider value={{ cart, setCart, addToCart, cartCount }}>
       {children}
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </CartContext.Provider>
   );
 };

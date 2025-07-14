@@ -8,8 +8,8 @@ import {
 } from 'lucide-react';
 const Footer = () => {
   return (
-    <footer className='bg-slate-900 px-6 py-12 text-white'>
-      <div className='gap-8 grid grid-cols-1 md:grid-cols-4 mx-auto max-w-7xl'>
+    <footer className='bg-slate-900 px-6  text-white'>
+      <div className='gap-8 grid grid-cols-1 md:grid-cols-4 mx-auto max-w-7xl py-12'>
         {/* Logo + Social */}
         <div>
           <div className='flex justify-start items-center '>
@@ -18,8 +18,8 @@ const Footer = () => {
               alt='Mockshark Logo'
               className='w-18 h-18 object-contain'
             />
-            <h2 className=' font-bold text-cyan-400 text-2xl'>
-              Mock <br /> <span className='text-white'>Shark</span>
+            <h2 className=' font-bold text-cyan-400 text-2xl flex flex-col mt-[3px] '>
+              Mock <span className='text-white mt-[-5px]'>Shark</span>
             </h2>
           </div>
        <div className='flex gap-2 text-xl ml-3'>
@@ -44,19 +44,23 @@ const Footer = () => {
           <h4 className='mb-2 font-bold'>Information</h4>
           <ul className='space-y-1 text-sm'>
             <li>
-              <a href='#' className='hover:underline'>
+            <Link href="/">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href='#' className='hover:underline'>
+             
+              
+              <Link href="/aboutus">
                 About Us
-              </a>
+              </Link>
             </li>
             <li>
-              <a href='#' className='hover:underline'>
+             
+               
+              <Link href="/Bundle-Deals">
                 Pricing
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -87,13 +91,18 @@ const Footer = () => {
           <h4 className='mb-2 font-bold'>Support</h4>
           <ul className='space-y-1 text-sm'>
             <li>
-              
+              <Link href='/Help-Center'>
                 Help Center
+              </Link>
+              
               
             </li>
             <li>
               
+                
+                <Link href="/faq">
                 FAQs
+              </Link>
               
             </li>
             <li>
@@ -109,8 +118,8 @@ const Footer = () => {
       </div>
 
       {/* Footer bottom */}
-      <div className='mt-10 pt-4 border-slate-700 border-t text-gray-400 text-sm text-center'>
-        © 2025 MockShark.com. All rights reserved.
+      <div className='mt-10 flex justify-center items-center  border-slate-700 border-t text-gray-400 text-sm text-center'>
+       <h1 className='p-6'> © 2025 MockShark.com. All rights reserved.</h1>
       </div>
     </footer>
   )

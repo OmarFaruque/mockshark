@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import { CartProvider } from "@/CartContext";
  // 👈 import the Providers wrapper
 
 const geistSans = Geist({
@@ -24,7 +25,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers> {/* 👈 wrap with Providers */}
+       <CartProvider>
+         {children}
+        </CartProvider> {/* 👈 wrap with Providers */}
        
       </body>
     </html>

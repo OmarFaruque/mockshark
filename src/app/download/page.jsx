@@ -7,12 +7,13 @@ import { Navbar } from "../components/Navbar";
 import Footer from "../components/Footer";
 import { jsPDF } from "jspdf";
 
+
 export default function DownloadPage() {
   const [downloads, setDownloads] = useState([]);
   const [licenses, setLicenses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 const [loading, setLoading] = useState(true);
-  const handleLicenseDownload = (productName) => {
+   const handleLicenseDownload = (productName) => {
   const license = licenses.find(
     (item) => item.productName === productName
   );
@@ -31,7 +32,13 @@ const [loading, setLoading] = useState(true);
   doc.save(`MockShark-License-${productName}.pdf`);
 };
 
-  useEffect(() => {
+
+
+
+
+
+
+ useEffect(() => {
   const userId = Cookies.get("userId");
   if (!userId) return;
 
@@ -68,6 +75,8 @@ const [loading, setLoading] = useState(true);
 
   fetchData();
 }, []);
+
+
 
 
   const filteredDownloads = downloads.filter((item) =>
@@ -117,24 +126,25 @@ const [loading, setLoading] = useState(true);
     );
   }
   return (
-    <div className="min-h-screen bg-white text-[#0f1c2e]">
+    <div className="h-screen bg-white text-[#0f1c2e] ">
       <Navbar />
 
       {/* Search Bar */}
-      <div className="bg-[#192533] px-4 py-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search by Product Name..."
-              className="w-full px-4 py-2 pr-12 rounded-full border border-gray-400 text-white placeholder-white bg-[#192533] focus:outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" />
-          </div>
-        </div>
-      </div>
+     <div className="px-4 py-6 bg-white/10 backdrop-blur-md rounded-md">
+  <div className="max-w-6xl mx-auto">
+    <div className="relative">
+      <input
+        type="text"
+        placeholder="Search by Product Name..."
+        className="w-full px-4 py-2 pr-12 rounded-full border border-gray-400 text-black placeholder-black bg-white/30 backdrop-blur-md focus:outline-none"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
+    </div>
+  </div>
+</div>
+
 
       {/* Product Download Table */}
       <div className="bg-gray-100 px-4 py-3 font-bold text-xl text-[#0f1c2e]">
@@ -214,7 +224,9 @@ const [loading, setLoading] = useState(true);
         ))}
       </div> */}
 
-      <Footer />
+      <div className="mt-20">
+        <Footer />
+      </div>
     </div>
   );
 }

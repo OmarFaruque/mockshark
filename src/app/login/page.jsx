@@ -202,12 +202,17 @@ const handleLogin = async (e) => {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
+               
                 <div className="w-full border-t border-gray-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Or continue with
-                </span>
+              
+    <Link href="/forgot-password">
+      <span className="text-blue-600 hover:underline transition duration-200 px-2 bg-white">
+        Forgot your password?
+      </span>
+    </Link>
+ 
               </div>
             </div>
 

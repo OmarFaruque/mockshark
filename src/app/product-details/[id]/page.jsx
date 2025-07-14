@@ -57,9 +57,64 @@ const [selectedVariant, setSelectedVariant] = useState(null);
 
 const router = useRouter();
 
+
+const [creditsLeft, setCreditsLeft] = useState(0);
+const [userHasBundle, setUserHasBundle] = useState(false);
+const [userCredits, setUserCredits] = useState(0);
+
+// useEffect(() => {
+//   const fetchCredits = async () => {
+//     try {
+//       const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/users/${userId}/credits`);
+//       const data = await res.json();
+
+//       if (data.success) {
+//         const remaining = data.data.remaining; // ✅ your structure
+//         setCreditsLeft(remaining);
+//         setUserHasBundle(remaining > 0);
+//       }
+//     } catch (err) {
+//       console.error("Failed to fetch credits", err);
+//     }
+//   };
+
+//   if (userId) {
+//     fetchCredits();
+//   }
+// }, [userId]);
+
+ const handleBuyNow = async (productId) => {
+    try {
+      const userId = Cookies.get("userId");
+      if (!userId) {
+        toast.error("Please log in first");
+        return;
+      }
+
+      const res = await axios.get('https://mockshark-backend.vercel.app/api/v1/download-with-credit', {
+        params: { userId, productId }
+      });
+
+      if (res.data.success) {
+        toast.success(res.data.message);
+        // Reduce local credits count immediately for UI update
+        setUserCredits((prev) => prev - 1);
+        // Open download link
+        window.open(res.data?.downloadUrl, "_blank");
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      toast.error("Download failed. Please try again.");
+      console.error(error);
+    }
+  };
+
+  
+
 const handleCheckout = () => {
  if (!selectedVariant || !selectedVariant.id) {
-  toast.error("Invalid variant selected");
+  toast.error("Please Select a Variant ");
   return;
 }
 
@@ -175,6 +230,18 @@ const handleDelete = async (reviewId) => {
       }
     };
     if (id) fetchProduct();
+     const fetchUserCredits = async () => {
+          try {
+            const userId = Cookies.get("userId");
+            if (!userId) return;
+    
+            const res = await axios.get(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`);
+            setUserCredits(res.data?.data?.credits - res.data?.data?.creditsUsed || 0);
+          } catch (error) {
+            console.error("Failed to fetch user credits", error);
+          }
+        };
+    fetchUserCredits();
   }, [id]);
 
  useEffect(() => {
@@ -485,11 +552,13 @@ const handleShowLess = () => {
     </label>
   ))}
 </div>
+
     <p className="text-[#1C2836] text-xs">
       For personal & brand usage.{' '}
-      <a href="#" className="text-sky-500 underline">
-        See License
-      </a>
+      
+      <Link href="/license-types" className="text-sky-500 underline"> See License</Link>
+       
+     
     </p>
     <button className=" h-[40px] border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold"
     onClick={handleCheckout}
@@ -499,6 +568,12 @@ const handleShowLess = () => {
    <button onClick={handleCheckout} className="bg-[#1C2836] h-[40px] rounded-full w-full font-semibold text-white">
   CHECKOUT
 </button>
+
+{userCredits > 0 && (
+  <button   onClick={() => handleBuyNow(product.id)} className="h-[40px] border  bg-green-400 border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold">
+    Download using credits
+  </button>
+)}
 
     <div className=" rounded text-[#939393] text-center">
       <p className='mt-3'>

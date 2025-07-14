@@ -8,7 +8,7 @@ import { Trash2 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
-
+import Swal from 'sweetalert2';
 const Page = () => {
  const { cart, setCart } = useContext(CartContext);
 
@@ -23,6 +23,7 @@ useEffect(() => {
 
   const [selectedVariants, setSelectedVariants] = useState({});
   const [checkoutProduct, setCheckoutProduct] = useState(null);
+const [paymentMethod, setPaymentMethod] = useState("digital");
 
   const [formData, setFormData] = useState({
     profile: {
@@ -94,12 +95,15 @@ useEffect(() => {
     setSelectedVariants((prev) => ({ ...prev, [itemId]: size }));
   };
 
-  const handleRemove = (id) => {
-    const updatedCart = cart.filter((item) => item.id !== id);
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    toast.success("✅ Product removed from cart!");
-  };
+ const handleRemove = (id) => {
+  const updatedCart = cart.filter((item) => item.id !== id);
+  setCart(updatedCart);
+  localStorage.setItem("cart", JSON.stringify(updatedCart));
+  toast.success("✅ Product Removed From Cart!", {
+    autoClose: 3000,
+    closeOnClick: true,
+  });
+};
 
   // const subtotal = cart.reduce((acc, item) => {
   //   const selectedSize = selectedVariants[item.id] || item.productAttributes?.[0]?.size;
@@ -112,23 +116,72 @@ const checkoutProductPrice = checkoutProduct?.productAttributes?.[0]?.retailPric
 let subtotal = cart.reduce((acc, item) => {
   const selectedSize = selectedVariants[item.id] || item.productAttributes?.[0]?.size;
   const selectedVariant = item.productAttributes.find(v => v.size === selectedSize);
-  const price = selectedVariant?.retailPrice ?? 0;
+  const price = selectedVariant?.costPrice ?? 0;
   return acc + price * item.quantity;
 }, 0);
 
 if (checkoutProduct) {
   subtotal += checkoutProduct.price * checkoutProduct.quantity;
 }
+// const isBundle = checkoutProduct && !checkoutProduct.productId && !checkoutProduct.productAttributeId;
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
+  const isBundle = checkoutProduct && !checkoutProduct.productId && !checkoutProduct.productAttributeId;
+
+  if (isBundle) {
+    const payload = {
+      userId,
+      bundleId: "bundle-" + checkoutProduct.variant.split(" ")[0],
+      credits: parseInt(checkoutProduct.variant),
+      price: checkoutProduct.price,
+      invoiceNumber: "INV-" + Date.now(),
+      billingFirstName: formData.profile.billingFirstName,
+      billingLastName: formData.profile.billingLastName,
+      billingCompany: formData.profile.billingCompany,
+      billingCountry: formData.profile.billingCountry,
+      billingEmail: formData.profile.billingEmail,
+      billingPhone: formData.profile.billingPhone,
+      address: formData.profile.address,
+      apartment: formData.profile.apartment,
+      city: formData.profile.city,
+      state: formData.profile.state,
+      postalCode: formData.profile.postalCode,
+      subtotalCost: checkoutProduct.price,
+
+    };
+
+    try {
+      const res = await fetch("https://mockshark-backend.vercel.app/api/v1/bundles/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Bundle order failed");
+
+      toast.success("✅ Bundle order placed!");
+      localStorage.removeItem("checkoutItem");
+      setCheckoutProduct(null);
+      return; 
+    } catch (err) {
+      toast.error(" Failed to place bundle order");
+      console.error(err);
+      return;
+    }
+  }
+
+  
   const orderItems = [];
 
-  // Handle cart items
+  // Add cart items
   cart.forEach((item) => {
     const selectedSize = selectedVariants[item.id] || item.productAttributes?.[0]?.size;
-    const selectedVariant = item.productAttributes?.find(v => v.size === selectedSize);
+    const selectedVariant = item.productAttributes?.find((v) => v.size === selectedSize);
 
     orderItems.push({
       productId: item.id,
@@ -141,12 +194,12 @@ if (checkoutProduct) {
       quantity: item.quantity,
       totalCostPrice: selectedVariant?.costPrice * item.quantity,
       totalPrice: selectedVariant?.retailPrice * item.quantity,
-       licenseType:"personal"
+      licenseType: "personal",
     });
   });
 
-  // Handle single checkoutProduct
-  if (checkoutProduct) {
+  // Add direct checkout product (if it's not a bundle)
+  if (checkoutProduct && !isBundle) {
     orderItems.push({
       productId: checkoutProduct.productId,
       productAttributeId: checkoutProduct.productAttributeId,
@@ -158,7 +211,7 @@ if (checkoutProduct) {
       quantity: checkoutProduct.quantity,
       totalCostPrice: checkoutProduct.price * checkoutProduct.quantity,
       totalPrice: checkoutProduct.price * checkoutProduct.quantity,
-       licenseType: checkoutProduct.variant
+      licenseType: checkoutProduct.variant,
     });
   }
 
@@ -178,30 +231,45 @@ if (checkoutProduct) {
     orderItems,
   };
 
-  try {
-    const res = await fetch("https://mockshark-backend.vercel.app/api/v1/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+try {
+  const res = await fetch("https://mockshark-backend.vercel.app/api/v1/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
 
-    if (!res.ok) throw new Error("Order submission failed");
+  const result = await res.json();
+  console.log("✅ Order API result:", result);
 
-    toast.success("✅ Order placed successfully!");
-
-    // Cleanup
-    setCart([]);
-    localStorage.removeItem("cart");
-    localStorage.removeItem("checkoutItem");
-    setCheckoutProduct(null);
-  } catch (error) {
-    console.error(error);
-    toast.error("❌ Failed to place order");
+  if (!res.ok) {
+    toast.error(result.message || "Order submission failed");
+    return;
   }
+
+  Swal.fire({
+  toast: true,
+  position: 'top-end',
+  icon: 'success',
+  title: '✅ Order placed successfully!',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+});
+
+  setCart([]);
+  localStorage.removeItem("cart");
+  localStorage.removeItem("checkoutItem");
+  setCheckoutProduct(null);
+} catch (error) {
+  console.error("❌ Order error:", error);
+  toast.error(error.message || "❌ Order failed");
+}
+
 };
+
 
 
 useEffect(() => {
@@ -211,6 +279,7 @@ useEffect(() => {
     setCheckoutProduct(parsed);
   }
 }, []);
+
 
 
 
@@ -236,6 +305,7 @@ useEffect(() => {
         })
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+      placeholder="FirstName"
     />
     <input
       type="text"
@@ -246,7 +316,8 @@ useEffect(() => {
           profile: { ...formData.profile, billingLastName: e.target.value },
         })
       }
-      className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+      className="border border-[#371818] px-4 py-2 rounded w-full"
+       placeholder="LastName"
     />
   </div>
 
@@ -260,6 +331,7 @@ useEffect(() => {
       })
     }
     className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+     placeholder="CompanyName"
   />
 
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -273,6 +345,7 @@ useEffect(() => {
         })
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+       placeholder="Email"
     />
     <input
       type="tel"
@@ -284,6 +357,7 @@ useEffect(() => {
         })
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+       placeholder="Phone"
     />
   </div>
 
@@ -297,6 +371,7 @@ useEffect(() => {
       })
     }
     className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+     placeholder="Country"
   />
 
   <input
@@ -309,6 +384,7 @@ useEffect(() => {
       })
     }
     className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+     placeholder="address"
   />
 
   <input
@@ -321,6 +397,7 @@ useEffect(() => {
       })
     }
     className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+     placeholder="Apartment"
   />
 
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -334,6 +411,7 @@ useEffect(() => {
         })
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+       placeholder="City"
     />
     <input
       type="text"
@@ -345,6 +423,7 @@ useEffect(() => {
         })
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+       placeholder="PostalCode"
     />
   </div>
 
@@ -359,6 +438,7 @@ useEffect(() => {
         })
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+       placeholder="State"
     />
     <input
       type="text"
@@ -370,6 +450,7 @@ useEffect(() => {
         })
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+       placeholder="PostalCode"
     />
   </div>
 
@@ -425,12 +506,12 @@ useEffect(() => {
 ))}
 
                       </select> */}
-                      <button
+                      {/* <button
                         onClick={() => handleRemove(item.id)}
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash2 size={18} />
-                      </button>
+                      </button> */}
                     </div>
                     <span className="text-[#1C2836] font-medium">
                       ${itemTotal.toFixed(2)}
@@ -495,7 +576,7 @@ useEffect(() => {
         </div>
       </div>
       <Footer />
-      <ToastContainer />
+     
     </div>
   );
 };
