@@ -101,6 +101,7 @@ const [userCredits, setUserCredits] = useState(0);
         setUserCredits((prev) => prev - 1);
         // Open download link
         window.open(res.data?.downloadUrl, "_blank");
+        window.location.reload();
       } else {
         toast.error(res.data.message);
       }
@@ -420,7 +421,7 @@ const handleShowLess = () => {
   setShowAll(false);
 };
 
-
+const attributeOrder = ['Personal', 'Commercial', 'Extended Commercial'];
 
   return (
     <div>
@@ -526,31 +527,33 @@ const handleShowLess = () => {
 
 
   {/* Product Details */}
-  <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0 mr-4 h-[560px]">
+  <div className="space-y-4 p-4 border border-gray-300 rounded-xl mt-20 lg:mt-0 mr-4 max-h-[620px] ">
     <p className="text-[#C0C0C0] text-sm">⭐⭐⭐⭐⭐ {product?.review?.length} Reviews</p>
     <h2 className="font-bold text-[#1C2836] text-xl">
       {name}
     </h2>
   <div className="space-y-4 text-[#1C2836]">
-  {productAttributes.map((attr, idx) => (
-    <label
-      key={idx}
-      className="flex justify-between items-center px-2 py-2 rounded cursor-pointer"
-    >
-      <span>
-        <input
-  type="radio"
-  name="license"
-  className="mr-2"
-  value={attr.size}
-  onChange={() => setSelectedVariant(attr)}
-/>
-
-        {attr.size}
-      </span>
-      <span className="font-bold">${attr.costPrice}</span>
-    </label>
-  ))}
+  {[...productAttributes]
+    .sort((a, b) => attributeOrder.indexOf(a.size) - attributeOrder.indexOf(b.size))
+    .map((attr, idx) => (
+      <label
+        key={idx}
+        className="flex justify-between items-center px-2 py-2 rounded cursor-pointer"
+      >
+        <span>
+          <input
+            type="radio"
+            name="license"
+            className="mr-2"
+            value={attr.size}
+            onChange={() => setSelectedVariant(attr)}
+          />
+          {attr.size}
+        </span>
+        <span className="font-bold">${attr.costPrice}</span>
+      </label>
+    ))
+  }
 </div>
 
     <p className="text-[#1C2836] text-xs">
@@ -580,9 +583,11 @@ const handleShowLess = () => {
         Get our bundle pack and Unlock <br />
         <strong>Exclusive Discounts!</strong>
       </p>
+      <Link href="/Bundle-Deals"> 
       <button className="bg-[#46D8F9] mt-3 h-[40px]  rounded-full w-full font-semibold text-[#1C2836]">
         GET NOW
       </button>
+      </Link>
     </div>
   </div>
 </section>

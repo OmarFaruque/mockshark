@@ -42,14 +42,14 @@ const { addToCart, cartCount } = useContext(CartContext);
 
           return (
             <Link href={`/product-details/${product.id}`} key={product.id}>
-              <div className="rounded-2xl shadow-md transition pb-4 hover:shadow-lg">
+              <div className="rounded-2xl shadow-md transition pb-4 hover:shadow-lg lg:h-[500px]">
                 <img
                   src={product.images?.[0]?.image || '/placeholder.png'}
                   alt={product.name}
                   className="rounded-t-2xl w-full h-full lg:w-[262px] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]"
                 />
 
-                <h3 className="text-[20px] font-semibold text-gray-800 leading-tight line-clamp-2 px-4">
+                <h3 className="text-[18px] lg:text-[15px] font-bold text-gray-800 leading-tight px-4 h-[40px]">
                   {product.name}
                 </h3>
 
