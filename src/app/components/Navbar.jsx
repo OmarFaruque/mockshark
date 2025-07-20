@@ -57,7 +57,7 @@ const userId = Cookies.get("userId");
     const fetchCategories = async () => {
       try {
         const res = await fetch(
-          "https://mockshark-backend.vercel.app/api/v1/customer/categories"
+          "http://localhost:4000/api/v1/customer/categories"
         );
         const json = await res.json();
 
@@ -124,7 +124,7 @@ const userId = Cookies.get("userId");
   const fetchCredits = async () => {
     const id = Cookies.get("userId"); // adjust if your cookie name is different
     const res = await fetch(
-      `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${id}`,
+      `http://localhost:4000/api/v1/customer/auth/users/${id}`,
       {}
     );
 

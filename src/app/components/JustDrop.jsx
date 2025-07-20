@@ -64,7 +64,7 @@ const JustDrop = ({ title, paragraph }) => {
   //   // Step 2: Fetch data when component mounts
   //   const fetchProducts = async () => {
   //     try {
-  //       const response = await axios.get('https://mockshark-backend.vercel.app/api/v1/customer/products');
+  //       const response = await axios.get('http://localhost:4000/api/v1/customer/products');
   //       setProducts(response.data.data);  // set product list in state
   //       setLoading(false);           // stop loader
   //     } catch (error) {
@@ -80,7 +80,7 @@ const JustDrop = ({ title, paragraph }) => {
     // Fetch products
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('https://mockshark-backend.vercel.app/api/v1/customer/products');
+        const response = await axios.get('http://localhost:4000/api/v1/customer/products');
         setProducts(response.data.data);
         setLoading(false);
       } catch (error) {
@@ -95,7 +95,7 @@ const JustDrop = ({ title, paragraph }) => {
         const userId = Cookies.get("userId");
         if (!userId) return;
 
-        const res = await axios.get(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`);
+        const res = await axios.get(`http://localhost:4000/api/v1/customer/auth/users/${userId}`);
         setUserCredits(res.data?.data?.credits - res.data?.data?.creditsUsed || 0);
       } catch (error) {
         console.error("Failed to fetch user credits", error);
@@ -114,7 +114,7 @@ const JustDrop = ({ title, paragraph }) => {
         return;
       }
 
-      const res = await axios.get('https://mockshark-backend.vercel.app/api/v1/download-with-credit', {
+      const res = await axios.get('http://localhost:4000/api/v1/download-with-credit', {
         params: { userId, productId }
       });
 

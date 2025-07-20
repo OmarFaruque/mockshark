@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { Navbar } from "../components/Navbar";
 import Footer from "../components/Footer";
 import { CartContext } from "@/CartContext";
@@ -9,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import Swal from 'sweetalert2';
+import useUser from "../hooks/user";
 const Page = () => {
  const { cart, setCart } = useContext(CartContext);
 
@@ -24,6 +25,10 @@ useEffect(() => {
   const [selectedVariants, setSelectedVariants] = useState({});
   const [checkoutProduct, setCheckoutProduct] = useState(null);
 const [paymentMethod, setPaymentMethod] = useState("digital");
+const user = useUser();
+const hasInitialized = useRef(false);
+
+
 
   const [formData, setFormData] = useState({
     profile: {
@@ -64,7 +69,7 @@ const [paymentMethod, setPaymentMethod] = useState("digital");
     const fetchUser = async () => {
       try {
         const res = await fetch(
-          `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`,
+          `http://localhost:4000/api/v1/customer/auth/users/${userId}`,
           {
             method: "GET",
             headers: {
@@ -159,7 +164,7 @@ const handleSubmit = async (e) => {
     };
 
     try {
-      const res = await fetch("https://mockshark-backend.vercel.app/api/v1/bundles/order", {
+      const res = await fetch("http://localhost:4000/api/v1/bundles/order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -238,7 +243,7 @@ const handleSubmit = async (e) => {
   };
 
 try {
-  const res = await fetch("https://mockshark-backend.vercel.app/api/v1/orders", {
+  const res = await fetch("http://localhost:4000/api/v1/orders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -294,7 +299,7 @@ const updateBillingInfo = async () => {
   formDataToSend.append("postalCode", formData?.profile?.postalCode || '');
 
   try {
-    const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${id}`, {
+    const res = await fetch(`http://localhost:4000/api/v1/customer/auth/users/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -328,6 +333,24 @@ useEffect(() => {
   }
 }, []);
 
+useEffect(() => {
+  if (
+    user &&
+    formData.profile.billingFirstName === "" &&
+    formData.profile.billingEmail === ""
+  ) {
+    setFormData((prev) => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        billingFirstName: user.name ?? "",
+        billingLastName: user.fullname ?? "",
+        billingEmail: user.email ?? "",
+      },
+    }));
+  }
+}, [user, formData.profile.billingFirstName, formData.profile.billingEmail]);
+
 
 
 
@@ -341,170 +364,154 @@ useEffect(() => {
             Billing Information
           </h2>
           {/* Form omitted for brevity */}
-          <form className="space-y-4 w-full text-black" onSubmit={handleSubmit}>
+       <form className="space-y-4 w-full text-black" onSubmit={handleSubmit}>
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <input
       type="text"
-      value={formData.profile.billingFirstName}
+      value={formData.profile?.billingFirstName ?? ''}
       onChange={(e) =>
-        setFormData({
-          ...formData,
-          profile: { ...formData.profile, billingFirstName: e.target.value },
-        })
+        setFormData((prev) => ({
+          ...prev,
+          profile: { ...prev.profile, billingFirstName: e.target.value },
+        }))
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-      placeholder="FirstName"
+      placeholder="First Name"
     />
     <input
       type="text"
-      value={formData.profile.billingLastName}
+      value={formData.profile?.billingLastName ?? ''}
       onChange={(e) =>
-        setFormData({
-          ...formData,
-          profile: { ...formData.profile, billingLastName: e.target.value },
-        })
+        setFormData((prev) => ({
+          ...prev,
+          profile: { ...prev.profile, billingLastName: e.target.value },
+        }))
       }
-      className="border border-[#371818] px-4 py-2 rounded w-full"
-       placeholder="LastName"
+      className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+      placeholder="Last Name"
     />
   </div>
 
   <input
     type="text"
-    value={formData.profile.billingCompany}
+    value={formData.profile?.billingCompany ?? ''}
     onChange={(e) =>
-      setFormData({
-        ...formData,
-        profile: { ...formData.profile, billingCompany: e.target.value },
-      })
+      setFormData((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, billingCompany: e.target.value },
+      }))
     }
     className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-     placeholder="CompanyName"
+    placeholder="Company Name"
   />
 
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <input
       type="email"
-      value={formData.profile.billingEmail}
+      value={formData.profile?.billingEmail ?? ''}
       onChange={(e) =>
-        setFormData({
-          ...formData,
-          profile: { ...formData.profile, billingEmail: e.target.value },
-        })
+        setFormData((prev) => ({
+          ...prev,
+          profile: { ...prev.profile, billingEmail: e.target.value },
+        }))
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-       placeholder="Email"
+      placeholder="Email"
     />
     <input
       type="tel"
-      value={formData.profile.billingPhone}
+      value={formData.profile?.billingPhone ?? ''}
       onChange={(e) =>
-        setFormData({
-          ...formData,
-          profile: { ...formData.profile, billingPhone: e.target.value },
-        })
+        setFormData((prev) => ({
+          ...prev,
+          profile: { ...prev.profile, billingPhone: e.target.value },
+        }))
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-       placeholder="Phone"
+      placeholder="Phone"
     />
   </div>
 
   <input
     type="text"
-    value={formData.profile.billingCountry}
+    value={formData.profile?.billingCountry ?? ''}
     onChange={(e) =>
-      setFormData({
-        ...formData,
-        profile: { ...formData.profile, billingCountry: e.target.value },
-      })
+      setFormData((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, billingCountry: e.target.value },
+      }))
     }
     className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-     placeholder="Country"
+    placeholder="Country"
   />
 
   <input
     type="text"
-    value={formData.profile.address}
+    value={formData.profile?.address ?? ''}
     onChange={(e) =>
-      setFormData({
-        ...formData,
-        profile: { ...formData.profile, address: e.target.value },
-      })
+      setFormData((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, address: e.target.value },
+      }))
     }
     className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-     placeholder="address"
+    placeholder="Address"
   />
 
   <input
     type="text"
-    value={formData.profile.apartment}
+    value={formData.profile?.apartment ?? ''}
     onChange={(e) =>
-      setFormData({
-        ...formData,
-        profile: { ...formData.profile, apartment: e.target.value },
-      })
+      setFormData((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, apartment: e.target.value },
+      }))
     }
     className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-     placeholder="Apartment"
+    placeholder="Apartment"
   />
 
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <input
       type="text"
-      value={formData.profile.city}
+      value={formData.profile?.city ?? ''}
       onChange={(e) =>
-        setFormData({
-          ...formData,
-          profile: { ...formData.profile, city: e.target.value },
-        })
+        setFormData((prev) => ({
+          ...prev,
+          profile: { ...prev.profile, city: e.target.value },
+        }))
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-       placeholder="City"
+      placeholder="City"
     />
     <input
       type="text"
-      value={formData.profile.postalCode}
+      value={formData.profile?.postalCode ?? ''}
       onChange={(e) =>
-        setFormData({
-          ...formData,
-          profile: { ...formData.profile, postalCode: e.target.value },
-        })
+        setFormData((prev) => ({
+          ...prev,
+          profile: { ...prev.profile, postalCode: e.target.value },
+        }))
       }
       className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-       placeholder="PostalCode"
+      placeholder="Postal Code"
     />
   </div>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <input
-      type="text"
-      value={formData.profile.state}
-      onChange={(e) =>
-        setFormData({
-          ...formData,
-          profile: { ...formData.profile, state: e.target.value },
-        })
-      }
-      className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-       placeholder="State"
-    />
-    <input
-      type="text"
-      value={formData.profile.postalCode}
-      onChange={(e) =>
-        setFormData({
-          ...formData,
-          profile: { ...formData.profile, postalCode: e.target.value },
-        })
-      }
-      className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-       placeholder="PostalCode"
-    />
-  </div>
-
-
-
+  <input
+    type="text"
+    value={formData.profile?.state ?? ''}
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, state: e.target.value },
+      }))
+    }
+    className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+    placeholder="State"
+  />
 </form>
+
 
  <button
   type="button"

@@ -1,4 +1,5 @@
 'use client';
+import DOMPurify from 'dompurify';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
@@ -65,7 +66,7 @@ const [userCredits, setUserCredits] = useState(0);
 // useEffect(() => {
 //   const fetchCredits = async () => {
 //     try {
-//       const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/users/${userId}/credits`);
+//       const res = await fetch(`http://localhost:4000/api/v1/users/${userId}/credits`);
 //       const data = await res.json();
 
 //       if (data.success) {
@@ -91,7 +92,7 @@ const [userCredits, setUserCredits] = useState(0);
         return;
       }
 
-      const res = await axios.get('https://mockshark-backend.vercel.app/api/v1/download-with-credit', {
+      const res = await axios.get('http://localhost:4000/api/v1/download-with-credit', {
         params: { userId, productId }
       });
 
@@ -158,7 +159,7 @@ const handleSubmit = async () => {
 
   try {
     const res = await axios.post(
-      "https://mockshark-backend.vercel.app/api/v1/reviews",
+      "http://localhost:4000/api/v1/reviews",
       {
         productId,
         userId,
@@ -200,7 +201,7 @@ const handleDelete = async (reviewId) => {
   
 
   try {
-    await axios.delete(`https://mockshark-backend.vercel.app/api/v1/reviews/${reviewId}`, {
+    await axios.delete(`http://localhost:4000/api/v1/reviews/${reviewId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -221,7 +222,7 @@ const handleDelete = async (reviewId) => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/customer/products/${id}`);
+        const res = await fetch(`http://localhost:4000/api/v1/customer/products/${id}`);
         const data = await res.json();
         setProduct(data?.data);
       } catch (error) {
@@ -236,7 +237,7 @@ const handleDelete = async (reviewId) => {
             const userId = Cookies.get("userId");
             if (!userId) return;
     
-            const res = await axios.get(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`);
+            const res = await axios.get(`http://localhost:4000/api/v1/customer/auth/users/${userId}`);
             setUserCredits(res.data?.data?.credits - res.data?.data?.creditsUsed || 0);
           } catch (error) {
             console.error("Failed to fetch user credits", error);
@@ -595,18 +596,22 @@ const attributeOrder = ['Personal', 'Commercial', 'Extended Commercial'];
 
 
       {/* Description Section */}
-      <section className='mx-auto lg:p-2 p-4 max-w-[1130px] bg-white lg:mt-11 '>
-        <h3 className='mb-2 font-bold text-[#1C2836] text-2xl'>
-          Description
-        </h3>
-        <p className='mb-4 text-[#939393]'>
-          {shortDescription}
-        </p>
-        <h4 className='mb-2 font-bold text-[#1C2836] text-2xl'>
-          Which License is Right for You?
-        </h4>
-       { longDescription }
-      </section>
+     <section className='mx-auto lg:p-2 p-4 max-w-[1130px] bg-white lg:mt-11 '>
+  <h3 className='mb-2 font-bold text-[#1C2836] text-2xl'>
+    Description
+  </h3>
+  <p className='mb-4 text-[#939393]'>
+    {shortDescription}
+  </p>
+  <h4 className='mb-2 font-bold text-[#1C2836] text-2xl'>
+    Which License is Right for You?
+  </h4>
+
+  <div
+    className="text-[#939393] prose max-w-none"
+    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(longDescription) }}
+  />
+</section>
  <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-md shadow-cyan-200 p-6 space-y-6 border border-gray-100">
 
       <h3 className="text-2xl font-bold text-gray-800 text-center">Write a Review</h3>

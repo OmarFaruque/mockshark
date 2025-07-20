@@ -73,7 +73,7 @@ const token =  Cookies.get('token');
    
 
     try {
-      const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`, {
+      const res = await fetch(`http://localhost:4000/api/v1/customer/auth/users/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ const handleSubmit = async (section, e) => {
   }
 
   try {
-    const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${id}`, {
+    const res = await fetch(`http://localhost:4000/api/v1/customer/auth/users/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,

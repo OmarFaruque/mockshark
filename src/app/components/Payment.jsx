@@ -42,7 +42,7 @@ const BundlePackages = () => {
   useEffect(() => {
     const fetchBundles = async () => {
       try {
-        const res = await fetch('https://mockshark-backend.vercel.app/api/v1/bundles');
+        const res = await fetch('http://localhost:4000/api/v1/bundles');
         const data = await res.json();
         if (data.success) {
           setBundles(data.data);
@@ -97,6 +97,11 @@ const BundlePackages = () => {
         return { color: 'bg-gray-200' };
     }
   };
+const desiredOrder = ["Essential Pack", "Designer Pack", "Agency Pack"];
+
+const sortedBundles = [...bundles].sort((a, b) => {
+  return desiredOrder.indexOf(a.title) - desiredOrder.indexOf(b.title);
+});
 
   return (
     <div className="bg-white">
@@ -109,7 +114,7 @@ const BundlePackages = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-10">
-          {bundles.map((bundle) => {
+          {sortedBundles.map((bundle) => {
             const {
               title,
               price,
@@ -143,11 +148,14 @@ const BundlePackages = () => {
         </div>
 
         
-         <Link href="/Bundle-Deals" className='mt-3'>
+        <div className='mt-16 text-center'>
+           <Link href="/Bundle-Deals" >
           <span className="text-cyan-400 underline">Click Here</span> to see full details
          </Link>
+        </div>
         
       </section>
+      
     </div>
   );
 };
