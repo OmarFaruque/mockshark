@@ -42,7 +42,7 @@ const BundlePackages = () => {
   useEffect(() => {
     const fetchBundles = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/v1/bundles');
+        const res = await fetch('https://mockshark-backend.vercel.app/bundles');
         const data = await res.json();
         if (data.success) {
           setBundles(data.data);

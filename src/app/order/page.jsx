@@ -25,8 +25,8 @@ useEffect(() => {
 
     try {
       const [normalRes, bundleRes] = await Promise.all([
-        fetch(`http://localhost:4000/api/v1/orders/user/${userId}`),
-        fetch(`http://localhost:4000/api/v1/bundle-orders/${userId}`),
+        fetch(`https://mockshark-backend.vercel.app/orders/user/${userId}`),
+        fetch(`https://mockshark-backend.vercel.app/bundle-orders/${userId}`),
       ]);
 
       const normalData = await normalRes.json();

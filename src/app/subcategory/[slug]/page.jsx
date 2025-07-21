@@ -18,7 +18,7 @@ export default function SubcategoryPage() {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:4000/api/v1/customer/subcategory/${slug}/products`
+          `https://mockshark-backend.vercel.app/customer/subcategory/${slug}/products`
         );
         const json = await res.json();
         if (json.success && json.data.length > 0) {

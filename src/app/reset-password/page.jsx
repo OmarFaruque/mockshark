@@ -11,7 +11,7 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const res = await fetch('http://localhost:4000/api/v1/reset-password', {
+    const res = await fetch('https://mockshark-backend.vercel.app/reset-password', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, newPassword }),
