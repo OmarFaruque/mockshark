@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
-import { useState ,useRef ,useEffect } from 'react';
+import { useState ,useRef ,useEffect, useContext } from 'react';
 import { Star,Trash2  } from 'lucide-react';
 import Image from 'next/image'
 import { Navbar } from '@/app/components/Navbar'
@@ -19,6 +19,7 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CartContext } from '@/CartContext';
 
 
 const NextArrow = ({ onClick }) => (
@@ -251,7 +252,7 @@ const handleDelete = async (reviewId) => {
 }, [product]);
 
 
-
+const { addToCart, cartCount } = useContext(CartContext);
  
 
 
@@ -565,8 +566,11 @@ const attributeOrder = ['Personal', 'Commercial', 'Extended Commercial'];
      
     </p>
     <button className=" h-[40px] border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold"
-    onClick={handleCheckout}
-    >
+    onClick={(e) => {
+                    e.preventDefault();
+                    addToCart(product);
+                  }}
+                  >
       ADD TO CART
     </button>
    <button onClick={handleCheckout} className="bg-[#1C2836] h-[40px] rounded-full w-full font-semibold text-white">
@@ -733,7 +737,9 @@ const attributeOrder = ['Personal', 'Commercial', 'Extended Commercial'];
       {/* Footer */}
     <Footer/>
 
-    <ToastContainer/>
+    <ToastContainer
+    position='bottom-right'
+    />
     </div>
   )
 }

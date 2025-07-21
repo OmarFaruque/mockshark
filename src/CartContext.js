@@ -58,7 +58,7 @@ const cartItem = {
     setCart(updatedCart);
 
     toast.success("✅ Product added to cart!", {
-      position: "top-right",
+      position: "bottom-right",
       autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -75,7 +75,7 @@ const cartItem = {
     <CartContext.Provider value={{ cart, setCart, addToCart, cartCount }}>
       {children}
       <ToastContainer
-        position="top-right"
+        position="bottom-right"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
