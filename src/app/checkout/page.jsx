@@ -69,7 +69,7 @@ const hasInitialized = useRef(false);
     const fetchUser = async () => {
       try {
         const res = await fetch(
-          `https://mockshark-backend.vercel.app/customer/auth/users/${userId}`,
+          `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`,
           {
             method: "GET",
             headers: {
@@ -164,7 +164,7 @@ const handleSubmit = async (e) => {
     };
 
     try {
-      const res = await fetch("https://mockshark-backend.vercel.app/bundles/order", {
+      const res = await fetch("https://mockshark-backend.vercel.app/api/v1/bundles/order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -243,7 +243,7 @@ const handleSubmit = async (e) => {
   };
 
 try {
-  const res = await fetch("https://mockshark-backend.vercel.app/orders", {
+  const res = await fetch("https://mockshark-backend.vercel.app/api/v1/orders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -299,7 +299,7 @@ const updateBillingInfo = async () => {
   formDataToSend.append("postalCode", formData?.profile?.postalCode || '');
 
   try {
-    const res = await fetch(`https://mockshark-backend.vercel.app/customer/auth/users/${id}`, {
+    const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,

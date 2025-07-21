@@ -7,7 +7,7 @@ export default function ForgotPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const res = await fetch('https://mockshark-backend.vercel.app/forgot-password', {
+    const res = await fetch('https://mockshark-backend.vercel.app/api/v1/forgot-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),

@@ -11,7 +11,7 @@ export default function useUser() {
     if (!userId) return;
 
     axios
-      .get(`https://mockshark-backend.vercel.app/customer/auth/users/${userId}`)
+      .get(`https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`)
       .then((res) => {
         if (res.data.success) {
           setUser(res.data.data);

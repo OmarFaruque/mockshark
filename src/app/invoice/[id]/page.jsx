@@ -10,7 +10,7 @@ export default function InvoicePage() {
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const res = await fetch(`https://mockshark-backend.vercel.app/orders/${id}`);
+        const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/orders/${id}`);
         const data = await res.json();
         setInvoiceHtml(data?.data?.invoiceHtml); // assuming { data: { invoiceHtml: "<p>...</p>" } }
       } catch (err) {

@@ -45,8 +45,8 @@ const [loading, setLoading] = useState(true);
   const fetchData = async () => {
   try {
     const [downloadsRes, licensesRes] = await Promise.all([
-      fetch(`https://mockshark-backend.vercel.app/downloads?userId=${userId}`),
-      fetch(`https://mockshark-backend.vercel.app/licenses?userId=${userId}`)
+      fetch(`https://mockshark-backend.vercel.app/api/v1/downloads?userId=${userId}`),
+      fetch(`https://mockshark-backend.vercel.app/api/v1/licenses?userId=${userId}`)
     ]);
 
     const downloadsData = await downloadsRes.json();
