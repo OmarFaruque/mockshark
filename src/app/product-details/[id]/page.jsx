@@ -51,11 +51,13 @@ const PrevArrow = ({ onClick }) => (
   const [commentText, setCommentText] = useState('');
   const [rating, setRating] = useState(0);
   const userId = Cookies.get("userId");
+  const roleId = Cookies.get("roleId");
   const productId = id; // assuming id is the product ID from the URL
   const token = Cookies.get("token");
 const [visibleCount, setVisibleCount] = useState(3); // Initially show 3 reviews
 const [showAll, setShowAll] = useState(false); // Toggle state
-const [selectedVariant, setSelectedVariant] = useState(null);
+const [selectedVariant, setSelectedVariant] = useState(null);  // default is first variant
+
 
 const router = useRouter();
 
@@ -63,6 +65,9 @@ const router = useRouter();
 const [creditsLeft, setCreditsLeft] = useState(0);
 const [userHasBundle, setUserHasBundle] = useState(false);
 const [userCredits, setUserCredits] = useState(0);
+
+const ADMIN_ROLE_ID = "7b307c77-ca01-4f9f-8935-f9b67f412fb9"; 
+
 
 // useEffect(() => {
 //   const fetchCredits = async () => {
@@ -116,6 +121,11 @@ const [userCredits, setUserCredits] = useState(0);
   
 
 const handleCheckout = () => {
+   const userId = Cookies.get("userId");
+      if (!userId) {
+        toast.error("Please log in first");
+        return;
+      }
  if (!selectedVariant || !selectedVariant.id) {
   toast.error("Please Select a Variant ");
   return;
@@ -559,20 +569,26 @@ const attributeOrder = ['Personal', 'Commercial', 'Extended Commercial'];
 </div>
 
     <p className="text-[#1C2836] text-xs">
-      For personal & brand usage.{' '}
+      Access your license information{' '}
       
       <Link href="/license-types" className="text-sky-500 underline"> See License</Link>
        
      
     </p>
-    <button className=" h-[40px] border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold"
-    onClick={(e) => {
-                    e.preventDefault();
-                    addToCart(product);
-                  }}
-                  >
-      ADD TO CART
-    </button>
+   <button
+  className="h-[40px] border border-[#1C2836] text-[#1C2836] rounded-full w-full font-semibold"
+  onClick={(e) => {
+    e.preventDefault();
+    if (selectedVariant) {
+      addToCart(product, selectedVariant);
+    } else {
+      toast.error("Please select a license before adding to cart.");
+    }
+  }}
+>
+  ADD TO CART
+</button>
+
    <button onClick={handleCheckout} className="bg-[#1C2836] h-[40px] rounded-full w-full font-semibold text-white">
   CHECKOUT
 </button>
@@ -693,15 +709,16 @@ const attributeOrder = ['Personal', 'Commercial', 'Extended Commercial'];
           </div>
         </div>
 
-        {r.userId === userId && (
-          <button
-            onClick={() => handleDelete(r.id)}
-            className="text-red-500 hover:text-red-700"
-            title="Delete your comment"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
-        )}
+       {(r.userId === userId || roleId === ADMIN_ROLE_ID) && (
+  <button
+    onClick={() => handleDelete(r.id)}
+    className="text-red-500 hover:text-red-700"
+    title="Delete this comment"
+  >
+    <Trash2 className="w-5 h-5" />
+  </button>
+)}
+
       </div>
     ))
   )}

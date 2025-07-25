@@ -63,15 +63,24 @@ const { addToCart, cartCount } = useContext(CartContext);
             </div>
 
                 <div className="p-4">
-                  <button className="py-2 px-4 font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8] w-full rounded-full text-black"
+                  <button
+                   className="py-2 px-4 font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8] w-full rounded-full text-black"
                    onClick={(e) => {
-                    e.preventDefault();
-                    addToCart(product);
-                  }}
-                  
-                  >
-                    + Add to Cart
-                  </button>
+                     e.preventDefault();
+                 
+                     const personalVariant = product.productAttributes.find(
+                       (attr) => attr.size === "Personal"
+                     );
+                 
+                     if (personalVariant) {
+                       addToCart(product, personalVariant);
+                     } else {
+                       toast.error("Personal license not available for this product.");
+                     }
+                   }}
+                 >
+                   + Add to Cart
+                 </button>
                 </div>
               </div>
             </Link>

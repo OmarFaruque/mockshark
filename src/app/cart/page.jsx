@@ -2,7 +2,7 @@
 
 import { CartContext } from '@/CartContext'
 import React, { useContext, useState } from 'react'
-import { Trash2, ChevronDown, ChevronUp, Plus, Minus } from 'lucide-react'
+import { Trash2, ChevronDown, ChevronUp, Plus, Minus, Tag } from 'lucide-react'
 import { Navbar } from '../components/Navbar'
 import Footer from '../components/Footer'
 import Link from 'next/link'
@@ -127,6 +127,10 @@ const CartPage = () => {
                       <div className="flex justify-between items-start">
                         <div className='flex items-center gap-4'>
                           <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
+                         <span className="ml-2 bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs">
+  {item.selectedSize}
+</span>
+
                            <button
                           onClick={() => handleRemove(item.id)}
                           className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition"

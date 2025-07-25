@@ -16,43 +16,46 @@ const Order = () => {
   const router = useRouter();
 
 useEffect(() => {
-  const fetchOrders = async () => {
-    const userId = Cookies.get('userId');
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
+ const fetchOrders = async () => {
+  const userId = Cookies.get('userId');
+  if (!userId) {
+    setLoading(false);
+    return;
+  }
 
-    try {
-      const [normalRes, bundleRes] = await Promise.all([
-        fetch(`https://mockshark-backend.vercel.app/api/v1/orders/user/${userId}`),
-        fetch(`https://mockshark-backend.vercel.app/api/v1/bundle-orders/${userId}`),
-      ]);
+  try {
+    const [normalRes, bundleRes] = await Promise.all([
+      fetch(`https://mockshark-backend.vercel.app/api/v1/orders/user/${userId}`),
+      fetch(`https://mockshark-backend.vercel.app/api/v1/bundle-orders/${userId}`),
+    ]);
 
-      const normalData = await normalRes.json();
-      const bundleData = await bundleRes.json();
+    const normalData = await normalRes.json();
+    const bundleData = await bundleRes.json();
 
-      // Normalize bundle orders to match normal orders' shape
-      const normalizedBundle = bundleData?.data.map(order => ({
-        ...order,
-        isBundle: true,
-        invoiceNumber: order.id.slice(0, 8).toUpperCase(), // or generate however you want
-        subtotalCost: order.subtotal,
-        createdAt: order.createdAt,
-      }));
+    const normalOrders = Array.isArray(normalData.data) ? normalData.data : [];
+    const normalizedBundle = Array.isArray(bundleData.data)
+      ? bundleData.data.map(order => ({
+          ...order,
+          isBundle: true,
+          invoiceNumber: order.id.slice(0, 8).toUpperCase(),
+          subtotalCost: order.subtotal,
+          createdAt: order.createdAt,
+        }))
+      : [];
 
-      const allOrders = [...normalData.data, ...normalizedBundle].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
+    const allOrders = [...normalOrders, ...normalizedBundle].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
-      setOrders(allOrders);
-      setFilteredOrders(allOrders);
-    } catch (error) {
-      console.error('Failed to fetch orders:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setOrders(allOrders);
+    setFilteredOrders(allOrders);
+  } catch (error) {
+    console.error('Failed to fetch orders:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   fetchOrders();
 }, []);

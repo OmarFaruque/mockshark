@@ -59,6 +59,8 @@ const handleLogin = async (e) => {
     Cookies.set('userId', data?.data?.id, { expires: 7 }); // expires in 7 days
     Cookies.set('token', data?.data?.accessToken, { expires: 7 }); // expires in 7 days
     Cookies.set('name', data?.data?.name, { expires: 7 }); // expires in 7 days
+    Cookies.set('roleId', data?.data?.roleId, { expires: 7 }); // expires in 7 days
+
 
     toast.success('Login successful');
 

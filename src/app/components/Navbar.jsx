@@ -92,6 +92,7 @@ const userId = Cookies.get("userId");
     setIsLoggedIn(false);
     Cookies.remove("userId"); // Remove user ID cookie
     Cookies.remove("token"); // Remove token cookie
+    Cookies.remove("roleId"); // Remove role ID cookie
     router.push("/login");
   };
 

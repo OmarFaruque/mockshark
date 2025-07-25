@@ -80,7 +80,7 @@ const BundlePackages = () => {
   const getDesignConfig = (mockups) => {
     switch (mockups) {
       case 10:
-        return { color: 'bg-cyan-500' };
+        return { color: 'bg-red-500' };
       case 20:
         return {
           color: 'bg-[#7CB84D]',
@@ -94,7 +94,7 @@ const BundlePackages = () => {
           priceColor: 'text-white',
         };
       default:
-        return { color: 'bg-gray-200' };
+        return { color: 'bg-[#46D8F9]' };
     }
   };
 const desiredOrder = ["Essential Pack", "Designer Pack", "Agency Pack"];
@@ -149,9 +149,9 @@ const sortedBundles = [...bundles].sort((a, b) => {
 
         
         <div className='mt-16 text-center'>
-           <Link href="/Bundle-Deals" >
+           {/* <Link href="/Bundle-Deals" >
           <span className="text-cyan-400 underline">Click Here</span> to see full details
-         </Link>
+         </Link> */}
         </div>
         
       </section>

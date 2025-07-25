@@ -11,6 +11,11 @@ import Cookies from "js-cookie";
 import Swal from 'sweetalert2';
 import useUser from "../hooks/user";
 const Page = () => {
+
+
+
+
+  
  const { cart, setCart } = useContext(CartContext);
 
 useEffect(() => {
@@ -26,6 +31,10 @@ useEffect(() => {
   const [checkoutProduct, setCheckoutProduct] = useState(null);
 const [paymentMethod, setPaymentMethod] = useState("digital");
 const user = useUser();
+
+
+
+
 const hasInitialized = useRef(false);
 
 
@@ -61,6 +70,28 @@ const hasInitialized = useRef(false);
       state: "",
     },
   });
+
+
+ const [isPrefilled, setIsPrefilled] = useState(false);
+
+useEffect(() => {
+  if (user && !isPrefilled) {
+    setFormData((prev) => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        billingFirstName: prev.profile.billingFirstName || user.name || "",
+        billingLastName: prev.profile.billingLastName || user.fullname || "",
+        billingEmail: prev.profile.billingEmail || user.email || "",
+      },
+    }));
+    setIsPrefilled(true);
+  }
+}, [user, isPrefilled]);
+
+
+
+
 
   const token = Cookies.get("token");
   const userId = Cookies.get("userId");
@@ -226,21 +257,22 @@ const handleSubmit = async (e) => {
     });
   }
 
-  const payload = {
-    userId,
-    billingFirstName: formData.profile.billingFirstName,
-    billingLastName: formData.profile.billingLastName,
-    billingCompany: formData.profile.billingCompany,
-    billingCountry: formData.profile.billingCountry,
-    billingEmail: formData.profile.billingEmail,
-    billingPhone: formData.profile.billingPhone,
-    address: formData.profile.address,
-    apartment: formData.profile.apartment,
-    city: formData.profile.city,
-    state: formData.profile.state,
-    postalCode: formData.profile.postalCode,
-    orderItems,
-  };
+ const payload = {
+  userId,
+  billingFirstName: formData.profile.billingFirstName || user?.name || "",
+  billingLastName: formData.profile.billingLastName || user?.fullname || "",
+  billingCompany: formData.profile.billingCompany,
+  billingCountry: formData.profile.billingCountry,
+  billingEmail: formData.profile.billingEmail || user?.email || "",
+  billingPhone: formData.profile.billingPhone,
+  address: formData.profile.address,
+  apartment: formData.profile.apartment,
+  city: formData.profile.city,
+  state: formData.profile.state,
+  postalCode: formData.profile.postalCode,
+  orderItems,
+};
+
 
 try {
   const res = await fetch("https://mockshark-backend.vercel.app/api/v1/orders", {
@@ -333,23 +365,9 @@ useEffect(() => {
   }
 }, []);
 
-useEffect(() => {
-  if (
-    user &&
-    formData.profile.billingFirstName === "" &&
-    formData.profile.billingEmail === ""
-  ) {
-    setFormData((prev) => ({
-      ...prev,
-      profile: {
-        ...prev.profile,
-        billingFirstName: user.name ?? "",
-        billingLastName: user.fullname ?? "",
-        billingEmail: user.email ?? "",
-      },
-    }));
-  }
-}, [user, formData.profile.billingFirstName, formData.profile.billingEmail]);
+
+
+
 
 
 
@@ -365,32 +383,38 @@ useEffect(() => {
           </h2>
           {/* Form omitted for brevity */}
        <form className="space-y-4 w-full text-black" onSubmit={handleSubmit}>
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <input
-      type="text"
-      value={formData.profile?.billingFirstName ?? ''}
-      onChange={(e) =>
-        setFormData((prev) => ({
-          ...prev,
-          profile: { ...prev.profile, billingFirstName: e.target.value },
-        }))
-      }
-      className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-      placeholder="First Name"
-    />
-    <input
-      type="text"
-      value={formData.profile?.billingLastName ?? ''}
-      onChange={(e) =>
-        setFormData((prev) => ({
-          ...prev,
-          profile: { ...prev.profile, billingLastName: e.target.value },
-        }))
-      }
-      className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-      placeholder="Last Name"
-    />
-  </div>
+ <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <input
+    type="text"
+    value={
+      formData.profile?.billingFirstName || user?.name || ''
+    }
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, billingFirstName: e.target.value },
+      }))
+    }
+    className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+    placeholder="First Name"
+  />
+  
+  <input
+    type="text"
+    value={
+      formData.profile?.billingLastName || user?.fullname || ''
+    }
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, billingLastName: e.target.value },
+      }))
+    }
+    className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+    placeholder="Last Name"
+  />
+</div>
+
 
   <input
     type="text"
@@ -407,17 +431,18 @@ useEffect(() => {
 
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <input
-      type="email"
-      value={formData.profile?.billingEmail ?? ''}
-      onChange={(e) =>
-        setFormData((prev) => ({
-          ...prev,
-          profile: { ...prev.profile, billingEmail: e.target.value },
-        }))
-      }
-      className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
-      placeholder="Email"
-    />
+  type="email"
+  value={formData.profile?.billingEmail || user?.email || ''}
+  onChange={(e) =>
+    setFormData((prev) => ({
+      ...prev,
+      profile: { ...prev.profile, billingEmail: e.target.value },
+    }))
+  }
+  className="border border-[#b7b7b7] px-4 py-2 rounded w-full"
+  placeholder="Email"
+/>
+
     <input
       type="tel"
       value={formData.profile?.billingPhone ?? ''}

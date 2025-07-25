@@ -3,6 +3,7 @@ import React from 'react';
 import { Navbar } from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const blogs = [
   {
@@ -37,7 +38,7 @@ const blogs = [
   // },
 ];
 
-const BlogCard = ({ title, desc, image, delay }) => (
+const BlogCard = ({ title, desc, image, delay ,id }) => (
   <motion.div
     initial={{ opacity: 0, y: 60 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -64,13 +65,15 @@ const BlogCard = ({ title, desc, image, delay }) => (
           {desc}
         </p>
         
-        <button className="relative inline-flex items-center text-cyan-600 font-medium group">
-          <span className="relative z-10">Read case study</span>
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-300 group-hover:w-full"></span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 ml-1 mt-0.5 transition-transform group-hover:translate-x-1">
-            <path fillRule="evenodd" d="M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z" clipRule="evenodd" />
-          </svg>
-        </button>
+       <Link href={`/BlogDetails/${id}`}>
+  <button className="relative inline-flex items-center text-cyan-600 font-medium group">
+    <span className="relative z-10">Read case study</span>
+    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-300 group-hover:w-full"></span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 ml-1 mt-0.5 transition-transform group-hover:translate-x-1">
+      <path fillRule="evenodd" d="M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z" clipRule="evenodd" />
+    </svg>
+  </button>
+</Link>
       </div>
     </div>
   </motion.div>
@@ -103,6 +106,7 @@ const BlogPage = () => {
           {blogs.map((blog, index) => (
             <BlogCard
               key={blog.id}
+              id={blog.id}
               title={blog.title}
               desc={blog.desc}
               image={blog.image}

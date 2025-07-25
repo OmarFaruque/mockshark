@@ -25,47 +25,34 @@ export const CartProvider = ({ children }) => {
   }, [cart, isLoaded]);
 
   // 🛒 Only adds product with all variants, no selection yet
-  const addToCart = (product) => {
-    const updatedCart = [...cart];
+ const addToCart = (product, selectedVariant) => {
+  const updatedCart = [...cart];
 
-    // Check if this product is already in cart (only by id)
-    const index = updatedCart.findIndex((item) => item.id === product.id);
+  // Check by product ID + variant size to avoid duplicates of same variant
+  const index = updatedCart.findIndex(
+    (item) => item.id === product.id && item.productAttributes[0].size === selectedVariant.size
+  );
 
-    if (index > -1) {
-      toast.info("🛒 Product is already in your cart.", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-      return;
-    }
+  if (index > -1) {
+    toast.info("🛒 Product is already in your cart.", { position: "top-right" });
+    return;
+  }
 
-  const personalVariant = product.productAttributes.find(
-  (attr) => attr.size === "Personal"
-);
+  const cartItem = {
+    id: product.id,
+    name: product.name,
+    quantity: 1,
+    selectedSize: selectedVariant.size,      // store size info
+    price: selectedVariant.discountedRetailPrice,  // store price directly
+    productAttributes: [selectedVariant],    // store selected variant
+  };
 
-const cartItem = {
-  id: product.id,
-  name: product.name,
-  quantity: 1,
-  productAttributes: [personalVariant], // ✅ only "Personal"
+  updatedCart.push(cartItem);
+  setCart(updatedCart);
+
+  toast.success("✅ Product added to cart!", { position: "bottom-right" });
 };
 
-
-    updatedCart.push(cartItem);
-    setCart(updatedCart);
-
-    toast.success("✅ Product added to cart!", {
-      position: "bottom-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
-  };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
