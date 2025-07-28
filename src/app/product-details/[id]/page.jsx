@@ -107,7 +107,7 @@ const ADMIN_ROLE_ID = "7b307c77-ca01-4f9f-8935-f9b67f412fb9";
         // Reduce local credits count immediately for UI update
         setUserCredits((prev) => prev - 1);
         // Open download link
-        window.open(res.data?.downloadUrl, "_blank");
+        // window.open(res.data?.downloadUrl, "_blank");
         window.location.reload();
       } else {
         toast.error(res.data.message);
@@ -124,6 +124,7 @@ const handleCheckout = () => {
    const userId = Cookies.get("userId");
       if (!userId) {
         toast.error("Please log in first");
+        window.location.href = "/login";
         return;
       }
  if (!selectedVariant || !selectedVariant.id) {

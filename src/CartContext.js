@@ -37,15 +37,16 @@ export const CartProvider = ({ children }) => {
     toast.info("🛒 Product is already in your cart.", { position: "top-right" });
     return;
   }
+const cartItem = {
+  id: product.id,
+  name: product.name,
+  quantity: 1,
+  image: product.images?.[0]?.image || '', // use the first image from images array, fallback to empty string
+  selectedSize: selectedVariant.size,      
+  price: selectedVariant.discountedRetailPrice,
+  productAttributes: [selectedVariant],
+};
 
-  const cartItem = {
-    id: product.id,
-    name: product.name,
-    quantity: 1,
-    selectedSize: selectedVariant.size,      // store size info
-    price: selectedVariant.discountedRetailPrice,  // store price directly
-    productAttributes: [selectedVariant],    // store selected variant
-  };
 
   updatedCart.push(cartItem);
   setCart(updatedCart);
