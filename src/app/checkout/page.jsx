@@ -136,18 +136,21 @@ const Page = () => {
     checkoutProduct?.productAttributes?.[0]?.retailPrice || 0;
 
   let subtotal = cart.reduce((acc, item) => {
-    const selectedSize =
-      selectedVariants[item.id] || item.productAttributes?.[0]?.size;
+    const selectedSize = item.selectedSize || item.productAttributes?.[0]?.size; // ✅ more reliable
+
     const selectedVariant = item.productAttributes.find(
       (v) => v.size === selectedSize
     );
+
     const price = selectedVariant?.costPrice ?? 0;
+
     return acc + price * item.quantity;
   }, 0);
 
-  if (checkoutProduct) {
-    subtotal += checkoutProduct.price * checkoutProduct.quantity;
-  }
+ if (checkoutProduct) {
+  subtotal += checkoutProduct.price * checkoutProduct.quantity;
+}
+
   // const isBundle = checkoutProduct && !checkoutProduct.productId && !checkoutProduct.productAttributeId;
 
   const handleSubmit = async (e) => {
@@ -208,25 +211,36 @@ const Page = () => {
     // Add cart items
     cart.forEach((item) => {
       const selectedSize =
-        selectedVariants[item.id] || item.productAttributes?.[0]?.size;
+        item.selectedSize ||
+        selectedVariants[item.id] ||
+        item.productAttributes?.[0]?.size;
+
       const selectedVariant = item.productAttributes?.find(
         (v) => v.size === selectedSize
       );
 
+      if (!selectedVariant) {
+        console.error(`❌ selectedVariant not found for item:`, {
+          id: item.id,
+          selectedSize,
+          productAttributes: item.productAttributes,
+        });
+        return; // skip this item or handle gracefully
+      }
+
       orderItems.push({
         productId: item.id,
-        productAttributeId: selectedVariant?.id,
+        productAttributeId: selectedVariant.id,
         name: item.name,
-        size: selectedVariant?.size,
-        costPrice: selectedVariant?.costPrice,
-        retailPrice: selectedVariant?.retailPrice,
+        size: selectedVariant.size,
+        costPrice: selectedVariant.costPrice,
+        retailPrice: selectedVariant.retailPrice,
         discountedRetailPrice:
-          selectedVariant?.discountedRetailPrice ||
-          selectedVariant?.retailPrice,
+          selectedVariant.discountedRetailPrice || selectedVariant.retailPrice,
         quantity: item.quantity,
-        totalCostPrice: selectedVariant?.costPrice * item.quantity,
-        totalPrice: selectedVariant?.retailPrice * item.quantity,
-        licenseType: "personal",
+        totalCostPrice: selectedVariant.costPrice * item.quantity,
+        totalPrice: selectedVariant.retailPrice * item.quantity,
+        licenseType: selectedVariant.size.toLowerCase(), // or use item.selectedSize
       });
     });
 
@@ -559,49 +573,30 @@ const Page = () => {
                 <span className="text-[#6f6f6f] text-[17px]">SUB TOTAL</span>
               </div>
 
-              {cart.map((item) => {
-                const selectedSize =
-                  selectedVariants[item.id] ||
-                  item.productAttributes?.[0]?.size;
+              {cart.map((item, index) => {
+                const selectedSize = item.selectedSize;
+
                 const selectedVariant = item.productAttributes.find(
                   (v) => v.size === selectedSize
                 );
+
                 const price = selectedVariant?.costPrice ?? 0;
                 const itemTotal = price * item.quantity;
 
+                const uniqueKey = `${item.id}-${selectedSize}-${index}`;
+
                 return (
                   <div
-                    key={item.id}
+                    key={uniqueKey}
                     className="flex justify-between items-center py-2 border-t border-[#b7b7b7]"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-[#1C2836] font-medium">
                         {item.name}
                       </span>
-                      {/* <select
-                        value={selectedSize}
-                        onChange={(e) => handleVariantChange(item.id, e.target.value)}
-                        className="ml-2 border rounded px-1 py-0.5 text-sm"
-                      >
-                       {item.productAttributes
-  ?.sort((a, b) => {
-    if (a.size === "Personal") return -1;
-    if (b.size === "Personal") return 1;
-    return 0;
-  })
-  .map((variant) => (
-    <option key={variant.id} value={variant.size}>
-      {variant.size}
-    </option>
-))}
-
-                      </select> */}
-                      {/* <button
-                        onClick={() => handleRemove(item.id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 size={18} />
-                      </button> */}
+                      <span className="text-sm text-gray-500 ml-1">
+                        ({selectedSize})
+                      </span>
                     </div>
                     <span className="text-[#1C2836] font-medium">
                       ${itemTotal.toFixed(2)}
@@ -609,6 +604,7 @@ const Page = () => {
                   </div>
                 );
               })}
+
               {checkoutProduct && (
                 <div className="mt-4 border-t pt-4 border-[#b7b7b7]">
                   <div className="flex justify-between items-center py-2">
@@ -616,6 +612,10 @@ const Page = () => {
                       <span className="text-[#1C2836] font-medium">
                         {checkoutProduct.name}
                       </span>
+                      <span className="text-sm text-gray-500 ml-1">
+                        ({checkoutProduct.variant})
+                      </span>
+
                       <button
                         onClick={() => {
                           localStorage.removeItem("checkoutItem");
@@ -624,7 +624,7 @@ const Page = () => {
                         }}
                         className="text-red-500 hover:text-red-700"
                       >
-                        {/* <Trash2 size={18} /> */}
+                        <Trash2 size={18} />
                       </button>
                     </div>
                     <div className="text-[#1C2836] font-medium">

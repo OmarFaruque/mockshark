@@ -16,20 +16,24 @@ const CartPage = () => {
   const [selectedVariants, setSelectedVariants] = useState({});
   const [expandedItems, setExpandedItems] = useState({});
   const router = useRouter();
-  const handleRemove = (id) => {
-    const updatedCart = cart.filter((item) => item.id !== id);
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    toast.success("Item removed", {
-      position: "bottom-right",
-      autoClose: 2000,
-      hideProgressBar: true,
-      style: {
-        background: "#10B981",
-        color: "#fff",
-      },
-    });
-  };
+ const handleRemove = (id, selectedSize) => {
+  const updatedCart = cart.filter(
+    (item) => !(item.id === id && item.selectedSize === selectedSize)
+  );
+  setCart(updatedCart);
+  localStorage.setItem("cart", JSON.stringify(updatedCart));
+  toast.success("Item removed", {
+    position: "bottom-right",
+    autoClose: 2000,
+    hideProgressBar: true,
+    style: {
+      background: "#10B981",
+      color: "#fff",
+    },
+  });
+};
+
+
 
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
@@ -138,6 +142,7 @@ const CartPage = () => {
               const selectedVariant = item.productAttributes.find(
                 (v) => v.size === selectedSize
               );
+              const uniqueKey = `${item.id}-${selectedSize}`;
               const price = selectedVariant?.costPrice ?? 0;
               const itemTotal = price * item.quantity;
 
@@ -150,6 +155,7 @@ const CartPage = () => {
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-all cursor-pointer"
                   onClick={() => router.push(`/product-details/${item.id}`)}
+                   key={uniqueKey}
                 >
                   <div className="p-5 flex items-start">
                     {/* Image */}
@@ -179,7 +185,7 @@ const CartPage = () => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleRemove(item.id);
+                              handleRemove(item.id ,item.selectedSize);
                             }}
                             className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition"
                             title="Remove from cart"
