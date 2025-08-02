@@ -203,79 +203,78 @@ const JustDrop = ({ title, paragraph }) => {
       <h2 className="text-2xl font-extrabold mb-2 text-[#1C2836]">{title}</h2>
       <p className="text-[#000000] mb-8 max-w-2xl mx-auto">{paragraph}</p>
 
-     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-4">
-  {products.slice(0, visibleCount).map((product) => (
-    <div
-      key={product.id}
-      onClick={() =>
-        (window.location.href = `/product-details/${product?.id}`)
-      }
-      className="cursor-pointer rounded-2xl shadow-md pb-4 lg:h-[500px]"
-    >
-      <img
-        src={
-          product?.images?.[0]?.image || "https://via.placeholder.com/262"
-        }
-        alt={product?.title}
-        className="rounded-t-2xl w-full h-full lg:w-[262] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]"
-      />
-
-      <h3 className="text-[18px] lg:text-[15px] font-bold text-gray-800 leading-tight px-4 h-[40px]">
-        {product.name}
-      </h3>
-
-      <div className="mt-4 mb-4">
-        <div className="text-[30px] font-extrabold text-gray-900">
-          $
-          {
-            product.productAttributes?.find((v) => v.size === "Personal")
-              ?.costPrice
-          }
-        </div>
-        <div className="text-[14px] text-gray-400 line-through">
-          Regular Price : $
-          {
-            product.productAttributes?.find((v) => v.size === "Personal")
-              ?.retailPrice
-          }
-        </div>
-      </div>
-
-      <div className="p-4">
-        <button
-          className="py-2 px-4 font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8] w-full rounded-full text-black"
-          onClick={(e) => {
-            e.stopPropagation();
-            const personalVariant = product.productAttributes.find(
-              (attr) => attr.size === "Personal"
-            );
-            if (personalVariant) {
-              addToCart(product, personalVariant);
-            } else {
-              toast.error(
-                "Personal license not available for this product."
-              );
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-4">
+        {products.slice(0, visibleCount).map((product) => (
+          <div
+            key={product.id}
+            onClick={() =>
+              (window.location.href = `/product-details/${product?.id}`)
             }
-          }}
-        >
-          + Add to Cart
-        </button>
+            className="cursor-pointer rounded-2xl shadow-md pb-4 lg:h-[500px]"
+          >
+            <img
+              src={
+                product?.images?.[0]?.image || "https://via.placeholder.com/262"
+              }
+              alt={product?.title}
+              className="rounded-t-2xl w-full h-full lg:w-[262] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]"
+            />
+
+            <h3 className="text-[18px] lg:text-[15px] font-bold text-gray-800 leading-tight line-clamp-2 px-4 h-[40px]">
+              {product.name}
+            </h3>
+
+            <div className="mt-4 mb-4">
+              <div className="text-[30px] font-extrabold text-gray-900">
+                $
+                {
+                  product.productAttributes?.find((v) => v.size === "Personal")
+                    ?.costPrice
+                }
+              </div>
+              <div className="text-[14px] text-gray-400 line-through">
+                Regular Price : $
+                {
+                  product.productAttributes?.find((v) => v.size === "Personal")
+                    ?.retailPrice
+                }
+              </div>
+            </div>
+
+            <div className="p-4">
+              <button
+                className="py-2 px-4 font-medium text-sm hover:bg-gray-100 transition bg-[#E8E8E8] w-full rounded-full text-black"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const personalVariant = product.productAttributes.find(
+                    (attr) => attr.size === "Personal"
+                  );
+                  if (personalVariant) {
+                    addToCart(product, personalVariant);
+                  } else {
+                    toast.error(
+                      "Personal license not available for this product."
+                    );
+                  }
+                }}
+              >
+                + Add to Cart
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
-  ))}
-</div>
 
-{visibleCount < products.length && (
-  <div className="mt-6">
-    <button
-      className="bg-[#0f1c2e] text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
-      onClick={() => setVisibleCount(prev => prev + 16)} // 4 rows at a time
-    >
-      See More
-    </button>
-  </div>
-)}
-
+      {visibleCount < products.length && (
+        <div className="mt-6">
+          <button
+            className="bg-[#0f1c2e] text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
+            onClick={() => setVisibleCount((prev) => prev + 16)} // 4 rows at a time
+          >
+            See More
+          </button>
+        </div>
+      )}
     </section>
   );
 };

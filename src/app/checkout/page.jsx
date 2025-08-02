@@ -10,23 +10,13 @@ import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 import useUser from "../hooks/user";
+
 const Page = () => {
   const { cart, setCart } = useContext(CartContext);
-
-  useEffect(() => {
-    if (cart.length === 0) {
-      const stored = localStorage.getItem("cart");
-      if (stored) {
-        setCart(JSON.parse(stored));
-      }
-    }
-  }, []);
-
   const [selectedVariants, setSelectedVariants] = useState({});
   const [checkoutProduct, setCheckoutProduct] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("digital");
   const user = useUser();
-
   const hasInitialized = useRef(false);
 
   const [formData, setFormData] = useState({
@@ -63,6 +53,17 @@ const Page = () => {
 
   const [isPrefilled, setIsPrefilled] = useState(false);
 
+  // Load cart from localStorage if empty
+  useEffect(() => {
+    if (cart.length === 0) {
+      const stored = localStorage.getItem("cart");
+      if (stored) {
+        setCart(JSON.parse(stored));
+      }
+    }
+  }, []);
+
+  // Prefill form with user data
   useEffect(() => {
     if (user && !isPrefilled) {
       setFormData((prev) => ({
@@ -81,6 +82,7 @@ const Page = () => {
   const token = Cookies.get("token");
   const userId = Cookies.get("userId");
 
+  // Fetch user data
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -104,6 +106,7 @@ const Page = () => {
     if (userId) fetchUser();
   }, [userId]);
 
+  // Initialize selected variants
   useEffect(() => {
     const initialVariants = {};
     cart.forEach((item) => {
@@ -111,6 +114,15 @@ const Page = () => {
     });
     setSelectedVariants(initialVariants);
   }, [cart]);
+
+  // Load checkout product from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("checkoutItem");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setCheckoutProduct(parsed);
+    }
+  }, []);
 
   const handleVariantChange = (itemId, size) => {
     setSelectedVariants((prev) => ({ ...prev, [itemId]: size }));
@@ -126,32 +138,23 @@ const Page = () => {
     });
   };
 
-  // const subtotal = cart.reduce((acc, item) => {
-  //   const selectedSize = selectedVariants[item.id] || item.productAttributes?.[0]?.size;
-  //   const selectedVariant = item.productAttributes.find(v => v.size === selectedSize);
-  //   const price = selectedVariant?.retailPrice ?? 0;
-  //   return acc + price * item.quantity;
-  // }, 0);
-  const checkoutProductPrice =
-    checkoutProduct?.productAttributes?.[0]?.retailPrice || 0;
+  // Calculate subtotal
+  let subtotal = 0;
 
-  let subtotal = cart.reduce((acc, item) => {
-    const selectedSize = item.selectedSize || item.productAttributes?.[0]?.size; // ✅ more reliable
-
-    const selectedVariant = item.productAttributes.find(
-      (v) => v.size === selectedSize
-    );
-
-    const price = selectedVariant?.costPrice ?? 0;
-
-    return acc + price * item.quantity;
-  }, 0);
-
- if (checkoutProduct) {
-  subtotal += checkoutProduct.price * checkoutProduct.quantity;
-}
-
-  // const isBundle = checkoutProduct && !checkoutProduct.productId && !checkoutProduct.productAttributeId;
+  if (checkoutProduct) {
+    // Only calculate checkout product price if it exists
+    subtotal = checkoutProduct.price * checkoutProduct.quantity;
+  } else {
+    // Calculate cart items subtotal if no checkout product
+    subtotal = cart.reduce((acc, item) => {
+      const selectedSize = item.selectedSize || item.productAttributes?.[0]?.size;
+      const selectedVariant = item.productAttributes.find(
+        (v) => v.size === selectedSize
+      );
+      const price = selectedVariant?.costPrice ?? 0;
+      return acc + price * item.quantity;
+    }, 0);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -161,6 +164,7 @@ const Page = () => {
       !checkoutProduct.productId &&
       !checkoutProduct.productAttributeId;
 
+    // Handle bundle order
     if (isBundle) {
       const payload = {
         userId,
@@ -208,44 +212,8 @@ const Page = () => {
 
     const orderItems = [];
 
-    // Add cart items
-    cart.forEach((item) => {
-      const selectedSize =
-        item.selectedSize ||
-        selectedVariants[item.id] ||
-        item.productAttributes?.[0]?.size;
-
-      const selectedVariant = item.productAttributes?.find(
-        (v) => v.size === selectedSize
-      );
-
-      if (!selectedVariant) {
-        console.error(`❌ selectedVariant not found for item:`, {
-          id: item.id,
-          selectedSize,
-          productAttributes: item.productAttributes,
-        });
-        return; // skip this item or handle gracefully
-      }
-
-      orderItems.push({
-        productId: item.id,
-        productAttributeId: selectedVariant.id,
-        name: item.name,
-        size: selectedVariant.size,
-        costPrice: selectedVariant.costPrice,
-        retailPrice: selectedVariant.retailPrice,
-        discountedRetailPrice:
-          selectedVariant.discountedRetailPrice || selectedVariant.retailPrice,
-        quantity: item.quantity,
-        totalCostPrice: selectedVariant.costPrice * item.quantity,
-        totalPrice: selectedVariant.retailPrice * item.quantity,
-        licenseType: selectedVariant.size.toLowerCase(), // or use item.selectedSize
-      });
-    });
-
-    // Add direct checkout product (if it's not a bundle)
-    if (checkoutProduct && !isBundle) {
+    if (checkoutProduct) {
+      // Only process checkout product if it exists (not a bundle)
       orderItems.push({
         productId: checkoutProduct.productId,
         productAttributeId: checkoutProduct.productAttributeId,
@@ -258,6 +226,42 @@ const Page = () => {
         totalCostPrice: checkoutProduct.price * checkoutProduct.quantity,
         totalPrice: checkoutProduct.price * checkoutProduct.quantity,
         licenseType: checkoutProduct.variant,
+      });
+    } else {
+      // Process cart items if no checkout product
+      cart.forEach((item) => {
+        const selectedSize =
+          item.selectedSize ||
+          selectedVariants[item.id] ||
+          item.productAttributes?.[0]?.size;
+
+        const selectedVariant = item.productAttributes?.find(
+          (v) => v.size === selectedSize
+        );
+
+        if (!selectedVariant) {
+          console.error(`❌ selectedVariant not found for item:`, {
+            id: item.id,
+            selectedSize,
+            productAttributes: item.productAttributes,
+          });
+          return; // skip this item
+        }
+
+        orderItems.push({
+          productId: item.id,
+          productAttributeId: selectedVariant.id,
+          name: item.name,
+          size: selectedVariant.size,
+          costPrice: selectedVariant.costPrice,
+          retailPrice: selectedVariant.retailPrice,
+          discountedRetailPrice:
+            selectedVariant.discountedRetailPrice || selectedVariant.retailPrice,
+          quantity: item.quantity,
+          totalCostPrice: selectedVariant.costPrice * item.quantity,
+          totalPrice: selectedVariant.retailPrice * item.quantity,
+          licenseType: selectedVariant.size.toLowerCase(),
+        });
       });
     }
 
@@ -305,6 +309,7 @@ const Page = () => {
         timerProgressBar: true,
       });
 
+      // Clear cart and checkout product after successful order
       setCart([]);
       localStorage.removeItem("cart");
       localStorage.removeItem("checkoutItem");
@@ -376,14 +381,6 @@ const Page = () => {
     }
   };
 
-  useEffect(() => {
-    const stored = localStorage.getItem("checkoutItem");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setCheckoutProduct(parsed);
-    }
-  }, []);
-
   return (
     <div className="bg-white min-h-screen flex flex-col justify-between">
       <Navbar />
@@ -393,7 +390,6 @@ const Page = () => {
           <h2 className="text-3xl font-bold mb-6 text-center text-[#1C2836]">
             Billing Information
           </h2>
-          {/* Form omitted for brevity */}
           <form className="space-y-4 w-full text-black" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input
@@ -573,40 +569,9 @@ const Page = () => {
                 <span className="text-[#6f6f6f] text-[17px]">SUB TOTAL</span>
               </div>
 
-              {cart.map((item, index) => {
-                const selectedSize = item.selectedSize;
-
-                const selectedVariant = item.productAttributes.find(
-                  (v) => v.size === selectedSize
-                );
-
-                const price = selectedVariant?.costPrice ?? 0;
-                const itemTotal = price * item.quantity;
-
-                const uniqueKey = `${item.id}-${selectedSize}-${index}`;
-
-                return (
-                  <div
-                    key={uniqueKey}
-                    className="flex justify-between items-center py-2 border-t border-[#b7b7b7]"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-[#1C2836] font-medium">
-                        {item.name}
-                      </span>
-                      <span className="text-sm text-gray-500 ml-1">
-                        ({selectedSize})
-                      </span>
-                    </div>
-                    <span className="text-[#1C2836] font-medium">
-                      ${itemTotal.toFixed(2)}
-                    </span>
-                  </div>
-                );
-              })}
-
-              {checkoutProduct && (
-                <div className="mt-4 border-t pt-4 border-[#b7b7b7]">
+              {/* Show either checkout product or cart items */}
+              {checkoutProduct ? (
+                <div className="mt-4">
                   <div className="flex justify-between items-center py-2">
                     <div className="flex items-center gap-2">
                       <span className="text-[#1C2836] font-medium">
@@ -616,7 +581,7 @@ const Page = () => {
                         ({checkoutProduct.variant})
                       </span>
 
-                      <button
+                      {/* <button
                         onClick={() => {
                           localStorage.removeItem("checkoutItem");
                           setCheckoutProduct(null);
@@ -625,7 +590,7 @@ const Page = () => {
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash2 size={18} />
-                      </button>
+                      </button> */}
                     </div>
                     <div className="text-[#1C2836] font-medium">
                       $
@@ -635,6 +600,41 @@ const Page = () => {
                     </div>
                   </div>
                 </div>
+              ) : (
+                cart.map((item, index) => {
+                  const selectedSize = item.selectedSize;
+                  const selectedVariant = item.productAttributes.find(
+                    (v) => v.size === selectedSize
+                  );
+                  const price = selectedVariant?.costPrice ?? 0;
+                  const itemTotal = price * item.quantity;
+                  const uniqueKey = `${item.id}-${selectedSize}-${index}`;
+
+                  return (
+                    <div
+                      key={uniqueKey}
+                      className="flex justify-between items-center py-2 border-t border-[#b7b7b7]"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#1C2836] font-medium">
+                          {item.name}
+                        </span>
+                        <span className="text-sm text-gray-500 ml-1">
+                          ({selectedSize})
+                        </span>
+                        {/* <button
+                          onClick={() => handleRemove(item.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={18} />
+                        </button> */}
+                      </div>
+                      <span className="text-[#1C2836] font-medium">
+                        ${itemTotal.toFixed(2)}
+                      </span>
+                    </div>
+                  );
+                })
               )}
 
               <div className="flex justify-between items-center font-bold text-[#1C2836] border-t border-[#b7b7b7] pt-2">

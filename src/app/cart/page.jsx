@@ -16,24 +16,22 @@ const CartPage = () => {
   const [selectedVariants, setSelectedVariants] = useState({});
   const [expandedItems, setExpandedItems] = useState({});
   const router = useRouter();
- const handleRemove = (id, selectedSize) => {
-  const updatedCart = cart.filter(
-    (item) => !(item.id === id && item.selectedSize === selectedSize)
-  );
-  setCart(updatedCart);
-  localStorage.setItem("cart", JSON.stringify(updatedCart));
-  toast.success("Item removed", {
-    position: "bottom-right",
-    autoClose: 2000,
-    hideProgressBar: true,
-    style: {
-      background: "#10B981",
-      color: "#fff",
-    },
-  });
-};
-
-
+  const handleRemove = (id, selectedSize) => {
+    const updatedCart = cart.filter(
+      (item) => !(item.id === id && item.selectedSize === selectedSize)
+    );
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    toast.success("Item removed", {
+      position: "bottom-right",
+      autoClose: 2000,
+      hideProgressBar: true,
+      style: {
+        background: "#10B981",
+        color: "#fff",
+      },
+    });
+  };
 
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
@@ -58,6 +56,13 @@ const CartPage = () => {
       const price = selectedVariant?.costPrice ?? 0;
       return acc + price * item.quantity;
     }, 0);
+  };
+  const handleCartCheckout = () => {
+    // Direct checkout data থাকলে clear করো
+    localStorage.removeItem("checkoutItem");
+
+    // Cart ডাটা আগে থেকেই localStorage এ আছে
+    router.push("/checkout");
   };
 
   if (cart.length === 0) {
@@ -130,7 +135,10 @@ const CartPage = () => {
           </Link>
         </motion.div>
         <div className="mb-3">
-          <h1 className="text-xl font-medium">To select your different license type, go to the product details page.</h1>
+          <h1 className="text-xl font-medium">
+            To select your different license type, go to the product details
+            page.
+          </h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -155,7 +163,7 @@ const CartPage = () => {
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-all cursor-pointer"
                   onClick={() => router.push(`/product-details/${item.id}`)}
-                   key={uniqueKey}
+                  key={uniqueKey}
                 >
                   <div className="p-5 flex items-start">
                     {/* Image */}
@@ -185,7 +193,7 @@ const CartPage = () => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleRemove(item.id ,item.selectedSize);
+                              handleRemove(item.id, item.selectedSize);
                             }}
                             className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition"
                             title="Remove from cart"
@@ -234,15 +242,14 @@ const CartPage = () => {
                 </div>
               </div>
 
-              <Link href="/checkout">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-3 bg-cyan-600 text-white rounded-lg shadow-md hover:bg-cyan-700 transition-colors font-medium"
-                >
-                  Proceed to Checkout
-                </motion.button>
-              </Link>
+              <motion.button
+                onClick={handleCartCheckout}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3 bg-cyan-600 text-white rounded-lg shadow-md hover:bg-cyan-700 transition-colors font-medium"
+              >
+                Proceed to Checkout
+              </motion.button>
 
               <p className="text-xs text-gray-500 text-center mt-4">
                 By placing your order, you agree to our Terms of Service
