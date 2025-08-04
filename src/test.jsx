@@ -19,12 +19,6 @@ const Page = () => {
   const user = useUser();
   const hasInitialized = useRef(false);
 
-  // Coupon states
-  const [couponCode, setCouponCode] = useState("");
-  const [availableCoupon, setAvailableCoupon] = useState(null);
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
-  const [discount, setDiscount] = useState(0);
-
   const [formData, setFormData] = useState({
     profile: {
       name: "",
@@ -67,23 +61,6 @@ const Page = () => {
         setCart(JSON.parse(stored));
       }
     }
-  }, []);
-
-  // Fetch available coupons
-  useEffect(() => {
-    const fetchCoupons = async () => {
-      try {
-        const res = await fetch("https://mockshark-backend.vercel.app/api/v1/coupons");
-        if (!res.ok) throw new Error("Failed to fetch coupons");
-        const data = await res.json();
-        if (data.data && data.data.length > 0) {
-          setAvailableCoupon(data.data[0]); // Only use the first coupon
-        }
-      } catch (error) {
-        console.error("Error fetching coupons:", error);
-      }
-    };
-    fetchCoupons();
   }, []);
 
   // Prefill form with user data
@@ -170,8 +147,7 @@ const Page = () => {
   } else {
     // Calculate cart items subtotal if no checkout product
     subtotal = cart.reduce((acc, item) => {
-      const selectedSize =
-        item.selectedSize || item.productAttributes?.[0]?.size;
+      const selectedSize = item.selectedSize || item.productAttributes?.[0]?.size;
       const selectedVariant = item.productAttributes.find(
         (v) => v.size === selectedSize
       );
@@ -179,40 +155,6 @@ const Page = () => {
       return acc + price * item.quantity;
     }, 0);
   }
-
-  // Calculate total after discount
-  const total = subtotal - discount;
-
-  // Apply coupon function
-  const applyCoupon = () => {
-    if (!availableCoupon) {
-      toast.error("No coupons available");
-      return;
-    }
-
-    if (
-      couponCode.trim().toLowerCase() !== availableCoupon.code.toLowerCase()
-    ) {
-      toast.error("Invalid coupon code");
-      return;
-    }
-
-    if (subtotal < availableCoupon.orderPriceLimit) {
-      toast.error(
-        `Minimum order amount is $${availableCoupon.orderPriceLimit} for this coupon`
-      );
-      return;
-    }
-
-    if (!availableCoupon.isActive) {
-      toast.error("This coupon is not active");
-      return;
-    }
-
-    setAppliedCoupon(availableCoupon);
-    setDiscount(availableCoupon.discountAmount);
-    toast.success("Coupon applied successfully!");
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -228,7 +170,7 @@ const Page = () => {
         userId,
         bundleId: "bundle-" + checkoutProduct.variant.split(" ")[0],
         credits: parseInt(checkoutProduct.variant),
-        price: total,
+        price: checkoutProduct.price,
         invoiceNumber: "INV-" + Date.now(),
         billingFirstName: formData.profile.billingFirstName || user?.name || "",
         billingLastName:
@@ -242,10 +184,7 @@ const Page = () => {
         city: formData.profile.city,
         state: formData.profile.state,
         postalCode: formData.profile.postalCode,
-        subtotalCost: total,
-        // couponId: appliedCoupon?.id || null,
-        discountAmount: discount,
-        totalAmount: total,
+        subtotalCost: checkoutProduct.price,
       };
 
       try {
@@ -263,9 +202,6 @@ const Page = () => {
         toast.success("✅ Bundle order placed!");
         localStorage.removeItem("checkoutItem");
         setCheckoutProduct(null);
-        setAppliedCoupon(null);
-        setDiscount(0);
-        setCouponCode("");
         return;
       } catch (err) {
         toast.error(" Failed to place bundle order");
@@ -275,17 +211,9 @@ const Page = () => {
     }
 
     const orderItems = [];
-    let subtotalCost = 0;
-    let subtotal = 0;
-    let totalNumberOfItems = 0;
 
     if (checkoutProduct) {
       // Only process checkout product if it exists (not a bundle)
-      const itemTotal = checkoutProduct.price * checkoutProduct.quantity;
-      subtotal += itemTotal;
-      subtotalCost += itemTotal;
-      totalNumberOfItems += checkoutProduct.quantity;
-
       orderItems.push({
         productId: checkoutProduct.productId,
         productAttributeId: checkoutProduct.productAttributeId,
@@ -295,8 +223,8 @@ const Page = () => {
         retailPrice: checkoutProduct.price,
         discountedRetailPrice: checkoutProduct.price,
         quantity: checkoutProduct.quantity,
-        totalCostPrice: itemTotal,
-        totalPrice: itemTotal,
+        totalCostPrice: checkoutProduct.price * checkoutProduct.quantity,
+        totalPrice: checkoutProduct.price * checkoutProduct.quantity,
         licenseType: checkoutProduct.variant,
       });
     } else {
@@ -320,15 +248,6 @@ const Page = () => {
           return; // skip this item
         }
 
-        const itemTotalCost = selectedVariant.costPrice * item.quantity;
-        const itemTotalPrice =
-          (selectedVariant.discountedRetailPrice ||
-            selectedVariant.retailPrice) * item.quantity;
-
-        subtotalCost += itemTotalCost;
-        subtotal += itemTotalPrice;
-        totalNumberOfItems += item.quantity;
-
         orderItems.push({
           productId: item.id,
           productAttributeId: selectedVariant.id,
@@ -337,18 +256,14 @@ const Page = () => {
           costPrice: selectedVariant.costPrice,
           retailPrice: selectedVariant.retailPrice,
           discountedRetailPrice:
-            selectedVariant.discountedRetailPrice ||
-            selectedVariant.retailPrice,
+            selectedVariant.discountedRetailPrice || selectedVariant.retailPrice,
           quantity: item.quantity,
-          totalCostPrice: itemTotalCost,
-          totalPrice: itemTotalPrice,
+          totalCostPrice: selectedVariant.costPrice * item.quantity,
+          totalPrice: selectedVariant.retailPrice * item.quantity,
           licenseType: selectedVariant.size.toLowerCase(),
         });
       });
     }
-
-    // Calculate final total after coupon discount
-    const finalTotal = subtotal - discount;
 
     const payload = {
       userId,
@@ -364,12 +279,6 @@ const Page = () => {
       state: formData.profile.state,
       postalCode: formData.profile.postalCode,
       orderItems,
-      // couponId: appliedCoupon?.id || null,
-      discountAmount: discount,
-      subtotalCost: total,
-      subtotal,
-      totalAmount: finalTotal,
-      totalNumberOfItems,
     };
 
     try {
@@ -390,8 +299,6 @@ const Page = () => {
         return;
       }
 
-      // Generate invoice HTML
-
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -407,9 +314,6 @@ const Page = () => {
       localStorage.removeItem("cart");
       localStorage.removeItem("checkoutItem");
       setCheckoutProduct(null);
-      setAppliedCoupon(null);
-      setDiscount(0);
-      setCouponCode("");
     } catch (error) {
       console.error("❌ Order error:", error);
       toast.error(error.message || "❌ Order failed");
@@ -483,7 +387,6 @@ const Page = () => {
       <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
         {/* Billing Info */}
         <div className="w-full">
-          {/* ... existing billing form ... */}
           <h2 className="text-3xl font-bold mb-6 text-center text-[#1C2836]">
             Billing Information
           </h2>
@@ -677,6 +580,17 @@ const Page = () => {
                       <span className="text-sm text-gray-500 ml-1">
                         ({checkoutProduct.variant})
                       </span>
+
+                      {/* <button
+                        onClick={() => {
+                          localStorage.removeItem("checkoutItem");
+                          setCheckoutProduct(null);
+                          toast.success("✅ Checkout item removed!");
+                        }}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={18} />
+                      </button> */}
                     </div>
                     <div className="text-[#1C2836] font-medium">
                       $
@@ -708,6 +622,12 @@ const Page = () => {
                         <span className="text-sm text-gray-500 ml-1">
                           ({selectedSize})
                         </span>
+                        {/* <button
+                          onClick={() => handleRemove(item.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={18} />
+                        </button> */}
                       </div>
                       <span className="text-[#1C2836] font-medium">
                         ${itemTotal.toFixed(2)}
@@ -722,48 +642,19 @@ const Page = () => {
                 <span className="text-[25px]">${subtotal.toFixed(2)}</span>
               </div>
             </div>
-
-            {/* Coupon Section */}
             <div className="flex items-center flex-col lg:flex-row lg:justify-between gap-4 lg:gap-1 mb-4">
               <input
                 type="text"
                 placeholder="Coupon code"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                className="border border-[#b7b7b7] px-3 py-2 rounded w-64"
+                className="border border-[#b7b7b7] px-3 py-2 rounded w-64 "
               />
-              <button
-                type="button"
-                onClick={applyCoupon}
-                className="bg-[#7CB84D] text-white px-12 py-2 rounded-lg hover:bg-green-700"
-              >
+              <button className="bg-[#7CB84D] text-white px-12 py-2 rounded-lg hover:bg-green-700">
                 APPLY COUPON
               </button>
             </div>
-
-            {availableCoupon && (
-              <div className="text-sm text-gray-600 mb-4">
-                Use coupon code{" "}
-                <span className="font-bold">{availableCoupon.code}</span> for $
-                {availableCoupon.discountAmount} off on orders over $
-                {availableCoupon.orderPriceLimit}
-              </div>
-            )}
-
-            {appliedCoupon && (
-              <div className="flex justify-between items-center py-2">
-                <span className="text-[#6f6f6f]">
-                  Coupon Discount ({appliedCoupon.code})
-                </span>
-                <span className="text-red-500 font-medium">
-                  -${discount.toFixed(2)}
-                </span>
-              </div>
-            )}
-
             <div className="text-center text-[#c1c1c1] mt-20 font-bold text-lg">
               YOUR TOTAL:{" "}
-              <span className="text-[#1C2836]">${total.toFixed(2)}</span>
+              <span className="text-[#1C2836]">${subtotal.toFixed(2)}</span>
             </div>
 
             <form onSubmit={handleSubmit}>

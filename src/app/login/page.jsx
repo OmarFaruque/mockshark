@@ -116,11 +116,11 @@ const handleLogin = async (e) => {
           {/* Login Form */}
           <div className="flex flex-col justify-center p-10 space-y-6 relative">
             {/* Floating label effect */}
-            <div className="absolute top-6 right-6 flex space-x-2">
+            {/* <div className="absolute top-6 right-6 flex space-x-2">
               <div className="w-3 h-3 rounded-full bg-red-400"></div>
               <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
               <div className="w-3 h-3 rounded-full bg-green-400"></div>
-            </div>
+            </div> */}
             
             <motion.div 
               initial={{ opacity: 0, y: -10 }}

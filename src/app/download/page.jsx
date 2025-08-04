@@ -35,7 +35,7 @@ export default function DownloadPage() {
     doc.setFont("Times", "Normal");
     doc.setFontSize(12);
     const lines = doc.splitTextToSize(license.licenseText, 180);
-    doc.text(lines, 15, 20);
+    doc.text(lines, 15, 20 , );
 
     doc.save(`MockShark-License-${licenseType}-${productName}.pdf`);
   };

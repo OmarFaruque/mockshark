@@ -217,7 +217,7 @@ const JustDrop = ({ title, paragraph }) => {
                 product?.images?.[0]?.image || "https://via.placeholder.com/262"
               }
               alt={product?.title}
-              className="rounded-t-2xl w-full h-full lg:w-[262] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]"
+              className="rounded-t-2xl lg:w-[262px] lg:h-[262px] object-contain mb-4 bg-[#E6E6E6]"
             />
 
             <h3 className="text-[18px] lg:text-[15px] font-bold text-gray-800 leading-tight line-clamp-2 px-4 h-[40px]">
