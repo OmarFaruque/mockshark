@@ -27,28 +27,7 @@ export const metadata = {
     "mockup templates",
     "design resources"
   ],
-  openGraph: {
-    title: "MockShark — Affordable High-Quality Mockups for Designers",
-    description: "Empowering designers with high-quality mockups without the hefty price tag. Perfect for creative professionals.",
-    url: "https://mockshark.com", 
-    siteName: "MockShark",
-    images: [
-      {
-        url: "https://i.ibb.co.com/Y7fB4j46/ML-02.png", // replace with actual OG image
-        width: 1200,
-        height: 630,
-        alt: "MockShark Mockup Templates"
-      }
-    ],
-    locale: "en_US",
-    type: "website"
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "MockShark — Affordable High-Quality Mockups for Designers",
-    description: "Empowering designers with high-quality mockups without the hefty price tag.",
-    images: ["https://mockshark.com/og-image.jpg"] // replace with actual image
-  }
+ 
 };
 
 
