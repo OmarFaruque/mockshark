@@ -1,73 +1,72 @@
-"use client";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Navbar } from "@/app/components/Navbar";
-import Footer from "@/app/components/Footer";
-import { ArrowUpRight, Clock, Eye } from "lucide-react";
-import Markdown from "react-markdown";
-import Link from "next/link";
-
-const blogs = [
-  {
-    id: "1",
-    title: "The Future of Mockup Design",
-    desc: "Explore how AI and modern design tools are revolutionizing the way we create and present digital mockups. From automated layout suggestions to intelligent color adjustments, the future of mockup design is driven by innovation. Discover how these changes are making design faster, smarter, and more accessible than ever before.",
-    image: "https://mockupline.com/wp-content/uploads/2024/12/canva-mockup.jpg",
-    content: `### The Future of Mockup Design
-
-As AI tools become more integrated into design workflows, mockup creation is evolving rapidly. Designers can now generate realistic previews using AI-driven platforms, automate repetitive layout tasks, and even receive design suggestions.
-
-These tools not only increase productivity but also help non-designers create visually compelling assets. In the next five years, expect cloud-based, AI-powered design platforms to dominate the mockup scene.
-
-Mockups will continue to bridge the gap between concept and reality, with 3D rendering, live preview on devices, and interactive mockups becoming the norm.`,
-  },
-  {
-    id: "2",
-    title: "3D Mockups in 2025",
-    desc: "Discover cutting-edge techniques for creating photorealistic 3D mockups. Learn how these mockups enhance product presentation, increase engagement, and shorten feedback cycles. From smart lighting to advanced texture mapping, 3D mockups are shaping the future of digital design.",
-    image:
-      "https://mir-s3-cdn-cf.behance.net/project_modules/source/ca1d7b90050449.5e0b57d95a6bb.jpg",
-    content: `### 3D Mockups in 2025
-
-3D mockups have moved beyond novelty and are now essential tools in product design, marketing, and branding. Designers use software like Blender, Adobe Dimension, and Figma plugins to create stunning product visualizations.
-
-These mockups improve client buy-in by presenting products in real-world scenarios before they’re built. Expect more automation in 3D mockup creation, as well as integration with AR and VR technologies.
-
-With better GPU rendering and AI-enhanced lighting, 2025 is the year of high-fidelity mockup experiences.`,
-  },
-  {
-    id: "3",
-    title: "Minimalist Mockup Trends",
-    desc: "Less is more. Learn how clean, minimalist mockup presentations are dominating the design industry in 2025. Designers are now embracing whitespace, simple color palettes, and sleek typography to highlight product value without distractions. This trend simplifies communication and enhances clarity in product storytelling.",
-    image:
-      "https://imgproxy.domestika.org/unsafe/w:1200/rs:fill/plain/src://blog-post-open-graph-covers/000/005/697/5697-original.PNG?1605464863",
-    content: `### Minimalist Mockup Trends
-
-Minimalism isn’t just a trend — it's a design philosophy. In 2025, designers are focusing on fewer elements, more whitespace, and typography-led compositions. The goal is to showcase the product without visual noise.
-
-Mockups are becoming less cluttered, with single-object scenes, soft shadows, and neutral backgrounds. This enhances focus and lets the design speak for itself.
-
-Whether it’s an app screen or a physical product, minimalist mockups are now the go-to for portfolios and presentations that aim to be both elegant and effective.`,
-  },
-];
+'use client';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Navbar } from '@/app/components/Navbar';
+import Footer from '@/app/components/Footer';
+import { ArrowUpRight, Clock, Eye } from 'lucide-react';
+import Markdown from 'react-markdown';
+import Link from 'next/link';
 
 export default function BlogDetailsPage() {
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [relatedBlogs, setRelatedBlogs] = useState([]);
 
   useEffect(() => {
-    const selectedBlog = blogs.find((b) => b.id === id);
-    setBlog(selectedBlog);
+    const fetchBlog = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/blogs/${id}`);
+        const data = await res.json();
+
+        if (data.success) {
+          setBlog(data.data);
+          setError(null);
+        } else {
+          setError(data.message || 'Blog not found');
+        }
+      } catch (err) {
+        setError(err.message || 'Failed to fetch blog');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchRelatedBlogs = async () => {
+      try {
+        const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/blogs`);
+        const data = await res.json();
+
+        if (data.success) {
+          // Filter out current blog and take 2 related
+          const related = data.data.filter(b => b.id !== id).slice(0, 2);
+          setRelatedBlogs(related);
+        }
+      } catch {
+        // ignore related fetch errors silently
+      }
+    };
+
+    fetchBlog();
+    fetchRelatedBlogs();
   }, [id]);
 
-  if (!blog)
+  if (loading)
     return (
       <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-white to-gray-50">
         <div className="animate-pulse flex space-x-4">
           <div className="h-12 w-12 rounded-full bg-gray-200"></div>
         </div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-white to-gray-50 text-red-500">
+        <p>{error}</p>
       </div>
     );
 
@@ -102,23 +101,7 @@ export default function BlogDetailsPage() {
                   </div>
                 </div>
 
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  {blog.desc}
-                </p>
-
-                {/* <button 
-                  className="group flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition-colors"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
-                  <span className="font-medium">Share article</span>
-                  <motion.span
-                    animate={{ x: isHovered ? 4 : 0 }}
-                    transition={{ type: 'spring', stiffness: 500 }}
-                  >
-                    <ArrowUpRight className="h-4 w-4" />
-                  </motion.span>
-                </button> */}
+                <p className="text-xl text-gray-600 leading-relaxed">{blog.description}</p>
               </div>
             </div>
 
@@ -141,32 +124,23 @@ export default function BlogDetailsPage() {
               </article>
 
               <div className="mt-16 pt-8 border-t border-gray-200/50">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6">
-                  Related Articles
-                </h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">Related Articles</h3>
                 <div className="grid md:grid-cols-2 gap-6">
-                  {blogs
-                    .filter((b) => b.id !== id)
-                    .slice(0, 2)
-                    .map((related) => (
-                      <Link
-                        key={related.id}
-                        href={`/BlogDetails/${related.id}`}
-                      >
+                  {relatedBlogs.length > 0 ? (
+                    relatedBlogs.map((related) => (
+                      <Link key={related.id} href={`/BlogDetails/${related.id}`}>
                         <motion.div
-                          key={related.id}
                           whileHover={{ y: -4 }}
-                          className="bg-white p-6 rounded-2xl border border-gray-200/50 shadow-sm hover:shadow-md transition-all"
+                          className="bg-white p-6 rounded-2xl border border-gray-200/50 shadow-sm hover:shadow-md transition-all cursor-pointer"
                         >
-                          <h4 className="text-lg font-semibold mb-2">
-                            {related.title}
-                          </h4>
-                          <p className="text-gray-600 line-clamp-2">
-                            {related.desc}
-                          </p>
+                          <h4 className="text-lg font-semibold mb-2">{related.title}</h4>
+                          <p className="text-gray-600 line-clamp-2">{related.description}</p>
                         </motion.div>
                       </Link>
-                    ))}
+                    ))
+                  ) : (
+                    <p>No related articles found.</p>
+                  )}
                 </div>
               </div>
             </div>
