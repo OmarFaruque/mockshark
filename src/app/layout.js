@@ -16,19 +16,9 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "MockShark — Affordable High-Quality Mockups for Designers",
-  description: "Empowering designers with high-quality mockups without the hefty price tag. Explore our wide range of affordable and professional mockup templates.",
-  keywords: [
-    "MockShark",
-    "mockups",
-    "free mockups",
-    "affordable mockups",
-    "premium mockups",
-    "PSD mockups",
-    "mockup templates",
-    "design resources"
-  ],
- 
+  description: "Empowering designers with high-quality mockups without the hefty price tag. Explore our wide range of affordable and professional mockup templates."
 };
+
 
 
 export default function RootLayout({ children }) {
