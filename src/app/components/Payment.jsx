@@ -80,7 +80,7 @@ const BundlePackages = () => {
   const getDesignConfig = (mockups) => {
     switch (mockups) {
       case 10:
-        return { color: 'bg-red-500' };
+        return { color: 'bg-[#46d8f9]' };
       case 20:
         return {
           color: 'bg-[#7CB84D]',
@@ -94,7 +94,7 @@ const BundlePackages = () => {
           priceColor: 'text-white',
         };
       default:
-        return { color: 'bg-[#46D8F9]' };
+        return { color: 'bg-[#46d8f9]' };
     }
   };
 const desiredOrder = ["Essential Pack", "Designer Pack", "Agency Pack"];

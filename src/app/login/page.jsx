@@ -93,7 +93,7 @@ const handleLogin = async (e) => {
               className="relative z-10"
             >
               <Image
-                src="/login-illustration.jpg" 
+                src="/loginSignupageimg.png" 
                 alt="Creative Work"
                 width={400}
                 height={400}

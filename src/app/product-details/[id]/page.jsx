@@ -558,7 +558,7 @@ const page = () => {
           </div>
 
           <p className="text-[#1C2836] text-xs">
-            Access your license information{" "}
+            Which one is better for you?{" "}
             <Link href="/license-types" className="text-sky-500 underline">
               {" "}
               See License

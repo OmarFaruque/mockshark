@@ -34,24 +34,23 @@ export const Navbar = () => {
   //   "Poster Mockups": ["Indoor", "Outdoor", "Framed", "Rolled"],
   //   "Logo Mockups": ["Wall Sign", "Embossed", "Paper", "Glass"]
   // };
-const userId = Cookies.get("userId");
+  const userId = Cookies.get("userId");
   const hoverTimeout = useRef(null);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categories, setCategories] = useState({});
   const [hoveredCategory, setHoveredCategory] = useState(null);
- const menuItems = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/aboutus" },
-  { label: "Order", href: "/order", protected: true },
-  { label: "Download", href: "/download", protected: true },
-  { label: "Blogs", href: "/blog" },
-  { label: "FAQs", href: "/faq" },
-  { label: "Contact Us", href: "/contact-us" },
-  { label: "Terms of Services", href: "/Terms-Conditions" },
-  { label: "Privacy Policy", href: "/Privacypolicy" },
-];
-
+  const menuItems = [
+    { label: "Home", href: "/" },
+    { label: "About Us", href: "/aboutus" },
+    { label: "Order", href: "/order", protected: true },
+    { label: "Download", href: "/download", protected: true },
+    { label: "Blogs", href: "/blog" },
+    { label: "FAQs", href: "/faq" },
+    { label: "Contact Us", href: "/contact-us" },
+    { label: "Terms of Services", href: "/Terms-Conditions" },
+    { label: "Privacy Policy", href: "/Privacypolicy" },
+  ];
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -117,10 +116,9 @@ const userId = Cookies.get("userId");
   //     setCartCount(existingCart.reduce((acc, item) => acc + item.quantity, 0));
   //   }, []);
 
- const handleCartClick = () => {
-  window.location.href = "/cart";  
-};
-
+  const handleCartClick = () => {
+    window.location.href = "/cart";
+  };
 
   const fetchCredits = async () => {
     const id = Cookies.get("userId"); // adjust if your cookie name is different
@@ -185,30 +183,29 @@ const userId = Cookies.get("userId");
             </button>
           </div>
           <div className="flex flex-col p-4 space-y-4">
-           {menuItems.map((item, idx) => (
-  item.protected ? (
-    <span
-      key={idx}
-      onClick={() => {
-        if (!userId) {
-          router.push("/login");
-        } else {
-          router.push(item.href);
-        }
-      }}
-      className="block cursor-pointer text-white uppercase hover:text-cyan-300 transition-colors duration-200"
-    >
-      {item.label}
-    </span>
-  ) : (
-    <Link key={idx} href={item.href}>
-      <span className="block text-white uppercase hover:text-cyan-300 transition-colors duration-200">
-        {item.label}
-      </span>
-    </Link>
-  )
-))}
-
+            {menuItems.map((item, idx) =>
+              item.protected ? (
+                <span
+                  key={idx}
+                  onClick={() => {
+                    if (!userId) {
+                      router.push("/login");
+                    } else {
+                      router.push(item.href);
+                    }
+                  }}
+                  className="block cursor-pointer text-white uppercase hover:text-cyan-300 transition-colors duration-200"
+                >
+                  {item.label}
+                </span>
+              ) : (
+                <Link key={idx} href={item.href}>
+                  <span className="block text-white uppercase hover:text-cyan-300 transition-colors duration-200">
+                    {item.label}
+                  </span>
+                </Link>
+              )
+            )}
           </div>
         </div>
 
@@ -429,10 +426,9 @@ const userId = Cookies.get("userId");
           ) : (
             <Link
               href="/login"
-              className="relative px-4 py-2 text-sm font-medium text-cyan-400 rounded-lg group "
+              className="hidden sm:inline-block  text-cyan-400 px-4 py-2 rounded-lg"
             >
               <span className="relative z-10">Sign In</span>
-              <span className="absolute "></span>
             </Link>
           )}
 
