@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext ,menuRef } from "react";
 import {
   Menu,
   X,
@@ -346,7 +346,8 @@ export const Navbar = () => {
             )}
           </div>
 
-          {user ? (
+         <div className="hidden sm:inline-block">
+           {user ? (
             <div className="relative inline-block">
               {/* Avatar - peer */}
               <div className="peer flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400/30">
@@ -431,6 +432,7 @@ export const Navbar = () => {
               <span className="relative z-10">Sign In</span>
             </Link>
           )}
+         </div>
 
           {/* Desktop Sign In */}
           {/* {!isLoggedIn && (
@@ -459,6 +461,95 @@ export const Navbar = () => {
         <div className="md:hidden mt-3 space-y-2 animate-slideDown">
           {/* Mockups Dropdown for Mobile */}
           <div className="px-4">
+           <div className="flex justify-end items-center w-full">
+  {user ? (
+    <div className="relative inline-block" ref={menuRef}>
+      {/* Avatar */}
+      <div
+        onClick={() => setMenuOpen((prev) => !prev)}
+        className="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400/30"
+      >
+        <Image
+          src={user.image || "/default-avatar.png"}
+          width={32}
+          height={32}
+          alt="User Avatar"
+          className="rounded-full border-2 border-[#0d0f18]"
+        />
+      </div>
+
+      {/* Dropdown menu */}
+      {menuOpen && (
+        <div
+          className="absolute right-0 mt-2 w-56 origin-top-right bg-[#1a1d28] rounded-xl shadow-2xl shadow-black/50 border border-gray-800/50 backdrop-blur-sm z-50
+          transition-all duration-150 ease-in-out"
+        >
+          <div className="px-4 py-3 border-b border-gray-800/50">
+            <p className="text-sm font-medium text-white">{user.name}</p>
+            <p className="text-xs text-gray-400 truncate">{user.email}</p>
+          </div>
+
+          <Link
+            href="/profile"
+            className="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-[#252a38] transition-colors duration-100"
+          >
+            <svg
+              className="w-5 h-5 mr-3 opacity-80"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            Account Settings
+          </Link>
+
+          <button
+            onClick={() => {
+              Cookies.remove("userId");
+              window.location.reload();
+            }}
+            className="flex items-center w-full px-4 py-3 text-sm text-red-400 hover:bg-[#252a38] transition-colors duration-100"
+          >
+            <svg
+              className="w-5 h-5 mr-3 opacity-80"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            Sign Out
+          </button>
+        </div>
+      )}
+    </div>
+  ) : (
+    <Link
+      href="/login"
+      className="hidden sm:inline-block text-cyan-400 px-4 py-2 rounded-lg"
+    >
+      <span className="relative z-10">Sign In</span>
+    </Link>
+  )}
+</div>
+
             <button
               onClick={() => handleCategoryClick("Mockups")}
               className="w-full flex justify-between items-center py-2 text-left text-white hover:text-cyan-300"
