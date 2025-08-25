@@ -516,10 +516,11 @@ export const Navbar = () => {
           </Link>
 
           <button
-            onClick={() => {
-              Cookies.remove("userId");
-              window.location.reload();
-            }}
+            // onClick={() => {
+            //   Cookies.remove("userId");
+            //   window.location.reload();
+            // }}
+            onClick={handleLogout}
             className="flex items-center w-full px-4 py-3 text-sm text-red-400 hover:bg-[#252a38] transition-colors duration-100"
           >
             <svg
@@ -594,15 +595,15 @@ export const Navbar = () => {
             )}
           </div>
 
-          <a href="#" className="block px-4 py-2 hover:text-cyan-300">
+          <Link href='/aboutus' className="block px-4 py-2 hover:text-cyan-300">
             About Us
-          </a>
-          <a href="#" className="block px-4 py-2 hover:text-cyan-300">
+          </Link>
+          <Link href="/Bundle-Deals" className="block px-4 py-2 hover:text-cyan-300">
             Bundle Deals
-          </a>
-          <a href="#" className="block px-4 py-2 hover:text-cyan-300">
+          </Link>
+          <Link  href="/blog" className="block px-4 py-2 hover:text-cyan-300">
             Blog
-          </a>
+          </Link>
 
           {/* Mobile Auth Buttons */}
           <div className="flex justify-center gap-4 mt-3">
