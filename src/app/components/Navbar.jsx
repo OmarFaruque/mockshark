@@ -606,7 +606,7 @@ export const Navbar = () => {
 
           {/* Mobile Auth Buttons */}
           <div className="flex justify-center gap-4 mt-3">
-            {!isLoggedIn ? (
+            {!isLoggedIn && (
               <>
                 <Link href="/login">
                   <button className="relative px-6 py-2 overflow-hidden font-semibold text-white border border-white rounded-lg group">
@@ -622,13 +622,7 @@ export const Navbar = () => {
                   </button>
                 </Link>
               </>
-            ) : (
-              <button
-                onClick={handleLogout}
-                className=" px-4 py-1.5 text-red-500 font-medium rounded hover:bg-gray-100 transition"
-              >
-                Logout
-              </button>
+            
             )}
           </div>
         </div>
