@@ -145,7 +145,7 @@ const TermsAndConditions = () => {
               <ListItem>
                 <ListItemIcon sx={{ color: 'cyan.600' }}>•</ListItemIcon>
                 <Typography>
-                  <span style={{ fontWeight: 500, color: '#06b6d4' }}>How to Request:</span> Email contact@mockshark.com with order details
+                  <span style={{ fontWeight: 500, color: '#06b6d4' }}>How to Request:</span> Emailservice.mockshark@gmail.com with order details
                 </Typography>
               </ListItem>
               <ListItem>
@@ -226,7 +226,7 @@ const TermsAndConditions = () => {
                   <span style={{ color: '#06b6d4', fontWeight: 500 }}>Delivery Method:</span> After purchase, products are available on your MockShark download page.
                 </Typography>
                 <Typography>
-                  <span style={{ color: '#06b6d4', fontWeight: 500 }}>Support:</span> Contact us at contact@mockshark.com for any issues.
+                  <span style={{ color: '#06b6d4', fontWeight: 500 }}>Support:</span> Contact us atservice.mockshark@gmail.com for any issues.
                 </Typography>
               </>
             )
@@ -319,7 +319,7 @@ const TermsAndConditions = () => {
                 textDecoration: 'none'
               }}
             >
-              contact@mockshark.com
+             service.mockshark@gmail.com
             </a>
           </Typography>
         </Paper>

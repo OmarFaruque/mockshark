@@ -56,7 +56,7 @@ export const Navbar = () => {
     const fetchCategories = async () => {
       try {
         const res = await fetch(
-          "https://mockshark-backend.vercel.app/api/v1/customer/categories"
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/categories`
         );
         const json = await res.json();
 
@@ -123,7 +123,7 @@ export const Navbar = () => {
   const fetchCredits = async () => {
     const id = Cookies.get("userId"); // adjust if your cookie name is different
     const res = await fetch(
-      `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${id}`,
       {}
     );
 

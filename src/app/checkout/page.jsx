@@ -73,7 +73,7 @@ const Page = () => {
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const res = await fetch("https://mockshark-backend.vercel.app/api/v1/coupons");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/coupons`);
         if (!res.ok) throw new Error("Failed to fetch coupons");
         const data = await res.json();
         if (data.data && data.data.length > 0) {
@@ -110,7 +110,7 @@ const Page = () => {
     const fetchUser = async () => {
       try {
         const res = await fetch(
-          `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${userId}`,
           {
             method: "GET",
             headers: {
@@ -249,7 +249,7 @@ const Page = () => {
       };
 
       try {
-        const res = await fetch("https://mockshark-backend.vercel.app/api/v1/bundles/order", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bundles/order`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -373,7 +373,7 @@ const Page = () => {
     };
 
     try {
-      const res = await fetch("https://mockshark-backend.vercel.app/api/v1/orders", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -451,7 +451,7 @@ const Page = () => {
 
     try {
       const res = await fetch(
-        `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${id}`,
         {
           method: "PUT",
           headers: {

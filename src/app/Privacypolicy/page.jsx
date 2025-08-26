@@ -315,7 +315,7 @@ const PrivacyPolicy = () => {
     }
   }}
 >
-  contact@mockshark.com
+ service.mockshark@gmail.com
 </Typography>
           </Paper>
         </Fade>

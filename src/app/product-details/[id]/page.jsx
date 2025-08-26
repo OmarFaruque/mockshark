@@ -66,7 +66,7 @@ const page = () => {
   // useEffect(() => {
   //   const fetchCredits = async () => {
   //     try {
-  //       const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/users/${userId}/credits`);
+  //       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${userId}/credits`);
   //       const data = await res.json();
 
   //       if (data.success) {
@@ -93,7 +93,7 @@ const page = () => {
       }
 
       const res = await axios.get(
-        "https://mockshark-backend.vercel.app/api/v1/download-with-credit",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/download-with-credit`,
         {
           params: { userId, productId },
         }
@@ -161,7 +161,7 @@ const page = () => {
 
     try {
       const res = await axios.post(
-        "https://mockshark-backend.vercel.app/api/v1/reviews",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/reviews`,
         {
           productId,
           userId,
@@ -201,7 +201,7 @@ const page = () => {
 
   const handleDelete = async (reviewId) => {
     try {
-      await axios.delete(`https://mockshark-backend.vercel.app/api/v1/reviews/${reviewId}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reviews/${reviewId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -220,7 +220,7 @@ const page = () => {
     const fetchProduct = async () => {
       try {
         const res = await fetch(
-          `https://mockshark-backend.vercel.app/api/v1/customer/products/${id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/products/${id}`
         );
         const data = await res.json();
         setProduct(data?.data);
@@ -237,7 +237,7 @@ const page = () => {
         if (!userId) return;
 
         const res = await axios.get(
-          `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${userId}`
         );
         setUserCredits(
           res.data?.data?.credits - res.data?.data?.creditsUsed || 0

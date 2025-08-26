@@ -12,7 +12,7 @@ export default function BundleInvoicePage() {
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/bundle-invoice-orders/${id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bundle-invoice-orders/${id}`);
         const data = await res.json();
 
         if (!res.ok) {

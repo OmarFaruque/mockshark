@@ -19,7 +19,7 @@ export default function BlogDetailsPage() {
     const fetchBlog = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/blogs/${id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/blogs/${id}`);
         const data = await res.json();
 
         if (data.success) {
@@ -37,7 +37,7 @@ export default function BlogDetailsPage() {
 
     const fetchRelatedBlogs = async () => {
       try {
-        const res = await fetch(`https://mockshark-backend.vercel.app/api/v1/blogs`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/blogs`);
         const data = await res.json();
 
         if (data.success) {

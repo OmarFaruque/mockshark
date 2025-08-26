@@ -255,7 +255,7 @@ const ContactUs = () => {
             variant="contained"
             size="large"
             startIcon={<Email />}
-            href="mailto:contact@mockshark.com"
+            href="mailto:service.mockshark@gmail.com"
             sx={{
               bgcolor: cyan[600],
               '&:hover': {

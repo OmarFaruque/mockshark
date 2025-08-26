@@ -109,7 +109,7 @@ const FAQ = () => {
       items: [
         {
           question: 'How do I contact support?',
-          answer: 'You can reach us via our Contact Us page or email us at contact@mockshark.com. We aim to respond within 24 hours.'
+          answer: 'You can reach us via our Contact Us page or email us atservice.mockshark@gmail.com. We aim to respond within 24 hours.'
         },
         {
           question: 'I lost access to my account. What now?',

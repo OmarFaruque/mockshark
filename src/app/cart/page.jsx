@@ -58,10 +58,10 @@ const CartPage = () => {
     }, 0);
   };
   const handleCartCheckout = () => {
-    // Direct checkout data থাকলে clear করো
+   
     localStorage.removeItem("checkoutItem");
 
-    // Cart ডাটা আগে থেকেই localStorage এ আছে
+   
     router.push("/checkout");
   };
 

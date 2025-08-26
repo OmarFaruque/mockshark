@@ -47,7 +47,7 @@ const HelpCenter = () => {
                 href="mailto:contact@mockshark.com" 
                 className="text-lg font-medium text-cyan-600 hover:text-cyan-700 break-all"
               >
-                contact@mockshark.com
+               service.mockshark@gmail.com
               </a>
             </div>
             <p className="text-gray-600 text-center">

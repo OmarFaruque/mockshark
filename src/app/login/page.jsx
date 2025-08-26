@@ -33,7 +33,7 @@ const handleLogin = async (e) => {
   e.preventDefault();
 
   try {
-    const res = await fetch('https://mockshark-backend.vercel.app/api/v1/auth/login', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -52,10 +52,10 @@ const handleLogin = async (e) => {
       return;
     }
 
-    // ✅ Store token in localStorage
+   
     localStorage.setItem('token', data?.data?.accessToken);
 
-    // ✅ Store user id in cookies
+   
     Cookies.set('userId', data?.data?.id, { expires: 7 }); // expires in 7 days
     Cookies.set('token', data?.data?.accessToken, { expires: 7 }); // expires in 7 days
     Cookies.set('name', data?.data?.name, { expires: 7 }); // expires in 7 days

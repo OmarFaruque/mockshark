@@ -65,7 +65,7 @@ const JustDrop = ({ title, paragraph }) => {
   //   // Step 2: Fetch data when component mounts
   //   const fetchProducts = async () => {
   //     try {
-  //       const response = await axios.get('https://mockshark-backend.vercel.app/api/v1/customer/products');
+  //       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/products`);
   //       setProducts(response.data.data);  // set product list in state
   //       setLoading(false);           // stop loader
   //     } catch (error) {
@@ -82,7 +82,7 @@ const JustDrop = ({ title, paragraph }) => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          "https://mockshark-backend.vercel.app/api/v1/customer/products"
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/products`
         );
         setProducts(response.data.data);
         setLoading(false);
@@ -99,7 +99,7 @@ const JustDrop = ({ title, paragraph }) => {
         if (!userId) return;
 
         const res = await axios.get(
-          `https://mockshark-backend.vercel.app/api/v1/customer/auth/users/${userId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${userId}`
         );
         setUserCredits(
           res.data?.data?.credits - res.data?.data?.creditsUsed || 0
@@ -122,7 +122,7 @@ const JustDrop = ({ title, paragraph }) => {
       }
 
       const res = await axios.get(
-        "https://mockshark-backend.vercel.app/api/v1/download-with-credit",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/download-with-credit`,
         {
           params: { userId, productId },
         }
