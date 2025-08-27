@@ -15,7 +15,7 @@ const RecommendedProduct = () => {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/featured-products`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/featured-products`);
         setProducts(response.data?.data || []);
       } catch (error) {
         console.error('Error fetching featured products:', error);
@@ -79,7 +79,7 @@ const { addToCart, cartCount } = useContext(CartContext);
                      }
                    }}
                  >
-                   + Add to Cart
+                   + Add to Cart 
                  </button>
                 </div>
               </div>

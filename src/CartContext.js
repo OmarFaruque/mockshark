@@ -28,6 +28,8 @@ export const CartProvider = ({ children }) => {
  const addToCart = (product, selectedVariant) => {
   const updatedCart = [...cart];
 
+  
+
   // Check by product ID + variant size to avoid duplicates of same variant
   const index = updatedCart.findIndex(
     (item) => item.id === product.id && item.productAttributes[0].size === selectedVariant.size
@@ -45,6 +47,7 @@ const cartItem = {
   selectedSize: selectedVariant.size,      
   price: selectedVariant.discountedRetailPrice,
   productAttributes: [selectedVariant],
+  paddlePriceId: selectedVariant.paddlePriceId,
 };
 
 

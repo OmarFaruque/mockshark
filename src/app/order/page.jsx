@@ -25,8 +25,8 @@ useEffect(() => {
 
   try {
     const [normalRes, bundleRes] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/orders/user/${userId}`),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bundle-orders/${userId}`),
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/user/${userId}`),
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bundle-orders/${userId}`),
     ]);
 
     const normalData = await normalRes.json();

@@ -11,7 +11,7 @@ export default function useUser() {
     if (!userId) return;
 
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${userId}`)
+      .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/auth/users/${userId}`)
       .then((res) => {
         if (res.data.success) {
           setUser(res.data.data);

@@ -56,7 +56,11 @@ export const Navbar = () => {
     const fetchCategories = async () => {
       try {
         const res = await fetch(
+<<<<<<< HEAD
           `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/categories`
+=======
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/categories`
+>>>>>>> 90dea4d (complete)
         );
         const json = await res.json();
 
@@ -123,7 +127,7 @@ export const Navbar = () => {
   const fetchCredits = async () => {
     const id = Cookies.get("userId"); // adjust if your cookie name is different
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${id}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/auth/users/${id}`,
       {}
     );
 

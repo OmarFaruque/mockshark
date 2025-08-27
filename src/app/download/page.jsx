@@ -47,8 +47,8 @@ export default function DownloadPage() {
     const fetchData = async () => {
       try {
         const [downloadsRes, licensesRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/downloads?userId=${userId}`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/licenses?userId=${userId}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/downloads?userId=${userId}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/licenses?userId=${userId}`),
         ]);
 
         const downloadsData = await downloadsRes.json();
