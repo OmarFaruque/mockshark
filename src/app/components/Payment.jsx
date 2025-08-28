@@ -42,7 +42,7 @@ const BundlePackages = () => {
   useEffect(() => {
     const fetchBundles = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bundles`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bundles`);
         const data = await res.json();
         if (data.success) {
           setBundles(data.data);
@@ -57,7 +57,7 @@ const BundlePackages = () => {
     fetchBundles();
   }, []);
 
-  const handleBuyNow = ({ title, price, mockups }) => {
+  const handleBuyNow = ({ title, price, mockups, paddleProductId, paddlePriceId }) => {
    const item = {
   // productId: '10211d12-6853-4e85-95ef-5e4f5ea6b6c9',
   name: title,
@@ -67,7 +67,9 @@ const BundlePackages = () => {
   // productAttributeId: null,
   productAttributes: [],
   isBundle: true,              // ✅ Add this
-  credits: mockups             // ✅ How many mockups this bundle gives
+  credits: mockups,            // ✅ How many mockups this bundle gives
+  paddleProductId,
+  paddlePriceId
 };
 
 
@@ -121,6 +123,8 @@ const sortedBundles = [...bundles].sort((a, b) => {
               regularPrice,
               discountPrice,
               mockups,
+              paddleProductId,
+              paddlePriceId,
             } = bundle;
 
             const savings = (regularPrice - discountPrice).toFixed(2);
@@ -140,6 +144,8 @@ const sortedBundles = [...bundles].sort((a, b) => {
                     title,
                     price: price,
                     mockups,
+                    paddleProductId,
+                    paddlePriceId,
                   })
                 }
               />

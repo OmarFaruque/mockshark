@@ -1,6 +1,7 @@
 "use client";
 
 import { useContext, useState, useEffect, useRef } from "react";
+import Script from "next/script";
 import { Navbar } from "../components/Navbar";
 import Footer from "../components/Footer";
 import { CartContext } from "@/CartContext";
@@ -9,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
+
 import useUser from "../hooks/user";
 
 const Page = () => {
@@ -73,7 +75,7 @@ const Page = () => {
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/coupons`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/coupons`);
         if (!res.ok) throw new Error("Failed to fetch coupons");
         const data = await res.json();
         if (data.data && data.data.length > 0) {
@@ -110,7 +112,7 @@ const Page = () => {
     const fetchUser = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${userId}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/auth/users/${userId}`,
           {
             method: "GET",
             headers: {
@@ -141,6 +143,7 @@ const Page = () => {
   // Load checkout product from localStorage
   useEffect(() => {
     const stored = localStorage.getItem("checkoutItem");
+    
     if (stored) {
       const parsed = JSON.parse(stored);
       setCheckoutProduct(parsed);
@@ -180,6 +183,7 @@ const Page = () => {
     }, 0);
   }
 
+
   // Calculate total after discount
   const total = subtotal - discount;
 
@@ -199,7 +203,7 @@ const Page = () => {
 
     if (subtotal < availableCoupon.orderPriceLimit) {
       toast.error(
-        `Minimum order amount is $${availableCoupon.orderPriceLimit} for this coupon`
+        `Minimum order amount is ${availableCoupon.orderPriceLimit} for this coupon`
       );
       return;
     }
@@ -221,6 +225,10 @@ const Page = () => {
       checkoutProduct &&
       !checkoutProduct.productId &&
       !checkoutProduct.productAttributeId;
+
+
+    const paddleItems = [];
+    console.log('checkoutProduct:', checkoutProduct);
 
     // Handle bundle order
     if (isBundle) {
@@ -248,25 +256,60 @@ const Page = () => {
         totalAmount: total,
       };
 
+
+      paddleItems.push({
+        priceId: checkoutProduct.paddlePriceId,
+        quantity: 1
+      });
+
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bundles/order`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+
+        Paddle.Initialize({
+          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN, 
+          eventCallback: async function (event) {
+              
+              if (event.type === "checkout.error") {
+                  console.error("Paddle Checkout Error:", event);
+              }
+              if( event.name === "checkout.completed") {
+
+                
+
+                  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bundles/order`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                  });
+
+                  if (!res.ok) throw new Error("Bundle order failed");
+
+                  toast.success("✅ Bundle order placed!");
+                  localStorage.removeItem("checkoutItem");
+                  setCheckoutProduct(null);
+                  setAppliedCoupon(null);
+                  setDiscount(0);
+                  setCouponCode("");
+                  
+                  
+                  Paddle.Checkout.close();
+
+              }
+          }
+      });
+
+        Paddle.Checkout.open({
+          items: [...paddleItems],
+          customer: {
+            email: user?.email || formData.profile.billingEmail,
           },
-          body: JSON.stringify(payload),
+          customData: payload,
         });
 
-        if (!res.ok) throw new Error("Bundle order failed");
 
-        toast.success("✅ Bundle order placed!");
-        localStorage.removeItem("checkoutItem");
-        setCheckoutProduct(null);
-        setAppliedCoupon(null);
-        setDiscount(0);
-        setCouponCode("");
-        return;
+        
       } catch (err) {
         toast.error(" Failed to place bundle order");
         console.error(err);
@@ -275,6 +318,7 @@ const Page = () => {
     }
 
     const orderItems = [];
+    
     let subtotalCost = 0;
     let subtotal = 0;
     let totalNumberOfItems = 0;
@@ -302,6 +346,8 @@ const Page = () => {
     } else {
       // Process cart items if no checkout product
       cart.forEach((item) => {
+
+       
         const selectedSize =
           item.selectedSize ||
           selectedVariants[item.id] ||
@@ -344,6 +390,13 @@ const Page = () => {
           totalPrice: itemTotalPrice,
           licenseType: selectedVariant.size.toLowerCase(),
         });
+
+        
+
+        paddleItems.push({
+          priceId: item.paddlePriceId || selectedVariant.paddlePriceId,
+          quantity: item.quantity
+        });
       });
     }
 
@@ -373,43 +426,72 @@ const Page = () => {
     };
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+  
+        Paddle.Initialize({
+          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN, 
+          eventCallback: async function (event) {
+              
+              if (event.type === "checkout.error") {
+                  console.error("Paddle Checkout Error:", event);
+              }
+              if( event.name === "checkout.completed") {
+
+                    // Map snake_case -> camelCase
+                    const normalized = snakeToCamelDeep(event.data.custom_data);
+
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders`, {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify(normalized),
+                    });
+
+                    const result = await res.json();
+                    
+                    if(result.success)
+                    {
+                        // toast.success("Order submitted successfully!");
+                        Swal.fire({
+                          toast: true,
+                          position: "top-end",
+                          icon: "success",
+                          title: "✅ Order placed successfully!",
+                          showConfirmButton: false,
+                          timer: 3000,
+                          timerProgressBar: true,
+                        });
+
+                        // Clear cart and checkout product after successful order
+                        setCart([]);
+                        localStorage.removeItem("cart");
+                        localStorage.removeItem("checkoutItem");
+                        setCheckoutProduct(null);
+                        setAppliedCoupon(null);
+                        setDiscount(0);
+                        setCouponCode("");
+
+                        // Close Paddle popup
+                        Paddle.Checkout.close();
+                    } 
+
+                    if (!result.success) {
+                      toast.error(result.message || "Order submission failed");
+                      return;
+                    }
+              }
+          }
+      });
+      
+      Paddle.Checkout.open({
+        items: [...paddleItems,],
+        customer: {
+          email: user?.email || formData.profile.billingEmail,
         },
-        body: JSON.stringify(payload),
+        customData: payload,
       });
 
-      const result = await res.json();
-      console.log("✅ Order API result:", result);
-
-      if (!res.ok) {
-        toast.error(result.message || "Order submission failed");
-        return;
-      }
-
-      // Generate invoice HTML
-
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "success",
-        title: "✅ Order placed successfully!",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-      });
-
-      // Clear cart and checkout product after successful order
-      setCart([]);
-      localStorage.removeItem("cart");
-      localStorage.removeItem("checkoutItem");
-      setCheckoutProduct(null);
-      setAppliedCoupon(null);
-      setDiscount(0);
-      setCouponCode("");
     } catch (error) {
       console.error("❌ Order error:", error);
       toast.error(error.message || "❌ Order failed");
@@ -451,7 +533,7 @@ const Page = () => {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/auth/users/${id}`,
         {
           method: "PUT",
           headers: {
@@ -781,5 +863,24 @@ const Page = () => {
     </div>
   );
 };
+
+
+
+
+function snakeToCamelDeep(input) {
+  if (Array.isArray(input)) {
+    return input.map(snakeToCamelDeep); // Recursively handle arrays
+  } else if (input !== null && typeof input === "object") {
+    return Object.keys(input).reduce((acc, key) => {
+      const camelKey = key.replace(/([-_][a-z])/g, (group) =>
+        group.toUpperCase().replace("_", "").replace("-", "")
+      );
+      acc[camelKey] = snakeToCamelDeep(input[key]); // Recursively handle nested objects
+      return acc;
+    }, {});
+  }
+  return input; // Primitive value (string, number, etc.)
+}
+
 
 export default Page;

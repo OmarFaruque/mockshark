@@ -65,7 +65,7 @@ const JustDrop = ({ title, paragraph }) => {
   //   // Step 2: Fetch data when component mounts
   //   const fetchProducts = async () => {
   //     try {
-  //       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/products`);
+  //       const response = await axios.get('${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/products');
   //       setProducts(response.data.data);  // set product list in state
   //       setLoading(false);           // stop loader
   //     } catch (error) {
@@ -80,10 +80,14 @@ const JustDrop = ({ title, paragraph }) => {
   useEffect(() => {
     // Fetch products
     const fetchProducts = async () => {
+
+      console.log('Fetching products...', `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/products`);
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/products`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/products`
         );
+
+        
         setProducts(response.data.data);
         setLoading(false);
       } catch (error) {
@@ -99,7 +103,7 @@ const JustDrop = ({ title, paragraph }) => {
         if (!userId) return;
 
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${userId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/auth/users/${userId}`
         );
         setUserCredits(
           res.data?.data?.credits - res.data?.data?.creditsUsed || 0
@@ -122,7 +126,7 @@ const JustDrop = ({ title, paragraph }) => {
       }
 
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/download-with-credit`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/download-with-credit`,
         {
           params: { userId, productId },
         }
@@ -171,6 +175,8 @@ const JustDrop = ({ title, paragraph }) => {
   //     ))}
   //   </div>
   // );
+
+  
 
   if (loading) {
     return (
@@ -249,6 +255,7 @@ const JustDrop = ({ title, paragraph }) => {
                   const personalVariant = product.productAttributes.find(
                     (attr) => attr.size === "Personal"
                   );
+
                   if (personalVariant) {
                     addToCart(product, personalVariant);
                   } else {

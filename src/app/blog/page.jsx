@@ -61,7 +61,7 @@ const BlogPage = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/blogs`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/blogs`);
         const data = await res.json();
 
         if (data.success) {

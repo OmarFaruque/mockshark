@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { CartProvider } from "@/CartContext";
+import PaddleLoader from "./components/PaddleLoader";
  // 👈 import the Providers wrapper
 
 const geistSans = Geist({
@@ -30,7 +31,7 @@ export default function RootLayout({ children }) {
        <CartProvider>
          {children}
         </CartProvider> {/* 👈 wrap with Providers */}
-       
+        <PaddleLoader />
       </body>
     </html>
   );

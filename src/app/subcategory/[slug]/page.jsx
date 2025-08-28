@@ -18,7 +18,7 @@ export default function SubcategoryPage() {
       setLoading(true);
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/subcategory/${slug}/products`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/subcategory/${slug}/products`
         );
         const json = await res.json();
         if (json.success && json.data.length > 0) {

@@ -11,7 +11,7 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reset-password`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/reset-password`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, newPassword }),
