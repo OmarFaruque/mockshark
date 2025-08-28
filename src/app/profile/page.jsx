@@ -148,11 +148,9 @@ const handleSubmit = async (section, e) => {
   }
 
   try {
-<<<<<<< HEAD
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/customer/auth/users/${id}`, {
-=======
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/auth/users/${id}`, {
->>>>>>> 90dea4d (complete)
+
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
