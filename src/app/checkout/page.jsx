@@ -324,6 +324,7 @@ const Page = () => {
     let totalNumberOfItems = 0;
 
     if (checkoutProduct) {
+      console.log('direct purchase in checkout')
       // Only process checkout product if it exists (not a bundle)
       const itemTotal = checkoutProduct.price * checkoutProduct.quantity;
       subtotal += itemTotal;
@@ -343,9 +344,16 @@ const Page = () => {
         totalPrice: itemTotal,
         licenseType: checkoutProduct.variant,
       });
+
+      paddleItems.push({
+        priceId: checkoutProduct.paddlePriceId,
+        quantity: checkoutProduct.quantity
+      });
+
+
     } else {
       // Process cart items if no checkout product
-      console.log("items in cart:", cart);
+      
       cart.forEach((item) => {
 
        

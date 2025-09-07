@@ -127,6 +127,8 @@ const page = () => {
       return;
     }
 
+    
+
     const checkoutItem = {
       productId: product.id,
       productAttributeId: selectedVariant.id,
@@ -134,10 +136,11 @@ const page = () => {
       image: product?.images?.[0]?.image,
       variant: selectedVariant.size,
       price: selectedVariant.costPrice,
+      paddlePriceId: selectedVariant.paddlePriceId,
       quantity: 1,
     };
 
-    console.log("Saving to localStorage:", checkoutItem); // Debug
+    // console.log("Saving to localStorage:", checkoutItem); // Debug
     localStorage.setItem("checkoutItem", JSON.stringify(checkoutItem));
     router.push("/checkout");
   };
@@ -223,7 +226,7 @@ const page = () => {
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/products/${id}`
         );
         const data = await res.json();
-        console.log("Fetched product data:", data);
+        // console.log("Fetched product data:", data);
         setProduct(data?.data);
       } catch (error) {
         console.error("Failed to fetch product:", error);
