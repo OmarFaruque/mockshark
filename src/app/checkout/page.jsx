@@ -228,7 +228,7 @@ const Page = () => {
 
 
     const paddleItems = [];
-    console.log('checkoutProduct:', checkoutProduct);
+
 
     // Handle bundle order
     if (isBundle) {
@@ -345,6 +345,7 @@ const Page = () => {
       });
     } else {
       // Process cart items if no checkout product
+      console.log("items in cart:", cart);
       cart.forEach((item) => {
 
        

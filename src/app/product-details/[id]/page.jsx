@@ -223,6 +223,7 @@ const page = () => {
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/customer/products/${id}`
         );
         const data = await res.json();
+        console.log("Fetched product data:", data);
         setProduct(data?.data);
       } catch (error) {
         console.error("Failed to fetch product:", error);
@@ -422,6 +423,8 @@ const page = () => {
   };
 
   const attributeOrder = ["Personal", "Commercial", "Extended Commercial"];
+
+  
 
   return (
     <div>

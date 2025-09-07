@@ -39,6 +39,9 @@ export const CartProvider = ({ children }) => {
     toast.info("🛒 Product is already in your cart.", { position: "top-right" });
     return;
   }
+
+
+ 
 const cartItem = {
   id: product.id,
   name: product.name,
