@@ -860,9 +860,9 @@ const Page = () => {
             <form onSubmit={handleSubmit}>
               <button
                 type="submit"
-                className="w-full mt-4 bg-[#006a4e] text-white py-2 rounded-lg hover:bg-green-700 font-bold"
-              >
-                PLACE ORDER
+                disabled={!isPrefilled}
+                className={`w-full mt-4 bg-[#006a4e] text-white py-2 rounded-lg hover:bg-green-700 font-bold ${!isPrefilled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                {!isPrefilled ? 'LOADING...' : 'PLACE ORDER'}
               </button>
             </form>
           </div>
